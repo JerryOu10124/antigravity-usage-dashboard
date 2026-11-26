@@ -2,10 +2,4 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-if ! command -v node >/dev/null 2>&1; then
-  echo "[Error] Node.js 20+ is required. Please install Node.js from https://nodejs.org/" >&2
-  exit 1
-fi
-
-node "$SCRIPT_DIR/install.mjs" "$@"
+exec bash "$SCRIPT_DIR/scripts/setup.sh" "$@"

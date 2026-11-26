@@ -27,39 +27,41 @@
 
 ---
 
-## 快速开始（Quick Start）
+## 一键安装（Quick Start）
 
-### 前置要求
-- **Node.js 20+**（用于运行跨平台采集脚本 `sync_usage.mjs` 与 MCP App 插件服务端）。
+> **全自动环境检测**：无需预先手动装好 Node.js 或 Git。安装脚本会自动检测本机是否存在 **Node.js 20+**；若缺失会优先通过 `winget` / `brew` 安装，或在无管理员权限时自动从官方下载便携版 Node.js 到本地用户目录（`~/.local/antigravity-node` / `%LOCALAPPDATA%\antigravity-node`），不污染系统环境。
 
-### 第一步：获取代码
+### 方式一：一行命令远程一键安装（推荐，零前置步骤）
 
-```bash
-git clone https://github.com/JerryOu10124/antigravity-usage-dashboard.git
-cd antigravity-usage-dashboard
-```
+打开终端粘贴运行即可自动拉取仓库、补齐 Node.js 20+、安装 Antigravity 侧边栏插件并完成首次日志扫描：
 
-*(也可直接下载 Release / Code ZIP 解压到本地任意目录)*
-
-### 第二步：选择使用方式
-
-#### 方式一：集成到 Antigravity 侧边栏（推荐）
-
-仓库内已附带预打包好的插件产物 `plugin/token-usage/`，无需 `npm install` 即可直接安装：
-
-- **Windows**：双击运行根目录下的 **`install.bat`**（或在终端执行 `node install.mjs`）。
-- **macOS / Linux**：
+- **Windows（PowerShell）**：
+  ```powershell
+  irm https://raw.githubusercontent.com/JerryOu10124/antigravity-usage-dashboard/main/scripts/setup.ps1 | iex
+  ```
+- **macOS / Linux（Terminal）**：
   ```bash
-  chmod +x install.sh open-dashboard.sh
-  ./install.sh
+  curl -fsSL https://raw.githubusercontent.com/JerryOu10124/antigravity-usage-dashboard/main/scripts/setup.sh | bash
   ```
 
-安装完成后重启（或重开）Antigravity，即可在左侧边栏和右侧面板 `+` 菜单中看到 **「Token 统计」**，每次打开都会自动增量扫描最新本地记录。
+安装完成后重启（或重开）Antigravity，即可在左侧边栏和右侧面板 `+` 菜单中打开 **「Token 统计」**。
 
-#### 方式二：浏览器独立打开
+---
 
-- **Windows**：直接双击 **`open-dashboard.bat`**。
-- **macOS / Linux**：运行 **`./open-dashboard.sh`**（或 `node sync_usage.mjs` 后用浏览器打开 `dashboard.html`）。
+### 方式二：下载仓库后本地一键安装 / 独立打开
+
+如果你已通过 `git clone` 或 GitHub 下载 ZIP 解压到本地目录：
+
+1. **集成到 Antigravity 侧边栏（「Token 统计」）**：
+   - **Windows**：直接双击根目录下的 **`install.bat`**（会自动检测/安装 Node.js 20+ 并完成插件部署与首次扫描）。
+   - **macOS / Linux**：
+     ```bash
+     chmod +x install.sh open-dashboard.sh scripts/setup.sh
+     ./install.sh
+     ```
+2. **仅用浏览器独立查看**：
+   - **Windows**：双击 **`open-dashboard.bat`**（缺少 Node.js 时同样会自动补齐）。
+   - **macOS / Linux**：运行 **`./open-dashboard.sh`**。
 
 ---
 
@@ -106,18 +108,18 @@ git pull
 
 ## English Quick Start
 
-1. Install **Node.js 20+**.
-2. Clone this repo:
-   ```bash
-   git clone https://github.com/JerryOu10124/antigravity-usage-dashboard.git
-   cd antigravity-usage-dashboard
-   ```
-3. Install into Antigravity sidebar (`Token 统计`):
-   - **Windows**: run `install.bat` (or `node install.mjs`)
-   - **macOS / Linux**: `chmod +x install.sh && ./install.sh`
-4. Or open standalone in browser:
-   - **Windows**: double-click `open-dashboard.bat`
-   - **macOS / Linux**: `./open-dashboard.sh`
+One-line install (automatically detects or installs Node.js 20+ without admin privileges, clones/downloads the dashboard, installs the Antigravity sidebar plugin, and scans local transcripts):
+
+- **Windows (PowerShell)**:
+  ```powershell
+  irm https://raw.githubusercontent.com/JerryOu10124/antigravity-usage-dashboard/main/scripts/setup.ps1 | iex
+  ```
+- **macOS / Linux**:
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/JerryOu10124/antigravity-usage-dashboard/main/scripts/setup.sh | bash
+  ```
+
+Or clone manually and run `install.bat` / `./install.sh` (sidebar plugin) or `open-dashboard.bat` / `./open-dashboard.sh` (standalone browser).
 
 All transcript parsing runs 100% locally in read-only mode (`~/.gemini/antigravity/brain` & `~/.gemini/antigravity-cli/brain`). Nothing is ever sent to any external server.
 
