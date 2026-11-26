@@ -1,0 +1,13 @@
+{
+  "name": "token-usage-mcp-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^2.0.4",
+    "@modelcontextprotocol/sdk": "^1.32.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

@@ -1,0 +1,15 @@
+# Personal local & multi-device archives (never commit your usage data to a public repo)
+data/*.json
+data/usage_bundle.js
+data/*.tmp
+*.tmp
+
+# Personal local configuration (e.g. private dataDir / gitSync / machineName)
+config.json
+
+# Build dependencies
+plugin-src/node_modules/
+
+# OS metadata
+.DS_Store
+Thumbs.db

@@ -1,0 +1,12 @@
+{
+  "name": "token-usage",
+  "displayName": "Token 统计",
+  "description": "Antigravity 本地与跨设备 Token 用量统计看板，提供个人概览热力图、API 费用估测、模型趋势折线图与使用情况分析。",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "打开 Token 统计看板",
+    "刷新本地并查看最新累计 Token 用量",
+    "看看各模型的 Token 消耗与折合费用趋势"
+  ]
+}

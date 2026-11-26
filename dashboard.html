@@ -1,0 +1,5052 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antigravity 使用情况与 Token 统计</title>
+<style>
+  :root {
+    --bg-canvas: #121212;
+    --bg-surface: #18181b;
+    --bg-card: #1d1d20;
+    --bg-card-hover: #242428;
+    --bg-pill: #252529;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --heat-0: #26272b;
+    --heat-1: #0f3a6b;
+    --heat-2: #155ea8;
+    --heat-3: #1e88e5;
+    --heat-4: #58b4ff;
+    --accent-blue: #38bdf8;
+    --accent-orange: #fb923c;
+    --accent-green: #34d399;
+    --accent-purple: #a78bfa;
+    --accent-pink: #f472b6;
+    --accent-teal: #2dd4bf;
+    --accent-amber: #fbbf24;
+    --font-sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    background: var(--bg-canvas);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .workspace-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+  }
+
+  .side-nav {
+    width: 216px;
+    flex-shrink: 0;
+    background: #0e0e11;
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    padding: 22px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 30;
+  }
+
+  .side-brand {
+    padding: 0 8px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .side-brand-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+
+  .side-brand-sub {
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .side-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  .tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 12px;
+    border-radius: 9px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .tab-btn svg {
+    flex-shrink: 0;
+    opacity: 0.78;
+  }
+
+  .tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .tab-btn.active {
+    background: #24242b;
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .tab-btn.active svg {
+    opacity: 1;
+    color: #58b4ff;
+  }
+
+  .tab-btn.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: #58b4ff;
+  }
+
+  .side-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .side-footer .meta-strip {
+    margin-top: 0;
+    gap: 6px;
+  }
+
+  .side-footer .btn-pill {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .main-pane {
+    flex: 1;
+    min-width: 0;
+    margin-left: 216px;
+  }
+
+  .app-shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 28px 64px;
+  }
+
+  /* Header & Navigation */
+  .utility-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding-bottom: 18px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .title-block h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .title-block .subtitle {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .meta-strip {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .dot-live {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-green);
+  }
+
+  .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .segmented {
+    display: inline-flex;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .segmented button {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    padding: 5px 11px;
+    font-size: 12px;
+    font-family: inherit;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+
+  .segmented button:hover {
+    color: var(--text-primary);
+  }
+
+  .segmented button.active {
+    background: #2b2b31;
+    color: var(--text-primary);
+  }
+
+  .select-pill {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .select-pill:hover, .select-pill:focus {
+    border-color: var(--border-strong);
+  }
+
+  .native-select-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .codex-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .codex-dd-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px 5px 13px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .codex-dd-trigger:hover,
+  .codex-dropdown.open .codex-dd-trigger {
+    border-color: var(--border-strong);
+    background: var(--bg-card);
+  }
+
+  .codex-dd-chevron {
+    color: var(--text-muted);
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+
+  .codex-dropdown.open .codex-dd-chevron {
+    transform: rotate(180deg);
+    color: var(--text-primary);
+  }
+
+  .codex-dd-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 176px;
+    max-width: 280px;
+    background: #232327;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 5px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    z-index: 120;
+    display: none;
+  }
+
+  .codex-dropdown.open .codex-dd-menu {
+    display: block;
+  }
+
+  .codex-dropdown.align-left .codex-dd-menu {
+    right: auto;
+    left: 0;
+  }
+
+  .codex-dd-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 12px;
+    text-align: left;
+    padding: 7px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .codex-dd-option:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+  }
+
+  .codex-dd-option.selected {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .codex-dd-check {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--text-primary);
+    opacity: 0;
+  }
+
+  .codex-dd-option.selected .codex-dd-check {
+    opacity: 1;
+  }
+
+  .btn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+
+  .btn-pill:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+    background: var(--bg-card);
+  }
+
+  .sync-btn {
+    color: var(--text-primary);
+    border-color: rgba(88, 180, 255, 0.35);
+    background: rgba(30, 136, 229, 0.14);
+  }
+
+  .sync-btn:hover:not(:disabled) {
+    border-color: rgba(88, 180, 255, 0.7);
+    background: rgba(30, 136, 229, 0.24);
+  }
+
+  .sync-btn.spinning,
+  .sync-btn:disabled {
+    opacity: 0.65;
+    cursor: wait;
+  }
+
+  .sync-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .sync-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    flex-shrink: 0;
+  }
+
+  .sync-dot.syncing {
+    background: var(--accent-blue);
+    animation: agyPulse 1.1s infinite ease-in-out;
+  }
+
+  .sync-dot.warn {
+    background: var(--accent-amber);
+  }
+
+  @keyframes agyPulse {
+    0%, 100% { opacity: 0.35; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.25); }
+  }
+
+  .mcp-sync-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hidden-input {
+    display: none;
+  }
+
+  .merge-hint {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  .merge-hint code {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    padding: 1px 4px;
+    border-radius: 4px;
+  }
+
+  .tab-panel {
+    display: none;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  /* Overview Profile Header & 5-KPI Bar */
+  .profile-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .profile-name {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+  }
+
+  .profile-sub {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .kpi-pill-bar {
+    width: 100%;
+    max-width: 960px;
+    margin: 16px auto 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .kpi-cell {
+    padding: 16px 12px;
+    text-align: center;
+    position: relative;
+  }
+
+  .kpi-cell + .kpi-cell::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .kpi-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.25;
+  }
+
+  .kpi-label {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .kpi-sub {
+    margin-top: 2px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .cost-accent-text {
+    color: #5ec2a6;
+  }
+
+  .cost-saved-text {
+    color: #5ec2a6;
+  }
+
+  /* Prominent API Cost Hero Card */
+  .cost-hero-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, #1d1d22 0%, #18181b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+  }
+
+  .cost-hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1.15fr;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .cost-summary-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .cost-headline-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .cost-big-amount {
+    font-size: 34px;
+    font-weight: 700;
+    color: #f9fafb;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  .cost-headline-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .cost-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .cost-mini-card {
+    background: rgba(18, 18, 22, 0.72);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 11px;
+  }
+
+  .cost-mini-label {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .cost-mini-val {
+    margin-top: 2px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .cost-mini-sub {
+    margin-top: 1px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cost-savings-box {
+    background: rgba(18, 18, 22, 0.72);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  .cost-savings-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .cost-savings-bar {
+    height: 7px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    display: flex;
+  }
+
+  .cost-savings-paid {
+    background: #58b4ff;
+    height: 100%;
+  }
+
+  .cost-savings-saved {
+    background: #2f8f76;
+    height: 100%;
+  }
+
+  .cost-type-chips {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .cost-type-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .cost-type-chip-top {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text-secondary);
+  }
+
+  .cost-type-chip-val {
+    margin-top: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .cost-models-col {
+    background: rgba(18, 18, 22, 0.62);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .cost-models-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .cost-model-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cost-model-row {
+    cursor: default;
+  }
+
+  .cost-model-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+
+  .cost-model-name-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .cost-model-name {
+    color: var(--text-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cost-rate-badge {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .cost-model-val {
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .cost-model-val strong {
+    color: var(--text-primary);
+  }
+
+  .cost-stack-track {
+    height: 7px;
+    background: #26272b;
+    border-radius: 999px;
+    overflow: hidden;
+    display: flex;
+    gap: 1px;
+  }
+
+  .cost-stack-seg {
+    height: 100%;
+  }
+
+  .cost-stack-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .cost-stack-legend-items {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Pricing Config Drawer */
+  .pricing-drawer {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .pricing-drawer-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .pricing-drawer-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .pricing-drawer-note {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .rate-input {
+    width: 78px;
+    background: #141418;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 4px 6px;
+    text-align: right;
+    outline: none;
+  }
+
+  .rate-input:focus {
+    border-color: var(--accent-blue);
+  }
+
+  /* Generic Cards */
+  .section-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+
+  .card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .card-title-wrap h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .card-title-wrap .card-desc {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Heatmap Dot Matrix (Codex Profile Style) */
+  .heatmap-wrap {
+    overflow-x: auto;
+    padding: 4px 8px 6px 2px;
+  }
+
+  .heatmap-inner {
+    min-width: 780px;
+  }
+
+  .heatmap-grid-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .weekday-col {
+    display: grid;
+    grid-template-rows: repeat(7, 11px);
+    gap: 3px;
+    padding-top: 2px;
+    font-size: 10px;
+    color: var(--text-muted);
+    width: 18px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .weekday-col span {
+    line-height: 11px;
+  }
+
+  .dots-matrix {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 11px);
+    gap: 3px;
+    flex: 1;
+    --sel-glow: rgba(88, 180, 255, 0.72);
+  }
+
+  .dots-matrix.cost-mode {
+    --sel-glow: rgba(57, 181, 150, 0.72);
+  }
+
+  .heat-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--heat-0);
+    border: none;
+    cursor: default;
+    transition: transform 0.12s ease, opacity 0.14s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    padding: 0;
+  }
+
+  .heat-dot.outside {
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .heat-dot.has-data {
+    cursor: pointer;
+  }
+
+  .heat-dot.has-data:hover {
+    transform: scale(1.12);
+    filter: brightness(1.22);
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.85);
+  }
+
+  .dots-matrix.has-sel .heat-dot:not(.selected) {
+    opacity: 0.36;
+  }
+
+  .dots-matrix.has-sel .heat-dot.has-data:not(.selected):hover {
+    opacity: 0.92;
+  }
+
+  .heat-dot.selected {
+    opacity: 1;
+    box-shadow: inset 0 0 0 1.5px #ffffff, 0 0 7px var(--sel-glow, rgba(88, 180, 255, 0.72));
+    filter: brightness(1.15);
+  }
+
+  .heat-dot.selected:hover {
+    transform: scale(1.08);
+    box-shadow: inset 0 0 0 1.5px #ffffff, 0 0 8px var(--sel-glow, rgba(88, 180, 255, 0.82));
+  }
+
+  .month-row {
+    display: flex;
+    margin-left: 26px;
+    margin-top: 8px;
+    position: relative;
+    height: 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .month-row.no-weekday {
+    margin-left: 0;
+  }
+
+  .week-dots-matrix {
+    display: grid;
+    gap: 3px;
+    flex: 1;
+    --dot-empty: #232428;
+    --dot-lit: #1580ff;
+    --dot-hover-lit: #7cc4ff;
+    --dot-hover-dim: #172d47;
+  }
+
+  .week-dots-matrix.cost-mode {
+    --dot-lit: #1f836b;
+    --dot-hover-lit: #5ed4b5;
+    --dot-hover-dim: #12332b;
+  }
+
+  .week-dot-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .week-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 3.5px;
+    background: var(--dot-empty);
+    transition: background 0.1s ease;
+    pointer-events: none;
+  }
+
+  .week-dot.lit {
+    background: var(--dot-lit);
+  }
+
+  .week-dot-col:hover .week-dot:not(.lit) {
+    background: var(--dot-hover-dim);
+  }
+
+  .week-dot-col:hover .week-dot.lit {
+    background: var(--dot-hover-lit);
+  }
+
+  .month-label {
+    position: absolute;
+    top: 0;
+    white-space: nowrap;
+  }
+
+  .heatmap-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .legend-scale {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .legend-scale .heat-dot {
+    width: 9px;
+    height: 9px;
+  }
+
+  /* Popular Tools / Skills Strip */
+  .plugin-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .plugin-tile {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    min-width: 148px;
+  }
+
+  .plugin-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: #26262c;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-blue);
+    flex-shrink: 0;
+  }
+
+  .plugin-meta .plugin-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .plugin-meta .plugin-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Insights 2-column Key/Value list */
+  .insights-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .insight-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .insight-row:last-child {
+    border-bottom: none;
+    padding-bottom: 2px;
+  }
+
+  .insight-key {
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  .insight-val {
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* Composition & Model Split inside Overview Card */
+  .comp-split-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .comp-chart-col {
+    min-width: 0;
+  }
+
+  .comp-rank-panel {
+    min-width: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .comp-rank-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .comp-rank-header strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .model-row-name-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+  }
+
+  /* Composition Summary & Line Legend */
+  .comp-legend {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .comp-chart-caption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .comp-line-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .comp-line-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .comp-item {
+    min-width: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 11px;
+  }
+
+  .comp-item-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .comp-item-val {
+    margin-top: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  .comp-item-pct {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .sub-heading {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 4px 0 10px;
+  }
+
+  .model-rank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .model-row-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 4px;
+    gap: 8px;
+  }
+
+  .model-row-name {
+    color: var(--text-primary);
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .model-row-val {
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    height: 6px;
+    background: #26272b;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 999px;
+  }
+
+  /* Tables */
+  .table-scroll {
+    overflow-x: auto;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  table.data-table th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-muted);
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    background: var(--bg-surface);
+    z-index: 1;
+  }
+
+  table.data-table th.num,
+  table.data-table td.num {
+    text-align: right;
+  }
+
+  table.data-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  table.data-table tr.clickable-row {
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+
+  table.data-table tr.clickable-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  table.data-table tr.highlight-row {
+    background: rgba(56, 189, 248, 0.09);
+  }
+
+  .expand-arrow {
+    display: inline-block;
+    width: 14px;
+    color: var(--text-muted);
+    transition: transform 0.15s;
+    font-family: var(--font-mono);
+  }
+
+  .expand-arrow.open {
+    transform: rotate(90deg);
+    color: var(--text-primary);
+  }
+
+  table.data-table tr.detail-drawer td {
+    background: #151518;
+    padding: 12px 16px;
+    white-space: normal;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 18px;
+    font-size: 12px;
+  }
+
+  .detail-kv {
+    min-width: 0;
+  }
+
+  .detail-kv.detail-span-2 {
+    grid-column: span 2;
+  }
+
+  .detail-kv .dk {
+    color: var(--text-muted);
+    font-size: 11px;
+  }
+
+  .detail-kv .dv {
+    color: var(--text-primary);
+    margin-top: 2px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .sub-breakdown-row td {
+    background: #151518;
+    color: var(--text-secondary);
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size: 12px;
+  }
+
+  .sub-breakdown-row td:first-child {
+    padding-left: 28px;
+  }
+
+  /* Analytics Charts */
+  .chart-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .history-date-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 2px 0 10px;
+  }
+
+  .history-range-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .pager-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .icon-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+  }
+
+  .icon-btn:hover:not(:disabled) {
+    border-color: var(--border-strong);
+    background: var(--bg-card-hover);
+  }
+
+  .icon-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .svg-chart-box {
+    width: 100%;
+    position: relative;
+  }
+
+  .svg-chart-box svg {
+    width: 100%;
+    display: block;
+    overflow: visible;
+  }
+
+  /* Codex Analytics Multi-Column Legend */
+  .codex-legend-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 24px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* 5-Hour & Weekly Side-by-Side Split */
+  .window-split-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    margin-top: 6px;
+  }
+
+  .window-col {
+    min-width: 0;
+  }
+
+  .window-col .subsection-title {
+    margin-top: 2px;
+  }
+
+  .window-col table.data-table th,
+  .window-col table.data-table td {
+    padding: 8px 6px;
+  }
+
+  .codex-legend-item {
+    display: flex;
+    align-items: stretch;
+    gap: 9px;
+  }
+
+  .codex-legend-bar {
+    width: 3px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .codex-legend-text .cl-name {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .codex-legend-text .cl-val {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.25;
+  }
+
+  .codex-legend-text .cl-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .big-metric {
+    margin-bottom: 10px;
+  }
+
+  .big-metric .bm-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .big-metric .bm-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .dot-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .dot-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dot-legend-circle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .info-banner {
+    background: rgba(56, 189, 248, 0.07);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 10px;
+    padding: 9px 13px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  .subsection-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 14px 0 8px;
+  }
+
+  .show-more-btn {
+    margin-top: 10px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .show-more-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+
+  .tag-pill {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    background: var(--bg-pill);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+
+  .title-cell-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 420px;
+  }
+
+  .title-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Floating Dark Tooltip */
+  .floating-tooltip {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    background: #1f2025;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    padding: 9px 12px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+    font-size: 12px;
+    color: var(--text-primary);
+    min-width: 170px;
+    max-width: 280px;
+    display: none;
+  }
+
+  .tt-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+  }
+
+  .tt-line {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.55;
+  }
+
+  .tt-line strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .empty-state {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 24px;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+
+  .empty-state h2 {
+    color: var(--text-primary);
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  @media (max-width: 960px) {
+    .workspace-layout {
+      flex-direction: column;
+    }
+    .side-nav {
+      width: 100%;
+      height: auto;
+      position: static;
+      left: auto;
+      bottom: auto;
+      overflow-y: visible;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 18px;
+    }
+    .main-pane {
+      margin-left: 0;
+    }
+    .side-nav-list {
+      flex-direction: row;
+      margin-top: 10px;
+    }
+    .tab-btn {
+      width: auto;
+      padding: 8px 14px;
+    }
+    .tab-btn.active::before {
+      display: none;
+    }
+    .side-footer {
+      display: none;
+    }
+    .app-shell {
+      padding: 20px 16px 48px;
+    }
+    .comp-split-grid,
+    .window-split-grid {
+      grid-template-columns: 1fr;
+    }
+    .codex-legend-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .kpi-pill-bar {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .kpi-cell + .kpi-cell::before {
+      display: none;
+    }
+    .kpi-cell {
+      border-bottom: 1px solid var(--border);
+    }
+    .cost-hero-grid {
+      grid-template-columns: 1fr;
+    }
+    .cost-mini-stats,
+    .cost-type-chips,
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+    .detail-kv.detail-span-2 {
+      grid-column: span 1;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="workspace-layout">
+  <aside class="side-nav">
+    <div>
+      <div class="side-brand">
+        <div class="side-brand-title">Antigravity</div>
+        <div class="side-brand-sub">账号 Token 统计看板</div>
+      </div>
+      <nav class="side-nav-list" id="mainTabGroup" aria-label="主导航">
+        <button type="button" class="tab-btn active" data-tab="overview">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <span>个人概览</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="analytics">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span>使用情况分析</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="side-footer">
+      <div class="meta-strip" id="metaStrip"></div>
+      <label class="btn-pill" for="importFileInput" title="仅在浏览器内临时预览合并；永久合并请将他机 data/设备名.json 放入数据目录后重新同步">
+        导入设备 JSON
+        <input type="file" id="importFileInput" class="hidden-input" accept=".json" multiple>
+      </label>
+      <div class="merge-hint">
+        多设备汇总：在 <code>config.json</code> 配置私有数据目录，或将他机 <code>data/&lt;设备名&gt;.json</code> 放入 <code>data/</code> 后运行 <code>node sync_usage.mjs</code>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-pane">
+    <div class="app-shell">
+      <header class="utility-bar">
+        <div class="title-block">
+          <h1 id="pageTitle">个人概览</h1>
+          <div class="subtitle" id="pageSubtitle">累计 Token 概览、活动热力图、技能洞察与模型趋势</div>
+        </div>
+        <div class="controls-bar">
+          <div class="segmented" id="metricToggle" title="在 Token 数量与等效 API 费用 (USD) 之间一键切换所有图表">
+            <button type="button" data-metric="tokens" class="active">按 Token</button>
+            <button type="button" data-metric="cost">按费用 ($)</button>
+          </div>
+          <div class="segmented" id="modeToggle" title="全量含缓存与 Codex 个人主页口径一致；净新增仅统计未缓存输入与输出">
+            <button type="button" data-mode="full" class="active">全量 (含缓存)</button>
+            <button type="button" data-mode="net">净新增 (不含缓存)</button>
+          </div>
+          <select class="select-pill" id="machineSelect" aria-label="选择设备"></select>
+          <div class="segmented" id="sourceToggle">
+            <button type="button" data-source="all" class="active">全部</button>
+            <button type="button" data-source="desktop">桌面端</button>
+            <button type="button" data-source="cli">CLI</button>
+          </div>
+          <div class="mcp-sync-group" id="mcpSyncControls" style="display:none;">
+            <span class="sync-status-pill" id="mcpSyncStatus" style="display:none;"></span>
+            <button type="button" class="btn-pill sync-btn" id="mcpSyncBtn">刷新同步</button>
+          </div>
+        </div>
+      </header>
+
+  <div id="missingDataBox" class="empty-state" style="display:none;">
+    <h2>未检测到本地统计数据</h2>
+    <p>请先运行 <strong>open-dashboard.bat</strong>（Windows）/ <strong>./open-dashboard.sh</strong>（macOS/Linux），或执行 <code>node sync_usage.mjs</code>，脚本会自动生成 <code>data/usage_bundle.js</code> 并打开本页。</p>
+  </div>
+
+  <main id="dashboardMain" style="display:none;">
+    <!-- TAB 1: OVERVIEW -->
+    <section id="tab-overview" class="tab-panel active">
+      <div class="profile-banner">
+        <div class="profile-name" id="profileTitle">Antigravity</div>
+        <div class="profile-sub" id="profileSubtitle">本地永久归档统计</div>
+        <div class="kpi-pill-bar" id="kpiBar"></div>
+      </div>
+
+      <div class="section-card cost-hero-card" id="costHeroCard" style="display:none;">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>API 费用估值 <span class="tag-pill" id="pricingPresetBadge" style="margin-left:8px;">官方按日匹配价</span></h2>
+            <div class="card-desc" id="costHeroDesc">基于 Gemini 4 等模型官方 API 单价按调用日期实时折算（美元 USD）</div>
+          </div>
+          <div class="card-actions">
+            <select class="select-pill" id="pricingPresetSelect" aria-label="选择 API 定价口径">
+              <option value="auto">官方价 (11月首发 / 12月正式)</option>
+              <option value="standard">12月正式标准价 (全期)</option>
+              <option value="uniform_neon">统一按 Neon ($3 / $15)</option>
+              <option value="uniform_carbon">统一按 Carbon 正式 ($4 / $20)</option>
+              <option value="uniform_hydrogen">统一按 Hydrogen ($1.5 / $7.5)</option>
+              <option value="custom">自定义单价</option>
+            </select>
+            <button type="button" class="btn-pill" id="togglePricingDrawerBtn">单价表 / 自定义</button>
+          </div>
+        </div>
+        <div id="costHeroBody"></div>
+        <div id="pricingConfigDrawer" class="pricing-drawer" style="display:none;"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2><span id="activityCardTitle">Token 活动</span> <span class="tag-pill tabular" id="activeDaysPill" style="margin-left:8px;">活跃 0 天</span></h2>
+          </div>
+          <div class="card-actions">
+            <div class="segmented" id="activityViewToggle">
+              <button type="button" data-view="daily" class="active">每天</button>
+              <button type="button" data-view="weekly">每周</button>
+              <button type="button" data-view="cumulative">累计总量</button>
+            </div>
+            <select class="select-pill" id="activityRangeSelect" aria-label="选择年份或周期"></select>
+          </div>
+        </div>
+        <div id="activityChartContainer"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>热门工具与技能</h2>
+            <div class="card-desc">基于本地会话工具调用与技能读取记录汇总</div>
+          </div>
+          <div class="card-actions">
+            <div class="segmented" id="popularTypeToggle">
+              <button type="button" data-ptype="tools" class="active">高频工具</button>
+              <button type="button" data-ptype="skills">常用技能</button>
+            </div>
+          </div>
+        </div>
+        <div class="plugin-strip" id="popularStrip"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>洞察</h2>
+          </div>
+        </div>
+        <div class="insights-list" id="insightsList"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2 id="compCardTitle">构成与模型分布</h2>
+          </div>
+          <div class="card-actions">
+            <div class="segmented" id="compDimensionToggle">
+              <button type="button" data-cdim="model" class="active">按模型</button>
+              <button type="button" data-cdim="comp">按构成</button>
+            </div>
+            <div class="segmented" id="compGranularityToggle">
+              <button type="button" data-cspan="hourly" class="active">按小时</button>
+              <button type="button" data-cspan="7">7天</button>
+              <button type="button" data-cspan="30">30天</button>
+            </div>
+          </div>
+        </div>
+        <div id="compositionAndModels"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>每日用量明细</h2>
+          </div>
+          <div class="card-actions" id="dailyFilterActions"></div>
+        </div>
+        <div class="table-scroll" id="dailyTableContainer"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: ANALYTICS -->
+    <section id="tab-analytics" class="tab-panel">
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>用量历史记录</h2>
+            <div class="card-desc">查看桌面端对话、子智能体与 CLI 任务在不同维度下的每日 Token 消耗构成</div>
+          </div>
+        </div>
+        <div class="chart-toolbar">
+          <div class="segmented" id="historySpanToggle">
+            <button type="button" data-span="7" class="active">7天</button>
+            <button type="button" data-span="30">30天</button>
+          </div>
+          <select class="select-pill" id="historyGroupSelect" aria-label="分组方式">
+            <option value="scene">按场景</option>
+            <option value="model">按模型</option>
+            <option value="machine">按设备</option>
+          </select>
+        </div>
+        <div class="history-date-row">
+          <span class="history-range-text tabular" id="historyRangeLabel">-</span>
+          <div class="pager-group">
+            <button type="button" class="icon-btn" id="historyPrevBtn" title="上一周期">&lt;</button>
+            <button type="button" class="icon-btn" id="historyNextBtn" title="下一周期">&gt;</button>
+          </div>
+        </div>
+        <div class="svg-chart-box" id="historyBarChart"></div>
+        <div class="codex-legend-grid" id="historyLegend"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>聊天用量排行</h2>
+            <div class="card-desc">比较每个会话的累计 Token、步数与工具调用情况，点击行可展开详情</div>
+          </div>
+        </div>
+        <div id="chatRankingContainer"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>时段用量历史</h2>
+            <div class="card-desc">按 5 小时滚动窗口与自然周统计本地实际消耗及占比（基于本地小时日志还原，不含云端配额上限）</div>
+          </div>
+          <div class="card-actions">
+            <select class="select-pill" id="windowGroupSelect" aria-label="时段分组维度">
+              <option value="scene">按场景</option>
+              <option value="model">按模型</option>
+              <option value="machine">按设备</option>
+            </select>
+          </div>
+        </div>
+        <div class="window-split-grid">
+          <div class="window-col">
+            <div class="subsection-title">5 小时时段</div>
+            <div id="fiveHourContainer"></div>
+          </div>
+          <div class="window-col">
+            <div class="subsection-title">每周汇总</div>
+            <div id="weeklyWindowContainer"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>工具活动</h2>
+            <div class="card-desc">查看一段时间内调用了哪些工具操作</div>
+          </div>
+          <div class="card-actions">
+            <div class="segmented" id="toolSpanToggle">
+              <button type="button" data-span="7" class="active">7天</button>
+              <button type="button" data-span="30">30天</button>
+            </div>
+            <div class="segmented" id="toolModeToggle">
+              <button type="button" data-tmode="category" class="active">按分类</button>
+              <button type="button" data-tmode="tool">按具体工具</button>
+            </div>
+          </div>
+        </div>
+        <div class="big-metric">
+          <div class="bm-label">操作调用</div>
+          <div class="bm-value tabular" id="toolTotalCount">0</div>
+        </div>
+        <div class="svg-chart-box" id="toolLineChart"></div>
+        <div class="dot-legend" id="toolLegend"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>消息</h2>
+            <div class="card-desc">追踪一段时间内模型响应的消息步数</div>
+          </div>
+          <div class="card-actions">
+            <div class="segmented" id="msgSpanToggle">
+              <button type="button" data-span="7" class="active">7天</button>
+              <button type="button" data-span="30">30天</button>
+            </div>
+            <div class="segmented" id="msgModeToggle">
+              <button type="button" data-mmode="model" class="active">按模型</button>
+              <button type="button" data-mmode="scene">按使用场景</button>
+            </div>
+          </div>
+        </div>
+        <div class="big-metric">
+          <div class="bm-label">消息</div>
+          <div class="bm-value tabular" id="msgTotalCount">0</div>
+        </div>
+        <div class="svg-chart-box" id="msgLineChart"></div>
+        <div class="dot-legend" id="msgLegend"></div>
+      </div>
+    </section>
+  </main>
+    </div>
+  </div>
+</div>
+
+<div class="floating-tooltip" id="tooltip"></div>
+
+<script src="data/usage_bundle.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var PALETTE = ["#58b4ff", "#fb923c", "#34d399", "#a78bfa", "#f472b6", "#2dd4bf", "#fbbf24", "#94a3b8"];
+  var HEAT_COLORS = ["#26272b", "#0f3a6b", "#155ea8", "#1e88e5", "#58b4ff"];
+  var HEAT_COLORS_COST = ["#26272b", "#103b31", "#165c4b", "#1f836b", "#39b596"];
+  var PRICING_STORAGE_KEY = "agy_usage_pricing_v1";
+
+  // Official API pricing (USD per 1M tokens, flat across 1M context window)
+  var MODEL_FAMILIES = [
+    {
+      id: "neon",
+      label: "Gemini 4 Neon",
+      color: "#58b4ff",
+      promo: { input: 3.00, cache_read: 0.15, output: 15.00 },
+      standard: { input: 3.00, cache_read: 0.15, output: 15.00 },
+      note: "全期标准价（1M 统一阶梯，缓存 95% 折扣）"
+    },
+    {
+      id: "hydrogen",
+      label: "Gemini 4 Hydrogen",
+      color: "#34d399",
+      promo: { input: 1.50, cache_read: 0.075, output: 7.50 },
+      standard: { input: 1.50, cache_read: 0.075, output: 7.50 },
+      note: "全期标准价（含 tiered 变体，缓存 95% 折扣）"
+    },
+    {
+      id: "carbon",
+      label: "Gemini 4 Carbon",
+      color: "#fb923c",
+      promoEnd: "2026-11-30",
+      promo: { input: 2.00, cache_read: 0.10, output: 10.00 },
+      standard: { input: 4.00, cache_read: 0.20, output: 20.00 },
+      note: "2026-11-30 前首发价 $2/$10，12/1 起 $4/$20"
+    },
+    {
+      id: "argon",
+      label: "Gemini 4 Argon",
+      color: "#a78bfa",
+      promoEnd: "2026-11-30",
+      promo: { input: 2.00, cache_read: 0.10, output: 10.00 },
+      standard: { input: 4.00, cache_read: 0.20, output: 20.00 },
+      note: "2026-11-30 前首发价 $2/$10，12/1 起 $4/$20"
+    },
+    {
+      id: "flash",
+      label: "Gemini Flash (3.x)",
+      color: "#2dd4bf",
+      promoEnd: "2026-12-31",
+      promo: { input: 0.75, cache_read: 0.0375, output: 3.75 },
+      standard: { input: 1.50, cache_read: 0.075, output: 7.50 },
+      note: "2026-12-31 前首发价 $0.75/$3.75，2027 起 $1.5/$7.5"
+    },
+    {
+      id: "claude_opus_5_5",
+      label: "Claude Opus 5.5",
+      color: "#f472b6",
+      promo: { input: 4.00, cache_read: 0.20, output: 20.00 },
+      standard: { input: 4.00, cache_read: 0.20, output: 20.00 },
+      note: "Anthropic 官方标准价（缓存读取 0.05x）"
+    },
+    {
+      id: "other",
+      label: "其他 / 未知模型",
+      color: "#94a3b8",
+      promo: { input: 3.00, cache_read: 0.15, output: 15.00 },
+      standard: { input: 3.00, cache_read: 0.15, output: 15.00 },
+      note: "未识别模型默认按 Gemini 4 Neon 单价兜底"
+    }
+  ];
+
+  var MODEL_FAMILY_MAP = {};
+  MODEL_FAMILIES.forEach(function (f) { MODEL_FAMILY_MAP[f.id] = f; });
+
+  var PRICING_PRESET_LABELS = {
+    auto: "官方按日匹配价",
+    standard: "12月正式标准价",
+    uniform_neon: "统一按 Neon ($3/$15)",
+    uniform_carbon: "统一按 Carbon 正式 ($4/$20)",
+    uniform_hydrogen: "统一按 Hydrogen ($1.5/$7.5)",
+    custom: "自定义单价"
+  };
+  var SCENE_LABELS = {
+    chat: "桌面端对话",
+    subagent: "子智能体",
+    cli: "CLI 命令行"
+  };
+  var SOURCE_LABELS = {
+    desktop: "桌面端",
+    cli: "CLI"
+  };
+  var TOOL_DISPLAY = {
+    run_command: "终端命令",
+    read_file: "读取文件",
+    write_file: "新建写入",
+    edit_file: "编辑修改",
+    search_web: "联网搜索",
+    search_marketplace: "插件检索",
+    update_focus: "进度聚焦",
+    update_steps: "步骤清单",
+    enter_plan_mode: "进入规划",
+    exit_plan_mode: "退出规划",
+    ask_question: "确认提问",
+    manage_task: "任务管理",
+    schedule: "定时调度",
+    invoke_subagent: "调用子智能体",
+    define_subagent: "定义子智能体",
+    manage_subagents: "管理子智能体",
+    send_message: "智能体通信",
+    run_workflow: "运行工作流",
+    swarm: "群体协同"
+  };
+
+  var state = {
+    tab: "overview",
+    metric: "tokens",
+    mode: "full",
+    pricingPreset: "auto",
+    customRates: {},
+    pricingDrawerOpen: false,
+    machine: "all",
+    source: "all",
+    activityView: "daily",
+    activityRange: "1y",
+    popularType: "tools",
+    selectedDate: null,
+    compDim: "model",
+    compSpan: "auto",
+    historySpan: 7,
+    historyPageOffset: 0,
+    historyGroup: "scene",
+    chatLimit: 5,
+    expandedConvs: {},
+    windowGroup: "scene",
+    fiveHourLimit: 5,
+    weeklyWindowLimit: 5,
+    expanded5h: {},
+    expandedWeeks: {},
+    expanded5hInitialized: false,
+    expandedWeeksInitialized: false,
+    toolSpan: 7,
+    toolMode: "category",
+    msgSpan: 7,
+    msgMode: "model",
+    importedMachines: []
+  };
+
+  function loadPricingConfig() {
+    try {
+      if (typeof window === "undefined" || !window.localStorage) return;
+      var raw = window.localStorage.getItem(PRICING_STORAGE_KEY);
+      if (!raw) return;
+      var parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") {
+        if (parsed.pricingPreset && PRICING_PRESET_LABELS[parsed.pricingPreset]) {
+          state.pricingPreset = parsed.pricingPreset;
+        }
+        if (parsed.customRates && typeof parsed.customRates === "object") {
+          var clean = {};
+          Object.keys(parsed.customRates).forEach(function (fid) {
+            if (!MODEL_FAMILY_MAP[fid]) return;
+            var r = parsed.customRates[fid];
+            if (!r || typeof r !== "object") return;
+            var def = MODEL_FAMILY_MAP[fid].standard;
+            clean[fid] = {
+              input: (isFinite(Number(r.input)) && Number(r.input) >= 0) ? Number(r.input) : def.input,
+              cache_read: (isFinite(Number(r.cache_read)) && Number(r.cache_read) >= 0) ? Number(r.cache_read) : def.cache_read,
+              output: (isFinite(Number(r.output)) && Number(r.output) >= 0) ? Number(r.output) : def.output
+            };
+          });
+          state.customRates = clean;
+        }
+      }
+    } catch (e) {}
+  }
+
+  function savePricingConfig() {
+    try {
+      if (typeof window === "undefined" || !window.localStorage) return;
+      window.localStorage.setItem(PRICING_STORAGE_KEY, JSON.stringify({
+        pricingPreset: state.pricingPreset,
+        customRates: state.customRates
+      }));
+    } catch (e) {}
+  }
+
+  loadPricingConfig();
+
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function pad2(n) {
+    return n < 10 ? "0" + n : String(n);
+  }
+
+  function parseDateYMD(ymd) {
+    var parts = String(ymd || "").split("-");
+    if (parts.length !== 3) return null;
+    return {
+      y: parseInt(parts[0], 10),
+      m: parseInt(parts[1], 10),
+      d: parseInt(parts[2], 10)
+    };
+  }
+
+  function ymdToUtcMs(ymd) {
+    var p = parseDateYMD(ymd);
+    if (!p) return 0;
+    return Date.UTC(p.y, p.m - 1, p.d);
+  }
+
+  function utcMsToYmd(ms) {
+    var dt = new Date(ms);
+    return dt.getUTCFullYear() + "-" + pad2(dt.getUTCMonth() + 1) + "-" + pad2(dt.getUTCDate());
+  }
+
+  function addDaysYmd(ymd, deltaDays) {
+    return utcMsToYmd(ymdToUtcMs(ymd) + deltaDays * 86400000);
+  }
+
+  function diffDaysYmd(ymdA, ymdB) {
+    return Math.round((ymdToUtcMs(ymdB) - ymdToUtcMs(ymdA)) / 86400000);
+  }
+
+  function getTodayLocalYmd() {
+    var now = new Date();
+    return now.getFullYear() + "-" + pad2(now.getMonth() + 1) + "-" + pad2(now.getDate());
+  }
+
+  function formatYmdMD(ymd) {
+    var p = parseDateYMD(ymd);
+    if (!p) return ymd;
+    return p.m + "月" + p.d + "日";
+  }
+
+  function formatYmdCnFull(ymd) {
+    var p = parseDateYMD(ymd);
+    if (!p) return ymd;
+    return p.y + "年" + p.m + "月" + p.d + "日";
+  }
+
+  function formatYmdSlash(ymd) {
+    return String(ymd || "").replace(/-/g, "/");
+  }
+
+  function formatYmdMDSlash(ymd) {
+    var p = parseDateYMD(ymd);
+    if (!p) return ymd;
+    return pad2(p.m) + "/" + pad2(p.d);
+  }
+
+  function formatInt(n) {
+    return Math.round(Number(n) || 0).toLocaleString("en-US");
+  }
+
+  function formatCompactCn(n) {
+    var num = Number(n) || 0;
+    if (num >= 100000000) {
+      return (num / 100000000).toFixed(2).replace(/\.?0+$/, "") + "亿";
+    }
+    if (num >= 10000) {
+      return (num / 10000).toFixed(1).replace(/\.0$/, "") + "万";
+    }
+    return formatInt(num);
+  }
+
+  function formatUsd(val) {
+    var n = Number(val) || 0;
+    if (n <= 0) return "$0.00";
+    if (n < 0.01) return "$" + n.toFixed(4);
+    if (n >= 1000) {
+      return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    return "$" + n.toFixed(2);
+  }
+
+  function formatUsdAxis(val) {
+    var n = Number(val) || 0;
+    if (n <= 0) return "$0";
+    if (n < 0.1) return "$" + n.toFixed(3);
+    if (n < 10) return "$" + n.toFixed(2);
+    if (n < 1000) return "$" + n.toFixed(1).replace(/\.0$/, "");
+    return "$" + (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+  }
+
+  function formatMetricCompact(val, metric) {
+    return metric === "cost" ? formatUsd(val) : formatCompactCn(val);
+  }
+
+  function formatMetricAxis(val, metric) {
+    return metric === "cost" ? formatUsdAxis(val) : formatCompactCn(val);
+  }
+
+  function formatMetricDetail(val, metric) {
+    return metric === "cost" ? formatUsd(val) : (formatCompactCn(val) + " (" + formatInt(val) + ")");
+  }
+
+  function formatDurationCn(sec) {
+    var s = Math.max(0, Math.round(Number(sec) || 0));
+    if (s === 0) return "0 秒";
+    var h = Math.floor(s / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var remS = s % 60;
+    if (h > 0) return h + " 小时 " + m + " 分";
+    if (m > 0) return m + " 分 " + remS + " 秒";
+    return remS + " 秒";
+  }
+
+  function formatPercent(part, total) {
+    if (!total || total <= 0 || !part || part <= 0) return "0%";
+    var pct = (part / total) * 100;
+    if (pct < 0.1) return "<0.1%";
+    return pct.toFixed(1).replace(/\.0$/, "") + "%";
+  }
+
+  function formatModelName(slug) {
+    if (!slug || slug === "unknown") return "未知模型";
+    var parts = String(slug).split("-");
+    var tiers = { low: "Low", medium: "Medium", high: "High", xhigh: "XHigh" };
+    var last = parts[parts.length - 1].toLowerCase();
+    var tierLabel = null;
+    var coreParts = parts;
+    if (tiers[last] && parts.length > 1) {
+      tierLabel = tiers[last];
+      coreParts = parts.slice(0, -1);
+    }
+    var titled = coreParts.map(function (w) {
+      if (/^\d+(\.\d+)?$/.test(w)) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    }).join(" ");
+    return tierLabel ? titled + " (" + tierLabel + ")" : titled;
+  }
+
+  function extractEffortTier(slug) {
+    if (!slug) return null;
+    var m = String(slug).toLowerCase().match(/-(xhigh|high|medium|low)$/);
+    if (!m) return null;
+    var map = { low: "Low", medium: "Medium", high: "High", xhigh: "XHigh" };
+    return map[m[1]] || null;
+  }
+
+  function categorizeTool(toolName) {
+    var t = String(toolName || "");
+    if (t === "run_command" || t === "manage_task" || t === "schedule") return "终端与任务";
+    if (t === "read_file" || t === "write_file" || t === "edit_file") return "文件读写与编辑";
+    if (t === "search_web" || t === "search_marketplace" || t.indexOf("browser") >= 0) return "搜索与浏览";
+    if (
+      t === "update_focus" || t === "update_steps" || t === "enter_plan_mode" ||
+      t === "exit_plan_mode" || t === "ask_question" || t === "invoke_subagent" ||
+      t === "define_subagent" || t === "manage_subagents" || t === "send_message" ||
+      t === "swarm" || t === "run_workflow"
+    ) return "规划与协作";
+    return "其他工具";
+  }
+
+  function getTokenValue(rec, mode) {
+    var inp = Number(rec.input) || 0;
+    var cache = Number(rec.cache_read) || 0;
+    var out = Number(rec.output) || 0;
+    return mode === "net" ? (inp + out) : (inp + cache + out);
+  }
+
+  function getModelFamilyId(slug) {
+    var s = String(slug || "").toLowerCase();
+    if (!s || s === "unknown") return "other";
+    if (s.indexOf("hydrogen") >= 0) return "hydrogen";
+    if (s.indexOf("neon") >= 0) return "neon";
+    if (s.indexOf("carbon") >= 0) return "carbon";
+    if (s.indexOf("argon") >= 0) return "argon";
+    if (s.indexOf("flash") >= 0) return "flash";
+    if (s.indexOf("opus-5-5") >= 0 || (s.indexOf("claude") >= 0 && s.indexOf("opus") >= 0)) return "claude_opus_5_5";
+    return "other";
+  }
+
+  function getEffectiveRateByFamily(famId, dateYmd) {
+    if (state.pricingPreset === "uniform_neon") return MODEL_FAMILY_MAP.neon.standard;
+    if (state.pricingPreset === "uniform_carbon") return MODEL_FAMILY_MAP.carbon.standard;
+    if (state.pricingPreset === "uniform_hydrogen") return MODEL_FAMILY_MAP.hydrogen.standard;
+    var fam = MODEL_FAMILY_MAP[famId] || MODEL_FAMILY_MAP.other;
+    if (state.pricingPreset === "custom") {
+      var cr = state.customRates[fam.id];
+      if (cr && typeof cr === "object") {
+        return {
+          input: rValid(cr.input) ? Number(cr.input) : fam.standard.input,
+          cache_read: rValid(cr.cache_read) ? Number(cr.cache_read) : fam.standard.cache_read,
+          output: rValid(cr.output) ? Number(cr.output) : fam.standard.output
+        };
+      }
+      return fam.standard;
+    }
+    if (state.pricingPreset === "standard") return fam.standard;
+    if (fam.promoEnd && dateYmd && dateYmd <= fam.promoEnd) return fam.promo;
+    return fam.standard;
+  }
+
+  function rValid(v) {
+    return isFinite(Number(v)) && Number(v) >= 0;
+  }
+
+  function getEffectiveRate(modelSlug, dateYmd) {
+    return getEffectiveRateByFamily(getModelFamilyId(modelSlug), dateYmd);
+  }
+
+  function computeRecordCost(rec, mode, dateYmd) {
+    var inp = Number(rec.input) || 0;
+    var cache = Number(rec.cache_read) || 0;
+    var out = Number(rec.output) || 0;
+    var famId = getModelFamilyId(rec.model);
+    var rate = getEffectiveRateByFamily(famId, dateYmd || rec.date);
+    var inCost = (inp / 1e6) * rate.input;
+    var cacheCost = mode === "net" ? 0 : (cache / 1e6) * rate.cache_read;
+    var outCost = (out / 1e6) * rate.output;
+    var total = inCost + cacheCost + outCost;
+    var noCache = ((inp + (mode === "net" ? 0 : cache)) / 1e6) * rate.input + outCost;
+    var cacheSaved = Math.max(0, noCache - total);
+    return {
+      total: total,
+      input: inCost,
+      cache_read: cacheCost,
+      output: outCost,
+      noCache: noCache,
+      cacheSaved: cacheSaved,
+      rate: rate,
+      familyId: famId
+    };
+  }
+
+  function computeConversationCost(conv, mode) {
+    var dateYmd = (conv.first_at || conv.last_at || "").slice(0, 10);
+    var models = Array.isArray(conv.models) && conv.models.length > 0
+      ? conv.models
+      : [{ model: "unknown", input: conv.input || 0, cache_read: conv.cache_read || 0, output: conv.output || 0 }];
+    var res = { total: 0, input: 0, cache_read: 0, output: 0, noCache: 0, cacheSaved: 0 };
+    models.forEach(function (m) {
+      var c = computeRecordCost(m, mode, dateYmd);
+      res.total += c.total;
+      res.input += c.input;
+      res.cache_read += c.cache_read;
+      res.output += c.output;
+      res.noCache += c.noCache;
+      res.cacheSaved += c.cacheSaved;
+    });
+    return res;
+  }
+
+  function getRecordMetricValue(rec, mode, metric, dateYmd) {
+    if (metric === "cost") {
+      return computeRecordCost(rec, mode, dateYmd || rec.date).total;
+    }
+    return getTokenValue(rec, mode);
+  }
+
+  function normalizeImportedArchive(doc) {
+    if (!doc || typeof doc !== "object" || !doc.machine || !doc.conversations) return null;
+    var hourlyMap = {};
+    var toolMap = {};
+    var skillMap = {};
+    var convList = [];
+    var convs = doc.conversations;
+
+    Object.keys(convs).forEach(function (ck) {
+      var c = convs[ck];
+      if (!c || typeof c !== "object") return;
+      var src = c.source || "desktop";
+      var scene = c.scene || (src === "cli" ? "cli" : "chat");
+      var cIn = 0, cCache = 0, cOut = 0, cSteps = 0, cTools = 0;
+      var cModels = {};
+      var bObj = c.hourly_buckets || c.buckets || {};
+      Object.keys(bObj).forEach(function (bk) {
+        var b = bObj[bk];
+        if (!b || !b.date) return;
+        var h = (b.hour !== undefined && b.hour !== null) ? Number(b.hour) : 12;
+        var model = b.model || "unknown";
+        var steps = Number(b.steps) || 0;
+        var inp = Number(b.input) || 0;
+        var cache = Number(b.cache_read) || 0;
+        var out = Number(b.output) || 0;
+        cSteps += steps; cIn += inp; cCache += cache; cOut += out;
+
+        if (!cModels[model]) cModels[model] = { model: model, steps: 0, input: 0, cache_read: 0, output: 0 };
+        cModels[model].steps += steps;
+        cModels[model].input += inp;
+        cModels[model].cache_read += cache;
+        cModels[model].output += out;
+
+        var hk = b.date + "|" + h + "|" + src + "|" + scene + "|" + model;
+        if (!hourlyMap[hk]) hourlyMap[hk] = { date: b.date, hour: h, source: src, scene: scene, model: model, steps: 0, input: 0, cache_read: 0, output: 0 };
+        hourlyMap[hk].steps += steps;
+        hourlyMap[hk].input += inp;
+        hourlyMap[hk].cache_read += cache;
+        hourlyMap[hk].output += out;
+      });
+
+      var td = c.tool_daily || {};
+      Object.keys(td).forEach(function (tk) {
+        var cnt = Number(td[tk]) || 0;
+        if (cnt <= 0) return;
+        var idx = tk.indexOf("|");
+        if (idx < 0) return;
+        var tDate = tk.slice(0, idx);
+        var tName = tk.slice(idx + 1);
+        cTools += cnt;
+        var key = tDate + "|" + src + "|" + scene + "|" + tName;
+        if (!toolMap[key]) toolMap[key] = { date: tDate, source: src, scene: scene, tool: tName, count: 0 };
+        toolMap[key].count += cnt;
+      });
+
+      var sk = c.skills || {};
+      Object.keys(sk).forEach(function (sn) {
+        var cnt = Number(sk[sn]) || 0;
+        if (cnt <= 0) return;
+        var key = src + "|" + scene + "|" + sn;
+        if (!skillMap[key]) skillMap[key] = { source: src, scene: scene, skill: sn, count: 0 };
+        skillMap[key].count += cnt;
+      });
+
+      convList.push({
+        conv_id: c.conv_id || ck,
+        title: c.title || (c.conv_id || ck).slice(0, 8),
+        first_prompt: c.first_prompt || "",
+        source: src,
+        scene: scene,
+        plan_execute: !!c.plan_execute,
+        first_at: c.first_at || "",
+        last_at: c.last_at || "",
+        turns: Number(c.turns) || 0,
+        max_turn_sec: Number(c.max_turn_sec) || 0,
+        max_turn_date: c.max_turn_date || "",
+        steps: cSteps,
+        input: cIn,
+        cache_read: cCache,
+        output: cOut,
+        tool_count: cTools,
+        models: Object.keys(cModels).map(function (mk) { return cModels[mk]; })
+      });
+    });
+
+    return {
+      machine: doc.machine,
+      updated_at: doc.updated_at || "",
+      conversation_count: convList.length,
+      hourly_records: Object.keys(hourlyMap).map(function (k) { return hourlyMap[k]; }),
+      tool_records: Object.keys(toolMap).map(function (k) { return toolMap[k]; }),
+      skill_totals: Object.keys(skillMap).map(function (k) { return skillMap[k]; }),
+      conversations: convList,
+      importedPreview: true
+    };
+  }
+
+  function getMergedMachines() {
+    var base = (window.AGY_USAGE_DATA && Array.isArray(window.AGY_USAGE_DATA.machines))
+      ? window.AGY_USAGE_DATA.machines.slice()
+      : [];
+    var byName = {};
+    base.forEach(function (m) {
+      if (m && m.machine) byName[m.machine] = m;
+    });
+    state.importedMachines.forEach(function (m) {
+      if (m && m.machine) byName[m.machine] = m;
+    });
+    return Object.keys(byName).map(function (k) { return byName[k]; });
+  }
+
+  function getFilteredData() {
+    var allMachines = getMergedMachines();
+    var selectedMachines = state.machine === "all"
+      ? allMachines
+      : allMachines.filter(function (m) { return m.machine === state.machine; });
+
+    var hourlyRecords = [];
+    var toolRecords = [];
+    var skillTotals = [];
+    var conversations = [];
+
+    selectedMachines.forEach(function (m) {
+      var mName = m.machine;
+      (m.hourly_records || []).forEach(function (r) {
+        if (state.source !== "all" && r.source !== state.source) return;
+        hourlyRecords.push(Object.assign({ machine: mName }, r));
+      });
+      (m.tool_records || []).forEach(function (r) {
+        if (state.source !== "all" && r.source !== state.source) return;
+        toolRecords.push(Object.assign({ machine: mName }, r));
+      });
+      (m.skill_totals || []).forEach(function (r) {
+        if (state.source !== "all" && r.source !== state.source) return;
+        skillTotals.push(Object.assign({ machine: mName }, r));
+      });
+      (m.conversations || []).forEach(function (c) {
+        if (state.source !== "all" && c.source !== state.source) return;
+        conversations.push(Object.assign({ machine: mName }, c));
+      });
+    });
+
+    return {
+      allMachines: allMachines,
+      selectedMachines: selectedMachines,
+      hourlyRecords: hourlyRecords,
+      toolRecords: toolRecords,
+      skillTotals: skillTotals,
+      conversations: conversations
+    };
+  }
+
+  function computeStreaks(activeDates) {
+    if (!activeDates || activeDates.length === 0) {
+      return { longest: 0, current: 0 };
+    }
+    var sorted = activeDates.slice().sort();
+    var longest = 1;
+    var run = 1;
+    for (var i = 1; i < sorted.length; i++) {
+      var diff = diffDaysYmd(sorted[i - 1], sorted[i]);
+      if (diff === 1) {
+        run++;
+        if (run > longest) longest = run;
+      } else if (diff > 1) {
+        run = 1;
+      }
+    }
+
+    var today = getTodayLocalYmd();
+    var yesterday = addDaysYmd(today, -1);
+    var activeSet = {};
+    sorted.forEach(function (d) { activeSet[d] = true; });
+
+    var anchor = activeSet[today] ? today : (activeSet[yesterday] ? yesterday : null);
+    var current = 0;
+    while (anchor && activeSet[anchor]) {
+      current++;
+      anchor = addDaysYmd(anchor, -1);
+    }
+    return { longest: longest, current: current };
+  }
+
+  function aggregateDaily(hourlyRecords, mode) {
+    var byDate = {};
+    hourlyRecords.forEach(function (r) {
+      var d = r.date;
+      if (!d) return;
+      if (!byDate[d]) {
+        byDate[d] = {
+          date: d,
+          input: 0,
+          cache_read: 0,
+          output: 0,
+          steps: 0,
+          total: 0,
+          cost: 0,
+          cost_input: 0,
+          cost_cache: 0,
+          cost_output: 0,
+          cost_no_cache: 0,
+          cost_saved: 0
+        };
+      }
+      var c = computeRecordCost(r, mode, d);
+      byDate[d].input += Number(r.input) || 0;
+      byDate[d].cache_read += Number(r.cache_read) || 0;
+      byDate[d].output += Number(r.output) || 0;
+      byDate[d].steps += Number(r.steps) || 0;
+      byDate[d].total += getTokenValue(r, mode);
+      byDate[d].cost += c.total;
+      byDate[d].cost_input += c.input;
+      byDate[d].cost_cache += c.cache_read;
+      byDate[d].cost_output += c.output;
+      byDate[d].cost_no_cache += c.noCache;
+      byDate[d].cost_saved += c.cacheSaved;
+    });
+    return byDate;
+  }
+
+  /* Tooltip Helpers */
+  var tooltipEl = document.getElementById("tooltip");
+
+  function showTooltip(evt, html) {
+    tooltipEl.innerHTML = html;
+    tooltipEl.style.display = "block";
+    positionTooltip(evt);
+  }
+
+  function positionTooltip(evt) {
+    if (tooltipEl.style.display !== "block") return;
+    var pad = 14;
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var rect = tooltipEl.getBoundingClientRect();
+    var left = evt.clientX + pad;
+    var top = evt.clientY - rect.height - 10;
+    if (left + rect.width > vw - 10) left = evt.clientX - rect.width - pad;
+    if (left < 10) left = 10;
+    if (top < 10) top = evt.clientY + 18;
+    if (top + rect.height > vh - 10) top = vh - rect.height - 10;
+    tooltipEl.style.left = left + "px";
+    tooltipEl.style.top = top + "px";
+  }
+
+  function hideTooltip() {
+    tooltipEl.style.display = "none";
+  }
+
+  document.addEventListener("mousemove", function (e) {
+    if (tooltipEl.style.display === "block") positionTooltip(e);
+  });
+
+  function renderHeaderAndMeta(data) {
+    var bundle = window.AGY_USAGE_DATA || {};
+    var machines = data.allMachines;
+
+    var selectEl = document.getElementById("machineSelect");
+    var prevVal = state.machine;
+    var optionsHtml = '<option value="all">全部设备 · 全账号汇总 (' + machines.length + ' 台)</option>';
+    machines.forEach(function (m) {
+      var label = m.machine + (m.importedPreview ? " (临时导入)" : "");
+      optionsHtml += '<option value="' + escapeHtml(m.machine) + '">' + escapeHtml(label) + '</option>';
+    });
+    selectEl.innerHTML = optionsHtml;
+    if (prevVal === "all" || machines.some(function (m) { return m.machine === prevVal; })) {
+      selectEl.value = prevVal;
+    } else {
+      state.machine = "all";
+      selectEl.value = "all";
+    }
+
+    var pageTitleEl = document.getElementById("pageTitle");
+    var pageSubEl = document.getElementById("pageSubtitle");
+    if (state.tab === "overview") {
+      pageTitleEl.textContent = "个人概览";
+      pageSubEl.textContent = "累计 Token 概览、活动热力图、技能洞察与模型趋势";
+    } else {
+      pageTitleEl.textContent = "使用情况分析";
+      pageSubEl.textContent = "每日消耗构成、聊天用量排行、5小时/每周时段、工具活动与消息";
+    }
+
+    var updatedText = "";
+    if (bundle.generated_at) {
+      var dt = new Date(bundle.generated_at);
+      if (!isNaN(dt.getTime())) {
+        updatedText = dt.getFullYear() + "-" + pad2(dt.getMonth() + 1) + "-" + pad2(dt.getDate()) +
+          " " + pad2(dt.getHours()) + ":" + pad2(dt.getMinutes()) + ":" + pad2(dt.getSeconds());
+      }
+    }
+
+    var totalConvs = data.conversations.length;
+    var strip = document.getElementById("metaStrip");
+    strip.innerHTML =
+      '<span class="meta-badge"><span class="dot-live"></span>已合并 ' + data.selectedMachines.length + ' / ' + machines.length + ' 台设备</span>' +
+      '<span class="meta-badge">归档会话 ' + totalConvs + ' 个</span>' +
+      (updatedText ? '<span class="meta-badge">最近同步 ' + escapeHtml(updatedText) + '</span>' : '');
+
+    var metricBox = document.getElementById("metricToggle");
+    if (metricBox) {
+      metricBox.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-metric") === state.metric);
+      });
+    }
+
+    var pTitle = document.getElementById("profileTitle");
+    var pSub = document.getElementById("profileSubtitle");
+    var machineNames = machines.map(function (m) { return m.machine; }).join(" + ");
+    var modeLabel = state.mode === "full" ? "全量含缓存" : "净新增不含缓存";
+    var metricNote = state.metric === "cost"
+      ? (" · 视图: API 费用 (" + (PRICING_PRESET_LABELS[state.pricingPreset] || "USD") + ")")
+      : "";
+    if (state.machine === "all") {
+      pTitle.textContent = "全账号汇总";
+      pSub.textContent = (machineNames ? ("包含设备: " + machineNames + " · ") : "") +
+        "口径: " + modeLabel + metricNote;
+    } else {
+      pTitle.textContent = state.machine;
+      pSub.textContent = "单机归档统计 · 口径: " + modeLabel + metricNote;
+    }
+  }
+
+  function renderKpis(data, byDate) {
+    var dates = Object.keys(byDate).sort();
+    var totalTokens = 0;
+    var totalCost = 0;
+    var totalCacheSaved = 0;
+    var peakDay = null;
+    var peakTokens = 0;
+    var peakCostDay = null;
+    var peakCost = 0;
+
+    dates.forEach(function (d) {
+      var t = byDate[d].total;
+      var c = byDate[d].cost;
+      totalTokens += t;
+      totalCost += c;
+      totalCacheSaved += byDate[d].cost_saved;
+      if (t > peakTokens) {
+        peakTokens = t;
+        peakDay = d;
+      }
+      if (c > peakCost) {
+        peakCost = c;
+        peakCostDay = d;
+      }
+    });
+
+    var maxTurnSec = 0;
+    var maxTurnDate = "";
+    data.conversations.forEach(function (c) {
+      var s = Number(c.max_turn_sec) || 0;
+      if (s > maxTurnSec) {
+        maxTurnSec = s;
+        maxTurnDate = c.max_turn_date || "";
+      }
+    });
+
+    var activeDates = dates.filter(function (d) { return byDate[d].total > 0; });
+    var streaks = computeStreaks(activeDates);
+
+    var showCacheSaved = (state.mode === "full" && totalCacheSaved > 0);
+    var cards = [
+      {
+        val: formatUsd(totalCost),
+        label: "等效 API 费用",
+        sub: showCacheSaved ? ("缓存已省 " + formatUsd(totalCacheSaved)) : "净新增口径 (不含缓存读)"
+      },
+      {
+        val: formatCompactCn(totalTokens),
+        label: "累计 Token 数",
+        sub: formatInt(totalTokens)
+      },
+      state.metric === "cost"
+        ? {
+            val: formatUsd(peakCost),
+            label: "单日费用峰值",
+            sub: peakCostDay ? formatYmdMD(peakCostDay) : "暂无数据"
+          }
+        : {
+            val: formatCompactCn(peakTokens),
+            label: "Token 使用峰值",
+            sub: peakDay ? formatYmdMD(peakDay) : "暂无数据"
+          },
+      {
+        val: formatDurationCn(maxTurnSec),
+        label: "最长任务用时",
+        sub: maxTurnDate ? formatYmdMD(maxTurnDate) : "暂无记录"
+      },
+      {
+        val: streaks.longest + " 天",
+        label: "最长连续天数",
+        sub: activeDates.length > 0 ? ("累计活跃 " + activeDates.length + " 天") : "暂无"
+      },
+      {
+        val: streaks.current + " 天",
+        label: "当前连续天数",
+        sub: streaks.current > 0 ? "保持连续中" : "今日未记录"
+      }
+    ];
+
+    document.getElementById("kpiBar").innerHTML = cards.map(function (c) {
+      return '<div class="kpi-cell">' +
+        '<div class="kpi-value tabular">' + escapeHtml(c.val) + '</div>' +
+        '<div class="kpi-label">' + escapeHtml(c.label) + '</div>' +
+        '<div class="kpi-sub tabular">' + escapeHtml(c.sub) + '</div>' +
+        '</div>';
+    }).join("");
+  }
+
+  function renderCostHeroCard(data, byDate) {
+    var cardEl = document.getElementById("costHeroCard");
+    if (state.metric !== "cost") {
+      if (cardEl) cardEl.style.display = "none";
+      return;
+    }
+    if (cardEl) cardEl.style.display = "";
+    var totalCost = 0, inCost = 0, cacheCost = 0, outCost = 0, noCacheCost = 0, cacheSaved = 0;
+    var totalTokens = 0;
+    var familyMap = {};
+
+    data.hourlyRecords.forEach(function (r) {
+      var tok = getTokenValue(r, state.mode);
+      var c = computeRecordCost(r, state.mode, r.date);
+      totalTokens += tok;
+      totalCost += c.total;
+      inCost += c.input;
+      cacheCost += c.cache_read;
+      outCost += c.output;
+      noCacheCost += c.noCache;
+      cacheSaved += c.cacheSaved;
+
+      var fid = c.familyId;
+      if (!familyMap[fid]) {
+        var fMeta = MODEL_FAMILY_MAP[fid] || MODEL_FAMILY_MAP.other;
+        familyMap[fid] = {
+          id: fid,
+          label: fMeta.label,
+          color: fMeta.color,
+          total: 0,
+          input: 0,
+          cache_read: 0,
+          output: 0,
+          tokens: 0,
+          steps: 0,
+          sampleRate: c.rate
+        };
+      }
+      var bucket = familyMap[fid];
+      bucket.total += c.total;
+      bucket.input += c.input;
+      bucket.cache_read += c.cache_read;
+      bucket.output += c.output;
+      bucket.tokens += tok;
+      bucket.steps += Number(r.steps) || 0;
+      bucket.sampleRate = c.rate;
+    });
+
+    var dates = Object.keys(byDate).sort();
+    var todayYmd = getTodayLocalYmd();
+    var todayRec = byDate[todayYmd];
+    var todayCost = todayRec ? todayRec.cost : 0;
+    var todayTokens = todayRec ? todayRec.total : 0;
+
+    var peakCostDay = null, peakCost = 0;
+    dates.forEach(function (d) {
+      if (byDate[d].cost > peakCost) {
+        peakCost = byDate[d].cost;
+        peakCostDay = d;
+      }
+    });
+
+    var convCount = data.conversations.length;
+    var avgConvCost = convCount > 0 ? (totalCost / convCount) : 0;
+
+    var badgeEl = document.getElementById("pricingPresetBadge");
+    if (badgeEl) badgeEl.textContent = PRICING_PRESET_LABELS[state.pricingPreset] || "官方按日匹配价";
+    var presetSel = document.getElementById("pricingPresetSelect");
+    if (presetSel) presetSel.value = state.pricingPreset;
+    var descEl = document.getElementById("costHeroDesc");
+    if (descEl) {
+      descEl.textContent = "基于 Gemini 4 等模型官方 API 单价按调用日期实时折算（美元 USD · 口径: " +
+        (state.mode === "full" ? "全量含缓存" : "净新增不含缓存") + "）";
+    }
+
+    var sortedFamilies = Object.keys(familyMap).map(function (k) { return familyMap[k]; })
+      .filter(function (f) { return f.tokens > 0 || f.total > 0; })
+      .sort(function (a, b) { return b.total - a.total; });
+    var maxFamilyCost = sortedFamilies.reduce(function (mx, f) { return Math.max(mx, f.total); }, 0);
+
+    var savingsHtml = "";
+    if (state.mode === "full") {
+      var paidPct = noCacheCost > 0 ? Math.min(100, Math.max(0, (totalCost / noCacheCost) * 100)) : 0;
+      var savedPct = noCacheCost > 0 ? Math.max(0, 100 - paidPct) : 0;
+      savingsHtml =
+        '<div class="cost-savings-box">' +
+          '<div class="cost-savings-head">' +
+            '<span>上下文缓存省钱：<strong class="cost-saved-text tabular">' + formatUsd(cacheSaved) + '</strong> <span style="color:var(--text-muted);">(' + formatPercent(cacheSaved, noCacheCost) + ')</span></span>' +
+            '<span class="tabular" style="color:var(--text-secondary);">无缓存原价 ' + formatUsd(noCacheCost) + '</span>' +
+          '</div>' +
+          '<div class="cost-savings-bar">' +
+            '<div class="cost-savings-paid" style="width:' + paidPct.toFixed(2) + '%;" title="实付等效: ' + formatUsd(totalCost) + '"></div>' +
+            '<div class="cost-savings-saved" style="width:' + savedPct.toFixed(2) + '%;" title="缓存节省: ' + formatUsd(cacheSaved) + '"></div>' +
+          '</div>' +
+        '</div>';
+    } else {
+      savingsHtml =
+        '<div class="cost-savings-box" style="border-color:var(--border);">' +
+          '<div class="cost-savings-head" style="margin-bottom:0;">' +
+            '<span style="color:var(--text-secondary);">当前为「净新增」口径，已跳过缓存读取费；切回「全量 (含缓存)」可查看 95% 缓存省钱对比。</span>' +
+          '</div>' +
+        '</div>';
+    }
+
+    var modelsRowsHtml = "";
+    if (sortedFamilies.length === 0) {
+      modelsRowsHtml = '<div style="color:var(--text-muted);font-size:12px;padding:24px 0;text-align:center;">当前筛选条件下暂无模型用量记录</div>';
+    } else {
+      modelsRowsHtml = sortedFamilies.map(function (f) {
+        var denom = maxFamilyCost > 0 ? maxFamilyCost : 1;
+        var wIn = (f.input / denom) * 100;
+        var wCache = (f.cache_read / denom) * 100;
+        var wOut = (f.output / denom) * 100;
+        var rateBadge = "$" + f.sampleRate.input + "/$" + f.sampleRate.output;
+        return '<div class="cost-model-row" data-famid="' + escapeHtml(f.id) + '">' +
+          '<div class="cost-model-row-top">' +
+            '<span class="cost-model-name-wrap">' +
+              '<span class="dot-legend-circle" style="background:' + f.color + ';"></span>' +
+              '<span class="cost-model-name">' + escapeHtml(f.label) + '</span>' +
+              '<span class="cost-rate-badge tabular">' + escapeHtml(rateBadge) + '</span>' +
+            '</span>' +
+            '<span class="cost-model-val tabular"><strong>' + formatUsd(f.total) + '</strong> <span style="color:var(--text-muted);">(' + formatPercent(f.total, totalCost) + ')</span></span>' +
+          '</div>' +
+          '<div class="cost-stack-track">' +
+            (wIn > 0 ? '<div class="cost-stack-seg" style="width:' + wIn.toFixed(2) + '%;background:#38bdf8;"></div>' : '') +
+            (wCache > 0 ? '<div class="cost-stack-seg" style="width:' + wCache.toFixed(2) + '%;background:#1e88e5;"></div>' : '') +
+            (wOut > 0 ? '<div class="cost-stack-seg" style="width:' + wOut.toFixed(2) + '%;background:#a78bfa;"></div>' : '') +
+          '</div>' +
+        '</div>';
+      }).join("");
+    }
+
+    var bodyEl = document.getElementById("costHeroBody");
+    bodyEl.innerHTML =
+      '<div class="cost-hero-grid">' +
+        '<div class="cost-summary-col">' +
+          '<div class="cost-headline-row">' +
+            '<div class="cost-big-amount tabular">' + formatUsd(totalCost) + '</div>' +
+            '<div class="cost-headline-sub tabular">' + formatCompactCn(totalTokens) + ' Token · ' + (state.mode === "full" ? "含缓存读取" : "净新增不含缓存") + '</div>' +
+          '</div>' +
+          '<div class="cost-mini-stats">' +
+            '<div class="cost-mini-card">' +
+              '<div class="cost-mini-label">今日费用</div>' +
+              '<div class="cost-mini-val tabular">' + formatUsd(todayCost) + '</div>' +
+              '<div class="cost-mini-sub tabular">' + (todayTokens > 0 ? (formatCompactCn(todayTokens) + ' Token') : '今日暂无消耗') + '</div>' +
+            '</div>' +
+            '<div class="cost-mini-card">' +
+              '<div class="cost-mini-label">单日最高费用</div>' +
+              '<div class="cost-mini-val tabular">' + formatUsd(peakCost) + '</div>' +
+              '<div class="cost-mini-sub tabular">' + (peakCostDay ? formatYmdMD(peakCostDay) : '暂无数据') + '</div>' +
+            '</div>' +
+            '<div class="cost-mini-card">' +
+              '<div class="cost-mini-label">单次会话均价</div>' +
+              '<div class="cost-mini-val tabular">' + formatUsd(avgConvCost) + '</div>' +
+              '<div class="cost-mini-sub tabular">' + (convCount > 0 ? ('共 ' + convCount + ' 个会话') : '暂无会话') + '</div>' +
+            '</div>' +
+          '</div>' +
+          savingsHtml +
+          '<div class="cost-type-chips">' +
+            '<div class="cost-type-chip">' +
+              '<div class="cost-type-chip-top"><span class="swatch" style="background:#38bdf8;"></span>新增输入</div>' +
+              '<div class="cost-type-chip-val tabular">' + formatUsd(inCost) + ' <span style="font-weight:400;font-size:11px;color:var(--text-muted);">(' + formatPercent(inCost, totalCost) + ')</span></div>' +
+            '</div>' +
+            '<div class="cost-type-chip" style="' + (state.mode === "net" ? "opacity:0.45;" : "") + '">' +
+              '<div class="cost-type-chip-top"><span class="swatch" style="background:#1e88e5;"></span>缓存读取</div>' +
+              '<div class="cost-type-chip-val tabular">' + formatUsd(cacheCost) + ' <span style="font-weight:400;font-size:11px;color:var(--text-muted);">(' + (state.mode === "full" ? formatPercent(cacheCost, totalCost) : "未计入") + ')</span></div>' +
+            '</div>' +
+            '<div class="cost-type-chip">' +
+              '<div class="cost-type-chip-top"><span class="swatch" style="background:#a78bfa;"></span>模型输出</div>' +
+              '<div class="cost-type-chip-val tabular">' + formatUsd(outCost) + ' <span style="font-weight:400;font-size:11px;color:var(--text-muted);">(' + formatPercent(outCost, totalCost) + ')</span></div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cost-models-col">' +
+          '<div class="cost-models-head">' +
+            '<span>按模型系列费用拆解</span>' +
+            '<span>悬停查看三段明细</span>' +
+          '</div>' +
+          '<div class="cost-model-list">' + modelsRowsHtml + '</div>' +
+          '<div class="cost-stack-legend">' +
+            '<span class="cost-stack-legend-items">' +
+              '<span><span class="swatch" style="display:inline-block;background:#38bdf8;margin-right:4px;"></span>新增输入</span>' +
+              '<span><span class="swatch" style="display:inline-block;background:#1e88e5;margin-right:4px;"></span>缓存读取</span>' +
+              '<span><span class="swatch" style="display:inline-block;background:#a78bfa;margin-right:4px;"></span>模型输出</span>' +
+            '</span>' +
+            '<span>' + (state.pricingPreset === "auto" ? "Carbon/Argon 2026-11-30 前按首发价" : escapeHtml(PRICING_PRESET_LABELS[state.pricingPreset] || "")) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    bodyEl.querySelectorAll(".cost-model-row[data-famid]").forEach(function (row) {
+      var fid = row.getAttribute("data-famid");
+      var f = familyMap[fid];
+      if (!f) return;
+      row.addEventListener("mouseenter", function (e) {
+        var html = '<div class="tt-title">' + escapeHtml(f.label) + '</div>' +
+          '<div class="tt-line"><span>折合费用</span><strong class="tabular">' + formatUsd(f.total) + ' (' + formatPercent(f.total, totalCost) + ')</strong></div>' +
+          '<div class="tt-line"><span>新增输入费用</span><span class="tabular">' + formatUsd(f.input) + '</span></div>' +
+          '<div class="tt-line"><span>缓存读取费用</span><span class="tabular">' + formatUsd(f.cache_read) + '</span></div>' +
+          '<div class="tt-line"><span>模型输出费用</span><span class="tabular">' + formatUsd(f.output) + '</span></div>' +
+          '<div class="tt-line"><span>Token 总量 / 步数</span><span class="tabular">' + formatCompactCn(f.tokens) + ' / ' + formatInt(f.steps) + ' 步</span></div>' +
+          '<div class="tt-line"><span>生效单价 ($/1M)</span><span class="tabular">$' + f.sampleRate.input + ' / $' + f.sampleRate.cache_read + ' / $' + f.sampleRate.output + '</span></div>';
+        showTooltip(e, html);
+      });
+      row.addEventListener("mouseleave", hideTooltip);
+    });
+
+    // Pricing Config Drawer
+    var drawerEl = document.getElementById("pricingConfigDrawer");
+    var toggleBtn = document.getElementById("togglePricingDrawerBtn");
+    if (toggleBtn) {
+      toggleBtn.textContent = state.pricingDrawerOpen ? "收起单价表" : "单价表 / 自定义";
+    }
+    if (!state.pricingDrawerOpen) {
+      drawerEl.style.display = "none";
+      drawerEl.innerHTML = "";
+      return;
+    }
+
+    var todayRef = getTodayLocalYmd();
+    var drawerRows = MODEL_FAMILIES.map(function (fam) {
+      var eff = getEffectiveRateByFamily(fam.id, todayRef);
+      return '<tr>' +
+        '<td><span class="dot-legend-circle" style="display:inline-block;background:' + fam.color + ';margin-right:6px;"></span>' + escapeHtml(fam.label) + '</td>' +
+        '<td class="num"><input type="number" class="rate-input tabular" step="0.001" min="0" data-fam="' + fam.id + '" data-field="input" value="' + eff.input + '"></td>' +
+        '<td class="num"><input type="number" class="rate-input tabular" step="0.001" min="0" data-fam="' + fam.id + '" data-field="cache_read" value="' + eff.cache_read + '"></td>' +
+        '<td class="num"><input type="number" class="rate-input tabular" step="0.001" min="0" data-fam="' + fam.id + '" data-field="output" value="' + eff.output + '"></td>' +
+        '<td style="color:var(--text-muted);font-size:11px;white-space:normal;">' + escapeHtml(fam.note) + '</td>' +
+      '</tr>';
+    }).join("");
+
+    drawerEl.style.display = "block";
+    drawerEl.innerHTML =
+      '<div class="pricing-drawer-head">' +
+        '<div>' +
+          '<div class="pricing-drawer-title">官方参考单价表 &amp; 自定义费率（美元 / 1M Token）</div>' +
+          '<div class="pricing-drawer-note">修改任意数字后回车或点击空白处即自动切换为「自定义单价」并保存在本地浏览器。</div>' +
+        '</div>' +
+        '<button type="button" class="btn-pill" id="resetPricingBtn">恢复官方默认</button>' +
+      '</div>' +
+      '<div class="table-scroll" style="max-height:none;">' +
+        '<table class="data-table">' +
+          '<thead><tr><th>模型系列</th><th class="num">新增输入 ($/1M)</th><th class="num">缓存读取 ($/1M)</th><th class="num">输出 ($/1M)</th><th>说明</th></tr></thead>' +
+          '<tbody>' + drawerRows + '</tbody>' +
+        '</table>' +
+      '</div>';
+
+    drawerEl.querySelectorAll(".rate-input").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        var famId = inp.getAttribute("data-fam");
+        var field = inp.getAttribute("data-field");
+        var val = Math.max(0, parseFloat(inp.value) || 0);
+        MODEL_FAMILIES.forEach(function (fm) {
+          if (!state.customRates[fm.id]) {
+            var curRate = getEffectiveRateByFamily(fm.id, todayRef);
+            state.customRates[fm.id] = {
+              input: curRate.input,
+              cache_read: curRate.cache_read,
+              output: curRate.output
+            };
+          }
+        });
+        state.customRates[famId][field] = val;
+        state.pricingPreset = "custom";
+        savePricingConfig();
+        renderAll();
+      });
+    });
+
+    var resetBtn = document.getElementById("resetPricingBtn");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        state.customRates = {};
+        state.pricingPreset = "auto";
+        savePricingConfig();
+        renderAll();
+      });
+    }
+  }
+
+  function getActivityBounds(byDate) {
+    var allDates = Object.keys(byDate).sort();
+    var yearsMap = {};
+    allDates.forEach(function (d) { yearsMap[d.slice(0, 4)] = true; });
+    var today = getTodayLocalYmd();
+    yearsMap[today.slice(0, 4)] = true;
+    var years = Object.keys(yearsMap).sort().reverse();
+
+    var select = document.getElementById("activityRangeSelect");
+    var html = '<option value="1y">近 1 年</option>';
+    years.forEach(function (y) {
+      html += '<option value="' + y + '">' + y + ' 年</option>';
+    });
+    select.innerHTML = html;
+    if (state.activityRange === "1y" || yearsMap[state.activityRange]) {
+      select.value = state.activityRange;
+    } else {
+      state.activityRange = "1y";
+      select.value = "1y";
+    }
+
+    var startYmd, endYmd;
+    if (state.activityRange === "1y") {
+      endYmd = allDates.length > 0 && allDates[allDates.length - 1] > today ? allDates[allDates.length - 1] : today;
+      startYmd = addDaysYmd(endYmd, -364);
+    } else {
+      startYmd = state.activityRange + "-01-01";
+      endYmd = state.activityRange + "-12-31";
+    }
+    return { startYmd: startYmd, endYmd: endYmd };
+  }
+
+  function getHeatLevel(val, maxVal) {
+    if (!val || val <= 0 || !maxVal || maxVal <= 0) return 0;
+    var ratio = val / maxVal;
+    if (ratio >= 0.72) return 4;
+    if (ratio >= 0.42) return 3;
+    if (ratio >= 0.18) return 2;
+    return 1;
+  }
+
+  function getDayMetricValue(rec) {
+    if (!rec) return 0;
+    return state.metric === "cost" ? rec.cost : rec.total;
+  }
+
+  function renderOverviewActivity(byDate) {
+    var titleEl = document.getElementById("activityCardTitle");
+    if (titleEl) {
+      titleEl.textContent = state.metric === "cost" ? "API 费用活动" : "Token 活动";
+    }
+
+    var bounds = getActivityBounds(byDate);
+    var startYmd = bounds.startYmd;
+    var endYmd = bounds.endYmd;
+
+    var activeInRange = 0;
+    var maxVal = 0;
+    var cur = startYmd;
+    while (cur <= endYmd) {
+      var rec = byDate[cur];
+      var mv = getDayMetricValue(rec);
+      if (rec && rec.total > 0) {
+        activeInRange++;
+      }
+      if (mv > maxVal) maxVal = mv;
+      cur = addDaysYmd(cur, 1);
+    }
+    document.getElementById("activeDaysPill").textContent = "活跃 " + activeInRange + " 天";
+
+    var container = document.getElementById("activityChartContainer");
+    if (state.activityView === "daily") {
+      renderHeatmapDots(container, byDate, startYmd, endYmd, maxVal);
+    } else if (state.activityView === "weekly") {
+      renderWeeklyActivityBars(container, byDate, startYmd, endYmd);
+    } else {
+      renderCumulativeActivityChart(container, byDate, startYmd, endYmd);
+    }
+  }
+
+  function renderHeatmapDots(container, byDate, startYmd, endYmd, maxVal) {
+    var isCost = state.metric === "cost";
+    var heatPalette = isCost ? HEAT_COLORS_COST : HEAT_COLORS;
+    var startDow = (new Date(ymdToUtcMs(startYmd)).getUTCDay() + 6) % 7; // Mon=0..Sun=6
+    var gridStart = addDaysYmd(startYmd, -startDow);
+    var totalDays = diffDaysYmd(gridStart, endYmd) + 1;
+    var totalCols = Math.ceil(totalDays / 7);
+
+    var dotsHtml = "";
+    var monthPositions = [];
+    var seenMonth = "";
+
+    for (var col = 0; col < totalCols; col++) {
+      var colFirstInRange = null;
+      for (var row = 0; row < 7; row++) {
+        var ymd = addDaysYmd(gridStart, col * 7 + row);
+        var inRange = (ymd >= startYmd && ymd <= endYmd);
+        if (!inRange) {
+          dotsHtml += '<span class="heat-dot outside"></span>';
+          continue;
+        }
+        if (!colFirstInRange) colFirstInRange = ymd;
+        var rec = byDate[ymd];
+        var val = getDayMetricValue(rec);
+        var hasDayData = !!(rec && rec.total > 0);
+        var lvl = hasDayData ? Math.max(1, getHeatLevel(val, maxVal)) : 0;
+        var selClass = (state.selectedDate === ymd) ? " selected" : "";
+        var cls = "heat-dot" + (hasDayData ? " has-data" : "") + selClass;
+        dotsHtml += '<button type="button" class="' + cls + '" data-ymd="' + ymd + '" style="background:' + heatPalette[lvl] + ';"></button>';
+      }
+      if (colFirstInRange) {
+        var ym = colFirstInRange.slice(0, 7);
+        if (ym !== seenMonth) {
+          var p = parseDateYMD(colFirstInRange);
+          if (col === 0 || p.d <= 7) {
+            seenMonth = ym;
+            if (monthPositions.length > 0 && col - monthPositions[monthPositions.length - 1].col < 2) {
+              monthPositions[monthPositions.length - 1] = { col: col, label: p.m + "月" };
+            } else {
+              monthPositions.push({ col: col, label: p.m + "月" });
+            }
+          }
+        }
+      }
+    }
+
+    var monthHtml = monthPositions.map(function (mp) {
+      var pct = (mp.col / Math.max(1, totalCols)) * 100;
+      return '<span class="month-label" style="left:' + pct.toFixed(2) + '%;">' + escapeHtml(mp.label) + '</span>';
+    }).join("");
+
+    var hasSelectedInRange = !!(state.selectedDate && state.selectedDate >= startYmd && state.selectedDate <= endYmd);
+    var heatMatrixCls = "dots-matrix" + (isCost ? " cost-mode" : "") + (hasSelectedInRange ? " has-sel" : "");
+
+    container.innerHTML =
+      '<div class="heatmap-wrap"><div class="heatmap-inner">' +
+        '<div class="heatmap-grid-row">' +
+          '<div class="weekday-col"><span>一</span><span></span><span>三</span><span></span><span>五</span><span></span><span></span></div>' +
+          '<div class="' + heatMatrixCls + '" id="heatMatrix" style="grid-template-columns:repeat(' + totalCols + ', minmax(11px, 1fr));">' + dotsHtml + '</div>' +
+        '</div>' +
+        '<div class="month-row">' + monthHtml + '</div>' +
+      '</div></div>' +
+      '<div class="heatmap-footer">' +
+        '<span>点击有数据的圆点可定位并筛选右侧每日明细</span>' +
+        '<span class="legend-scale"><span>少</span>' +
+          heatPalette.map(function (c) { return '<span class="heat-dot" style="background:' + c + ';"></span>'; }).join("") +
+        '<span>多</span></span>' +
+      '</div>';
+
+    var matrix = document.getElementById("heatMatrix");
+    matrix.querySelectorAll("button[data-ymd]").forEach(function (btn) {
+      var ymd = btn.getAttribute("data-ymd");
+      btn.addEventListener("mouseenter", function (e) {
+        var r = byDate[ymd];
+        var tokVal = r ? r.total : 0;
+        var costVal = r ? r.cost : 0;
+        var html = '<div class="tt-title">' + escapeHtml(ymd) + ' (' + escapeHtml(formatYmdMD(ymd)) + ')</div>' +
+          '<div class="tt-line"><span>等效 API 费用</span><strong class="tabular" style="color:#5ec2a6;">' + formatUsd(costVal) + '</strong></div>' +
+          '<div class="tt-line"><span>Token 用量</span><strong class="tabular">' + formatCompactCn(tokVal) + ' (' + formatInt(tokVal) + ')</strong></div>';
+        if (r && tokVal > 0) {
+          if (isCost) {
+            html +=
+              '<div class="tt-line"><span>输入费用</span><span class="tabular">' + formatUsd(r.cost_input) + '</span></div>' +
+              '<div class="tt-line"><span>缓存费用</span><span class="tabular">' + formatUsd(r.cost_cache) + '</span></div>' +
+              '<div class="tt-line"><span>输出费用</span><span class="tabular">' + formatUsd(r.cost_output) + '</span></div>' +
+              '<div class="tt-line"><span>调用步数</span><span class="tabular">' + formatInt(r.steps) + ' 步</span></div>';
+          } else {
+            html +=
+              '<div class="tt-line"><span>新增输入</span><span class="tabular">' + formatInt(r.input) + '</span></div>' +
+              '<div class="tt-line"><span>缓存命中</span><span class="tabular">' + formatInt(r.cache_read) + '</span></div>' +
+              '<div class="tt-line"><span>模型输出</span><span class="tabular">' + formatInt(r.output) + '</span></div>' +
+              '<div class="tt-line"><span>调用步数</span><span class="tabular">' + formatInt(r.steps) + ' 步</span></div>';
+          }
+        }
+        showTooltip(e, html);
+      });
+      btn.addEventListener("mouseleave", hideTooltip);
+      if (byDate[ymd] && byDate[ymd].total > 0) {
+        btn.addEventListener("click", function () {
+          state.selectedDate = (state.selectedDate === ymd) ? null : ymd;
+          renderAll();
+        });
+      }
+    });
+  }
+
+  function renderCodexWeeklyDotMatrix(container, byDate, startYmd, endYmd, isCumulative) {
+    var isCost = state.metric === "cost";
+    var startDow = (new Date(ymdToUtcMs(startYmd)).getUTCDay() + 6) % 7;
+    var wStart = addDaysYmd(startYmd, -startDow);
+
+    var priorTok = 0, priorCost = 0;
+    Object.keys(byDate).forEach(function (d) {
+      if (d < startYmd) {
+        priorTok += byDate[d].total;
+        priorCost += byDate[d].cost;
+      }
+    });
+
+    var runTok = priorTok, runCost = priorCost;
+    var weeks = [];
+    var monthPositions = [];
+    var seenMonth = "";
+
+    while (wStart <= endYmd) {
+      var wEnd = addDaysYmd(wStart, 6);
+      var sumTok = 0, sumCost = 0, sumSteps = 0;
+      var colFirstInRange = null;
+      for (var i = 0; i < 7; i++) {
+        var d = addDaysYmd(wStart, i);
+        if (d >= startYmd && d <= endYmd) {
+          if (!colFirstInRange) colFirstInRange = d;
+          if (byDate[d]) {
+            sumTok += byDate[d].total;
+            sumCost += byDate[d].cost;
+            sumSteps += byDate[d].steps;
+          }
+        }
+      }
+      runTok += sumTok;
+      runCost += sumCost;
+
+      var colIdx = weeks.length;
+      weeks.push({
+        start: wStart,
+        end: wEnd,
+        total: sumTok,
+        cost: sumCost,
+        steps: sumSteps,
+        cumTotal: runTok,
+        cumCost: runCost
+      });
+
+      if (colFirstInRange) {
+        var ym = colFirstInRange.slice(0, 7);
+        if (ym !== seenMonth) {
+          var p = parseDateYMD(colFirstInRange);
+          if (colIdx === 0 || p.d <= 7) {
+            seenMonth = ym;
+            if (monthPositions.length > 0 && colIdx - monthPositions[monthPositions.length - 1].col < 2) {
+              monthPositions[monthPositions.length - 1] = { col: colIdx, label: p.m + "月" };
+            } else {
+              monthPositions.push({ col: colIdx, label: p.m + "月" });
+            }
+          }
+        }
+      }
+
+      wStart = addDaysYmd(wStart, 7);
+    }
+
+    function getWeekMetric(w) {
+      if (isCumulative) return isCost ? w.cumCost : w.cumTotal;
+      return isCost ? w.cost : w.total;
+    }
+
+    var maxVal = weeks.reduce(function (mx, w) {
+      return Math.max(mx, getWeekMetric(w));
+    }, 0);
+
+    var totalCols = Math.max(1, weeks.length);
+    var colsHtml = weeks.map(function (w, idx) {
+      var v = getWeekMetric(w);
+      var litCount = (v <= 0 || maxVal <= 0) ? 0 : Math.max(1, Math.min(7, Math.round((v / maxVal) * 7)));
+      var dots = "";
+      for (var r = 0; r < 7; r++) {
+        var isLit = r >= (7 - litCount);
+        dots += '<span class="week-dot' + (isLit ? " lit" : "") + '"></span>';
+      }
+      return '<button type="button" class="week-dot-col" data-idx="' + idx + '">' + dots + '</button>';
+    }).join("");
+
+    var monthHtml = monthPositions.map(function (mp) {
+      var pct = (mp.col / totalCols) * 100;
+      return '<span class="month-label" style="left:' + pct.toFixed(2) + '%;">' + escapeHtml(mp.label) + '</span>';
+    }).join("");
+
+    var matrixCls = "week-dots-matrix" + (isCost ? " cost-mode" : "");
+    var footerLeft = isCumulative
+      ? "每列代表 1 周 · 纵向点亮 1–7 格按累计总量递进"
+      : "每列代表 1 周 · 纵向点亮 1–7 格按周峰值比例换算";
+    var footerRight = isCumulative
+      ? ("区间累计 " + formatMetricCompact(maxVal, state.metric))
+      : ("周峰值 " + formatMetricCompact(maxVal, state.metric));
+
+    container.innerHTML =
+      '<div class="heatmap-wrap"><div class="heatmap-inner">' +
+        '<div class="heatmap-grid-row">' +
+          '<div class="' + matrixCls + '" id="weekDotsMatrix" style="grid-template-columns:repeat(' + totalCols + ', minmax(11px, 1fr));">' + colsHtml + '</div>' +
+        '</div>' +
+        '<div class="month-row no-weekday">' + monthHtml + '</div>' +
+      '</div></div>' +
+      '<div class="heatmap-footer">' +
+        '<span>' + escapeHtml(footerLeft) + '</span>' +
+        '<span class="tabular">' + escapeHtml(footerRight) + '</span>' +
+      '</div>';
+
+    var matrixEl = document.getElementById("weekDotsMatrix");
+    if (!matrixEl) return;
+    matrixEl.querySelectorAll(".week-dot-col[data-idx]").forEach(function (colBtn) {
+      var w = weeks[Number(colBtn.getAttribute("data-idx"))];
+      if (!w) return;
+      colBtn.addEventListener("mouseenter", function (e) {
+        var html = "";
+        if (isCumulative) {
+          html = '<div class="tt-title">累计至 ' + escapeHtml(formatYmdCnFull(w.start)) + ' 起的一周</div>';
+          if (isCost) {
+            html +=
+              '<div class="tt-line"><span>累计等效费用</span><strong class="tabular" style="color:#5ec2a6;">' + formatUsd(w.cumCost) + '</strong></div>' +
+              '<div class="tt-line"><span>累计 Token</span><span class="tabular">' + formatCompactCn(w.cumTotal) + ' 个 Token</span></div>' +
+              '<div class="tt-line"><span>本周新增</span><span class="tabular">' + formatUsd(w.cost) + ' · ' + formatCompactCn(w.total) + '</span></div>';
+          } else {
+            html +=
+              '<div class="tt-line"><span>累计总量</span><strong class="tabular">' + formatCompactCn(w.cumTotal) + ' 个 Token (' + formatInt(w.cumTotal) + ')</strong></div>' +
+              '<div class="tt-line"><span>累计等效费用</span><span class="tabular">' + formatUsd(w.cumCost) + '</span></div>' +
+              '<div class="tt-line"><span>本周新增</span><span class="tabular">' + formatCompactCn(w.total) + ' 个 Token</span></div>';
+          }
+        } else {
+          html = '<div class="tt-title">' + escapeHtml(formatYmdCnFull(w.start)) + ' 起的一周</div>';
+          if (isCost) {
+            html +=
+              '<div class="tt-line"><span>本周费用</span><strong class="tabular" style="color:#5ec2a6;">' + formatUsd(w.cost) + '</strong></div>' +
+              '<div class="tt-line"><span>本周 Token</span><span class="tabular">' + formatCompactCn(w.total) + ' 个 Token</span></div>' +
+              '<div class="tt-line"><span>调用步数</span><span class="tabular">' + formatInt(w.steps) + ' 步</span></div>';
+          } else {
+            html +=
+              '<div class="tt-line"><span>本周用量</span><strong class="tabular">' + formatCompactCn(w.total) + ' 个 Token (' + formatInt(w.total) + ')</strong></div>' +
+              '<div class="tt-line"><span>等效 API 费用</span><span class="tabular">' + formatUsd(w.cost) + '</span></div>' +
+              '<div class="tt-line"><span>调用步数</span><span class="tabular">' + formatInt(w.steps) + ' 步</span></div>';
+          }
+        }
+        showTooltip(e, html);
+      });
+      colBtn.addEventListener("mouseleave", hideTooltip);
+    });
+  }
+
+  function renderWeeklyActivityBars(container, byDate, startYmd, endYmd) {
+    renderCodexWeeklyDotMatrix(container, byDate, startYmd, endYmd, false);
+  }
+
+  function renderCumulativeActivityChart(container, byDate, startYmd, endYmd) {
+    renderCodexWeeklyDotMatrix(container, byDate, startYmd, endYmd, true);
+  }
+
+  function getToolSvgIcon(cat) {
+    if (cat === "终端与任务") {
+      return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>';
+    }
+    if (cat === "文件读写与编辑") {
+      return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>';
+    }
+    if (cat === "搜索与浏览") {
+      return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
+    }
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>';
+  }
+
+  function renderPopularAndInsights(data) {
+    var toolCounts = {};
+    data.toolRecords.forEach(function (r) {
+      toolCounts[r.tool] = (toolCounts[r.tool] || 0) + (Number(r.count) || 0);
+    });
+    var skillCounts = {};
+    data.skillTotals.forEach(function (r) {
+      skillCounts[r.skill] = (skillCounts[r.skill] || 0) + (Number(r.count) || 0);
+    });
+
+    var strip = document.getElementById("popularStrip");
+    if (state.popularType === "tools") {
+      var topTools = Object.keys(toolCounts).map(function (t) {
+        return { name: TOOL_DISPLAY[t] || t, raw: t, count: toolCounts[t], cat: categorizeTool(t) };
+      }).sort(function (a, b) { return b.count - a.count; }).slice(0, 8);
+
+      strip.innerHTML = topTools.length === 0
+        ? '<span style="color:var(--text-muted);font-size:12px;">当前筛选下暂无工具调用记录</span>'
+        : topTools.map(function (t) {
+            return '<div class="plugin-tile">' +
+              '<div class="plugin-icon">' + getToolSvgIcon(t.cat) + '</div>' +
+              '<div class="plugin-meta">' +
+                '<div class="plugin-name">' + escapeHtml(t.name) + '</div>' +
+                '<div class="plugin-sub tabular">' + escapeHtml(t.raw) + ' · ' + formatInt(t.count) + ' 次</div>' +
+              '</div>' +
+            '</div>';
+          }).join("");
+    } else {
+      var topSkills = Object.keys(skillCounts).map(function (s) {
+        return { name: s, count: skillCounts[s] };
+      }).sort(function (a, b) { return b.count - a.count; }).slice(0, 8);
+
+      strip.innerHTML = topSkills.length === 0
+        ? '<span style="color:var(--text-muted);font-size:12px;">当前筛选下暂无技能读取记录</span>'
+        : topSkills.map(function (s) {
+            return '<div class="plugin-tile">' +
+              '<div class="plugin-icon" style="color:var(--accent-purple);">' + getToolSvgIcon("技能") + '</div>' +
+              '<div class="plugin-meta">' +
+                '<div class="plugin-name">' + escapeHtml(s.name) + '</div>' +
+                '<div class="plugin-sub tabular">调用 ' + formatInt(s.count) + ' 次</div>' +
+              '</div>' +
+            '</div>';
+          }).join("");
+    }
+
+    // Insights calculations
+    var totalConvs = data.conversations.length;
+    var planConvs = data.conversations.filter(function (c) { return !!c.plan_execute; }).length;
+    var planText = totalConvs > 0
+      ? (formatPercent(planConvs, totalConvs) + " (" + planConvs + " / " + totalConvs + " 个会话)")
+      : "暂无会话";
+
+    var effortSteps = {};
+    var totalStepsWithEffort = 0;
+    var totIn = 0, totCache = 0;
+    data.hourlyRecords.forEach(function (r) {
+      var steps = Number(r.steps) || 0;
+      totIn += Number(r.input) || 0;
+      totCache += Number(r.cache_read) || 0;
+      var tier = extractEffortTier(r.model);
+      if (tier) {
+        effortSteps[tier] = (effortSteps[tier] || 0) + steps;
+        totalStepsWithEffort += steps;
+      }
+    });
+    var topEffort = null, topEffortSteps = 0;
+    Object.keys(effortSteps).forEach(function (k) {
+      if (effortSteps[k] > topEffortSteps) {
+        topEffortSteps = effortSteps[k];
+        topEffort = k;
+      }
+    });
+    var effortText = topEffort
+      ? (topEffort + " · " + formatPercent(topEffortSteps, totalStepsWithEffort))
+      : "未识别";
+
+    var totalPromptInput = totIn + totCache;
+    var cacheRateText = totalPromptInput > 0
+      ? (formatPercent(totCache, totalPromptInput) + " (命中 " + formatCompactCn(totCache) + ")")
+      : "0%";
+
+    var uniqueSkillsCount = Object.keys(skillCounts).length;
+    var totalSkillReads = Object.keys(skillCounts).reduce(function (s, k) { return s + skillCounts[k]; }, 0);
+
+    var insights = [
+      { k: "规划模式 (Plan) 占比", v: planText },
+      { k: "最常用的推理强度", v: effortText },
+      { k: "上下文缓存命中率", v: cacheRateText },
+      { k: "已探索技能数", v: formatInt(uniqueSkillsCount) },
+      { k: "使用的技能总数", v: formatInt(totalSkillReads) }
+    ];
+
+    document.getElementById("insightsList").innerHTML = insights.map(function (row) {
+      return '<div class="insight-row">' +
+        '<span class="insight-key">' + escapeHtml(row.k) + '</span>' +
+        '<span class="insight-val tabular">' + escapeHtml(row.v) + '</span>' +
+        '</div>';
+    }).join("");
+  }
+
+  function renderCompositionAndDailyTable(data, byDate) {
+    var isCost = state.metric === "cost";
+    var compTitleEl = document.getElementById("compCardTitle");
+    if (compTitleEl) {
+      compTitleEl.textContent = isCost ? "费用构成与模型趋势" : "构成与模型分布";
+    }
+
+    var totIn = 0, totCache = 0, totOut = 0;
+    var totCostIn = 0, totCostCache = 0, totCostOut = 0, totCostAll = 0;
+    data.hourlyRecords.forEach(function (r) {
+      totIn += Number(r.input) || 0;
+      totCache += Number(r.cache_read) || 0;
+      totOut += Number(r.output) || 0;
+      var c = computeRecordCost(r, state.mode, r.date);
+      totCostIn += c.input;
+      totCostCache += c.cache_read;
+      totCostOut += c.output;
+      totCostAll += c.total;
+    });
+
+    var compTotal = state.mode === "net" ? (totIn + totOut) : (totIn + totCache + totOut);
+
+    var activeDaysCount = Object.keys(byDate).filter(function (d) { return byDate[d].total > 0; }).length;
+    var effectiveSpan = state.compSpan === "auto"
+      ? ((activeDaysCount <= 1 || state.selectedDate) ? "hourly" : "7")
+      : state.compSpan;
+
+    var granBox = document.getElementById("compGranularityToggle");
+    if (granBox) {
+      granBox.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-cspan") === effectiveSpan);
+      });
+    }
+
+    var slots = [];
+    var slotIndex = {};
+    var captionText = "";
+    var targetRecords = [];
+
+    if (effectiveSpan === "hourly") {
+      var targetDate = state.selectedDate;
+      if (!targetDate) {
+        data.hourlyRecords.forEach(function (r) {
+          if (r.date && (!targetDate || r.date > targetDate)) targetDate = r.date;
+        });
+      }
+      if (!targetDate) targetDate = getTodayLocalYmd();
+
+      var minH = 23, maxH = 0, hasHourRec = false;
+      data.hourlyRecords.forEach(function (r) {
+        if (r.date !== targetDate) return;
+        targetRecords.push(r);
+        var h = (r.hour !== undefined && r.hour !== null) ? Number(r.hour) : 12;
+        if (h < minH) minH = h;
+        if (h > maxH) maxH = h;
+        hasHourRec = true;
+      });
+      if (!hasHourRec) {
+        minH = 8;
+        maxH = 14;
+      } else if (minH === maxH) {
+        minH = Math.max(0, minH - 1);
+        maxH = Math.min(23, maxH + 1);
+      }
+
+      for (var h = minH; h <= maxH; h++) {
+        var hk = String(h);
+        slotIndex[hk] = slots.length;
+        slots.push({
+          key: hk,
+          label: pad2(h) + ":00",
+          title: targetDate + " " + pad2(h) + ":00"
+        });
+      }
+      captionText = targetDate + " 按小时趋势";
+    } else {
+      var spanDays = Number(effectiveSpan) || 7;
+      var bounds = getWindowDateBounds(data.hourlyRecords, data.toolRecords, spanDays, 0);
+      bounds.dates.forEach(function (d) {
+        slotIndex[d] = slots.length;
+        slots.push({
+          key: d,
+          label: formatYmdMD(d),
+          title: d + " (" + formatYmdMD(d) + ")"
+        });
+      });
+      data.hourlyRecords.forEach(function (r) {
+        if (slotIndex[r.date] !== undefined) targetRecords.push(r);
+      });
+      captionText = "近 " + spanDays + " 天趋势 (" + formatYmdMDSlash(bounds.startYmd) + " - " + formatYmdMDSlash(bounds.endYmd) + ")";
+    }
+
+    var seriesMap = {};
+    var totals = {};
+    var seriesOrder = [];
+    var windowTotal = 0;
+
+    if (state.compDim === "comp") {
+      seriesMap.input = { label: "新增输入", color: "#38bdf8", bySlot: {} };
+      totals.input = 0;
+      seriesOrder.push("input");
+      if (state.mode === "full") {
+        seriesMap.cache_read = { label: "缓存命中", color: "#1e88e5", bySlot: {} };
+        totals.cache_read = 0;
+        seriesOrder.push("cache_read");
+      }
+      seriesMap.output = { label: "模型输出", color: "#a78bfa", bySlot: {} };
+      totals.output = 0;
+      seriesOrder.push("output");
+
+      targetRecords.forEach(function (r) {
+        var skey = effectiveSpan === "hourly"
+          ? String((r.hour !== undefined && r.hour !== null) ? Number(r.hour) : 12)
+          : r.date;
+        if (slotIndex[skey] === undefined) return;
+        var inpVal, cacheVal, outVal;
+        if (isCost) {
+          var rc = computeRecordCost(r, state.mode, r.date);
+          inpVal = rc.input;
+          cacheVal = rc.cache_read;
+          outVal = rc.output;
+        } else {
+          inpVal = Number(r.input) || 0;
+          cacheVal = Number(r.cache_read) || 0;
+          outVal = Number(r.output) || 0;
+        }
+        seriesMap.input.bySlot[skey] = (seriesMap.input.bySlot[skey] || 0) + inpVal;
+        totals.input += inpVal;
+        windowTotal += inpVal;
+        if (state.mode === "full") {
+          seriesMap.cache_read.bySlot[skey] = (seriesMap.cache_read.bySlot[skey] || 0) + cacheVal;
+          totals.cache_read += cacheVal;
+          windowTotal += cacheVal;
+        }
+        seriesMap.output.bySlot[skey] = (seriesMap.output.bySlot[skey] || 0) + outVal;
+        totals.output += outVal;
+        windowTotal += outVal;
+      });
+    } else {
+      targetRecords.forEach(function (r) {
+        var skey = effectiveSpan === "hourly"
+          ? String((r.hour !== undefined && r.hour !== null) ? Number(r.hour) : 12)
+          : r.date;
+        if (slotIndex[skey] === undefined) return;
+        var val = getRecordMetricValue(r, state.mode, state.metric, r.date);
+        if (val <= 0) return;
+        var m = r.model || "unknown";
+        if (!seriesMap[m]) {
+          seriesMap[m] = { label: formatModelName(m), color: PALETTE[0], bySlot: {} };
+          totals[m] = 0;
+        }
+        seriesMap[m].bySlot[skey] = (seriesMap[m].bySlot[skey] || 0) + val;
+        totals[m] += val;
+        windowTotal += val;
+      });
+      seriesOrder = Object.keys(totals).sort(function (a, b) { return totals[b] - totals[a]; }).slice(0, 6);
+      seriesOrder.forEach(function (mk, idx) {
+        seriesMap[mk].color = PALETTE[idx % PALETTE.length];
+      });
+    }
+
+    var chartHtml = "";
+    if (slots.length === 0 || seriesOrder.length === 0 || windowTotal <= 0) {
+      chartHtml = '<div style="color:var(--text-muted);font-size:12px;padding:34px 0;text-align:center;">当前窗口暂无趋势记录</div>';
+    } else {
+      var maxY = 0;
+      seriesOrder.forEach(function (sk) {
+        slots.forEach(function (sl) {
+          var v = seriesMap[sk].bySlot[sl.key] || 0;
+          if (v > maxY) maxY = v;
+        });
+      });
+      var yTop = maxY > 0 ? maxY * 1.15 : 1;
+      var W = 560, H = 215, padL = 52, padR = 16, padT = 14, padB = 26;
+      var plotW = W - padL - padR, plotH = H - padT - padB;
+
+      var xCoords = slots.map(function (sl, idx) {
+        return padL + (slots.length <= 1 ? plotW / 2 : (idx / (slots.length - 1)) * plotW);
+      });
+
+      var grid = "";
+      for (var g = 0; g <= 2; g++) {
+        var gv = (yTop / 2) * g;
+        var gy = padT + plotH - (gv / yTop) * plotH;
+        grid += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + gy.toFixed(1) + '" stroke="rgba(255,255,255,0.06)" />' +
+          '<text x="' + (padL - 7) + '" y="' + (gy + 4).toFixed(1) + '" text-anchor="end" fill="#6b7280" font-size="10">' + formatMetricAxis(gv, state.metric) + '</text>';
+      }
+
+      var linesHtml = "";
+      var dotsHtml = "";
+      seriesOrder.forEach(function (sk) {
+        var sObj = seriesMap[sk];
+        var pts = slots.map(function (sl, si) {
+          var v = sObj.bySlot[sl.key] || 0;
+          var x = xCoords[si];
+          var y = padT + plotH - (v / yTop) * plotH;
+          return { x: x, y: y, v: v };
+        });
+        var poly = pts.map(function (p) { return p.x.toFixed(1) + "," + p.y.toFixed(1); }).join(" ");
+        linesHtml += '<polyline fill="none" stroke="' + sObj.color + '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="' + poly + '" />';
+        pts.forEach(function (p) {
+          if (p.v > 0) {
+            dotsHtml += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3.2" fill="' + sObj.color + '" stroke="#121212" stroke-width="1.2" />';
+          }
+        });
+      });
+
+      var xLabels = "";
+      var labelStep = slots.length <= 7 ? 1 : Math.ceil(slots.length / 6);
+      slots.forEach(function (sl, idx) {
+        if (idx === 0 || idx === slots.length - 1 || idx % labelStep === 0) {
+          xLabels += '<text x="' + xCoords[idx].toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" fill="#6b7280" font-size="10">' + escapeHtml(sl.label) + '</text>';
+        }
+      });
+
+      chartHtml =
+        '<div class="comp-chart-caption"><span>' + escapeHtml(captionText) + '</span><span class="tabular">区间合计 ' + formatMetricCompact(windowTotal, state.metric) + '</span></div>' +
+        '<div class="svg-chart-box"><svg id="compLine_svg" viewBox="0 0 ' + W + ' ' + H + '">' +
+          grid + linesHtml + dotsHtml + xLabels +
+          '<line id="compLine_hl" x1="0" y1="' + padT + '" x2="0" y2="' + (padT + plotH) + '" stroke="rgba(255,255,255,0.28)" stroke-dasharray="3,3" style="display:none;" />' +
+          '<rect id="compLine_ov" x="' + padL + '" y="' + padT + '" width="' + plotW + '" height="' + plotH + '" fill="transparent" style="cursor:crosshair;" />' +
+        '</svg></div>';
+    }
+
+    var rankTitle = state.compDim === "comp" ? "按构成明细" : "按模型明细";
+    var rankRowsHtml = seriesOrder.length === 0 || windowTotal <= 0
+      ? '<div style="color:var(--text-muted);font-size:12px;padding:18px 0;text-align:center;">当前窗口暂无明细数据</div>'
+      : '<div class="model-rank-list">' + seriesOrder.map(function (sk) {
+          var sObj = seriesMap[sk];
+          var sTot = totals[sk] || 0;
+          var wPct = Math.max(2, Math.min(100, windowTotal > 0 ? (sTot / windowTotal) * 100 : 0)).toFixed(1) + "%";
+          return '<div>' +
+            '<div class="model-row-head">' +
+              '<span class="model-row-name-wrap">' +
+                '<span class="dot-legend-circle" style="background:' + sObj.color + ';"></span>' +
+                '<span class="model-row-name" title="' + escapeHtml(sObj.label) + '">' + escapeHtml(sObj.label) + '</span>' +
+              '</span>' +
+              '<span class="model-row-val tabular"><strong style="color:var(--text-primary);font-weight:600;">' + formatMetricCompact(sTot, state.metric) + '</strong> <span style="color:var(--text-muted);">(' + formatPercent(sTot, windowTotal) + ')</span></span>' +
+            '</div>' +
+            '<div class="bar-track"><div class="bar-fill" style="width:' + wPct + ';background:' + sObj.color + ';"></div></div>' +
+          '</div>';
+        }).join("") + '</div>';
+
+    var dispIn = isCost ? formatUsd(totCostIn) : formatCompactCn(totIn);
+    var dispInPct = isCost ? formatPercent(totCostIn, totCostAll) : formatPercent(totIn, compTotal);
+    var dispCache = isCost ? formatUsd(totCostCache) : formatCompactCn(totCache);
+    var dispCachePct = state.mode === "full"
+      ? (isCost ? formatPercent(totCostCache, totCostAll) : formatPercent(totCache, compTotal))
+      : "净新增不计";
+    var dispOut = isCost ? formatUsd(totCostOut) : formatCompactCn(totOut);
+    var dispOutPct = isCost ? formatPercent(totCostOut, totCostAll) : formatPercent(totOut, compTotal);
+
+    var compHtml =
+      '<div class="comp-split-grid">' +
+        '<div class="comp-chart-col">' +
+          '<div class="comp-legend">' +
+            '<div class="comp-item"><div class="comp-item-top"><span class="swatch" style="background:#38bdf8;"></span>新增输入</div><div class="comp-item-val tabular">' + dispIn + '</div><div class="comp-item-pct tabular">' + dispInPct + '</div></div>' +
+            '<div class="comp-item" style="' + (state.mode === "net" ? "opacity:0.45;" : "") + '"><div class="comp-item-top"><span class="swatch" style="background:#1e88e5;"></span>缓存命中</div><div class="comp-item-val tabular">' + dispCache + '</div><div class="comp-item-pct tabular">' + dispCachePct + '</div></div>' +
+            '<div class="comp-item"><div class="comp-item-top"><span class="swatch" style="background:#a78bfa;"></span>模型输出</div><div class="comp-item-val tabular">' + dispOut + '</div><div class="comp-item-pct tabular">' + dispOutPct + '</div></div>' +
+          '</div>' +
+          chartHtml +
+        '</div>' +
+        '<div class="comp-rank-panel">' +
+          '<div class="comp-rank-header"><strong>' + rankTitle + '</strong><span>区间占比</span></div>' +
+          rankRowsHtml +
+        '</div>' +
+      '</div>';
+
+    document.getElementById("compositionAndModels").innerHTML = compHtml;
+
+    var compOv = document.getElementById("compLine_ov");
+    var compSvg = document.getElementById("compLine_svg");
+    var compHl = document.getElementById("compLine_hl");
+    if (compOv && compSvg && compHl && slots.length > 0 && seriesOrder.length > 0) {
+      var W2 = 560, padL2 = 52, padR2 = 16, plotW2 = W2 - padL2 - padR2;
+      var xCoords2 = slots.map(function (sl, idx) {
+        return padL2 + (slots.length <= 1 ? plotW2 / 2 : (idx / (slots.length - 1)) * plotW2);
+      });
+      compOv.addEventListener("mousemove", function (e) {
+        var rect = compSvg.getBoundingClientRect();
+        var svgX = ((e.clientX - rect.left) / rect.width) * W2;
+        var ratio = Math.max(0, Math.min(1, (svgX - padL2) / plotW2));
+        var idx = Math.round(ratio * (slots.length - 1));
+        var sl = slots[idx];
+        if (!sl) return;
+        compHl.setAttribute("x1", xCoords2[idx]);
+        compHl.setAttribute("x2", xCoords2[idx]);
+        compHl.style.display = "block";
+
+        var html = '<div class="tt-title">' + escapeHtml(sl.title) + '</div>';
+        seriesOrder.forEach(function (sk) {
+          var sObj = seriesMap[sk];
+          var v = sObj.bySlot[sl.key] || 0;
+          html += '<div class="tt-line"><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + sObj.color + ';margin-right:5px;"></span>' + escapeHtml(sObj.label) + '</span><strong class="tabular">' + formatMetricDetail(v, state.metric) + '</strong></div>';
+        });
+        showTooltip(e, html);
+      });
+      compOv.addEventListener("mouseleave", function () {
+        compHl.style.display = "none";
+        hideTooltip();
+      });
+    }
+
+    // Daily table
+    var filterActions = document.getElementById("dailyFilterActions");
+    if (state.selectedDate) {
+      filterActions.innerHTML = '<span class="tag-pill">已选: ' + escapeHtml(state.selectedDate) + '</span><button type="button" class="btn-pill" id="clearDayFilterBtn">显示全部</button>';
+      document.getElementById("clearDayFilterBtn").addEventListener("click", function () {
+        state.selectedDate = null;
+        renderAll();
+      });
+    } else {
+      filterActions.innerHTML = "";
+    }
+
+    var sortedDates = Object.keys(byDate).sort().reverse();
+    if (state.selectedDate) {
+      sortedDates = sortedDates.filter(function (d) { return d === state.selectedDate; });
+    }
+
+    var tableEl = document.getElementById("dailyTableContainer");
+    if (sortedDates.length === 0) {
+      tableEl.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:12px 0;">暂无匹配日期记录</div>';
+      return;
+    }
+
+    var rowsHtml = sortedDates.map(function (d) {
+      var r = byDate[d];
+      var hl = (state.selectedDate === d) ? ' class="highlight-row"' : '';
+      if (isCost) {
+        return '<tr' + hl + '>' +
+          '<td class="tabular">' + escapeHtml(d) + '</td>' +
+          '<td class="num tabular"><strong class="cost-accent-text">' + formatUsd(r.cost) + '</strong></td>' +
+          '<td class="num tabular">' + formatCompactCn(r.total) + '</td>' +
+          '<td class="num tabular">' + formatUsd(r.cost_input) + '</td>' +
+          '<td class="num tabular">' + formatUsd(r.cost_cache) + '</td>' +
+          '<td class="num tabular">' + formatUsd(r.cost_output) + '</td>' +
+          '<td class="num tabular">' + formatInt(r.steps) + '</td>' +
+          '<td class="num tabular">' + formatPercent(r.cost, totCostAll) + '</td>' +
+        '</tr>';
+      }
+      return '<tr' + hl + '>' +
+        '<td class="tabular">' + escapeHtml(d) + '</td>' +
+        '<td class="num tabular"><strong>' + formatInt(r.total) + '</strong></td>' +
+        '<td class="num tabular cost-accent-text">' + formatUsd(r.cost) + '</td>' +
+        '<td class="num tabular">' + formatInt(r.input) + '</td>' +
+        '<td class="num tabular">' + formatInt(r.cache_read) + '</td>' +
+        '<td class="num tabular">' + formatInt(r.output) + '</td>' +
+        '<td class="num tabular">' + formatInt(r.steps) + '</td>' +
+        '<td class="num tabular">' + formatPercent(r.total, compTotal) + '</td>' +
+      '</tr>';
+    }).join("");
+
+    var headHtml = isCost
+      ? '<thead><tr><th>日期</th><th class="num">折合费用</th><th class="num">合计 Token</th><th class="num">输入费用</th><th class="num">缓存费用</th><th class="num">输出费用</th><th class="num">步数</th><th class="num">费用占比</th></tr></thead>'
+      : '<thead><tr><th>日期</th><th class="num">合计 Token</th><th class="num">折合费用</th><th class="num">新增输入</th><th class="num">缓存命中</th><th class="num">输出</th><th class="num">步数</th><th class="num">占比</th></tr></thead>';
+
+    tableEl.innerHTML = '<table class="data-table">' +
+      headHtml +
+      '<tbody>' + rowsHtml + '</tbody>' +
+    '</table>';
+  }
+
+  /* TAB 2: ANALYTICS */
+  function getWindowDateBounds(hourlyRecords, toolRecords, spanDays, pageOffset) {
+    var maxDate = getTodayLocalYmd();
+    hourlyRecords.forEach(function (r) { if (r.date && r.date > maxDate) maxDate = r.date; });
+    toolRecords.forEach(function (r) { if (r.date && r.date > maxDate) maxDate = r.date; });
+
+    var endYmd = addDaysYmd(maxDate, -(pageOffset * spanDays));
+    var startYmd = addDaysYmd(endYmd, -(spanDays - 1));
+    var dates = [];
+    for (var i = 0; i < spanDays; i++) {
+      dates.push(addDaysYmd(startYmd, i));
+    }
+    return { startYmd: startYmd, endYmd: endYmd, dates: dates, maxDate: maxDate };
+  }
+
+  function getGroupInfo(rec, groupBy) {
+    if (groupBy === "model") {
+      return { key: rec.model || "unknown", label: formatModelName(rec.model) };
+    }
+    if (groupBy === "source") {
+      var s = rec.source || "desktop";
+      return { key: s, label: SOURCE_LABELS[s] || s };
+    }
+    if (groupBy === "machine") {
+      var m = rec.machine || "本机";
+      return { key: m, label: m };
+    }
+    var sc = rec.scene || "chat";
+    return { key: sc, label: SCENE_LABELS[sc] || sc };
+  }
+
+  function renderUsageHistoryCard(data) {
+    var isCost = state.metric === "cost";
+    var span = state.historySpan;
+    var bounds = getWindowDateBounds(data.hourlyRecords, data.toolRecords, span, state.historyPageOffset);
+    var dates = bounds.dates;
+    var dateSet = {};
+    dates.forEach(function (d) { dateSet[d] = true; });
+
+    document.getElementById("historyRangeLabel").textContent =
+      formatYmdSlash(bounds.startYmd) + " – " + formatYmdSlash(bounds.endYmd);
+    document.getElementById("historyNextBtn").disabled = (state.historyPageOffset <= 0);
+
+    var groupTotals = {};
+    var groupLabels = {};
+    var dailyGroup = {};
+    dates.forEach(function (d) { dailyGroup[d] = {}; });
+
+    var windowTotal = 0;
+    data.hourlyRecords.forEach(function (r) {
+      if (!dateSet[r.date]) return;
+      var val = getRecordMetricValue(r, state.mode, state.metric, r.date);
+      if (val <= 0) return;
+      var gi = getGroupInfo(r, state.historyGroup);
+      groupLabels[gi.key] = gi.label;
+      groupTotals[gi.key] = (groupTotals[gi.key] || 0) + val;
+      dailyGroup[r.date][gi.key] = (dailyGroup[r.date][gi.key] || 0) + val;
+      windowTotal += val;
+    });
+
+    var sortedGroups = Object.keys(groupTotals).sort(function (a, b) {
+      return groupTotals[b] - groupTotals[a];
+    });
+    var groupColor = {};
+    sortedGroups.forEach(function (gk, idx) {
+      groupColor[gk] = PALETTE[idx % PALETTE.length];
+    });
+
+    var maxDay = 0;
+    dates.forEach(function (d) {
+      var sum = 0;
+      Object.keys(dailyGroup[d]).forEach(function (gk) { sum += dailyGroup[d][gk]; });
+      if (sum > maxDay) maxDay = sum;
+    });
+    var yMax = maxDay > 0 ? maxDay * 1.12 : 1;
+
+    var W = 900, H = 200, padL = 52, padR = 14, padT = 14, padB = 28;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+    var slotW = plotW / dates.length;
+    var barW = span === 7 ? Math.min(48, slotW * 0.44) : Math.max(8, slotW * 0.62);
+
+    var grid = "";
+    for (var g = 0; g <= 3; g++) {
+      var gv = (yMax / 3) * g;
+      var gy = padT + plotH - (gv / yMax) * plotH;
+      grid += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + gy.toFixed(1) + '" stroke="rgba(255,255,255,0.06)" />' +
+        '<text x="' + (padL - 8) + '" y="' + (gy + 4).toFixed(1) + '" text-anchor="end" fill="#6b7280" font-size="10">' + formatMetricAxis(gv, state.metric) + '</text>';
+    }
+
+    var bars = "";
+    var defs = "";
+    var xLabels = "";
+    var labelStep = span === 7 ? 1 : 5;
+    dates.forEach(function (d, idx) {
+      var cx = padL + idx * slotW + slotW / 2;
+      var bx = cx - barW / 2;
+      var daySum = 0;
+      sortedGroups.forEach(function (gk) { daySum += (dailyGroup[d][gk] || 0); });
+      if (daySum > 0) {
+        var totalBarH = Math.max(4, (daySum / yMax) * plotH);
+        var topY = padT + plotH - totalBarH;
+        var botY = padT + plotH;
+        var r = Math.min(6, barW / 2, totalBarH / 2);
+        var clipId = "histClip_" + idx;
+        var pathD =
+          "M" + bx.toFixed(1) + "," + botY.toFixed(1) +
+          " L" + bx.toFixed(1) + "," + (topY + r).toFixed(1) +
+          " Q" + bx.toFixed(1) + "," + topY.toFixed(1) + " " + (bx + r).toFixed(1) + "," + topY.toFixed(1) +
+          " L" + (bx + barW - r).toFixed(1) + "," + topY.toFixed(1) +
+          " Q" + (bx + barW).toFixed(1) + "," + topY.toFixed(1) + " " + (bx + barW).toFixed(1) + "," + (topY + r).toFixed(1) +
+          " L" + (bx + barW).toFixed(1) + "," + botY.toFixed(1) + " Z";
+        defs += '<clipPath id="' + clipId + '"><path d="' + pathD + '" /></clipPath>';
+
+        var segRects = "";
+        var cumY = botY;
+        var activeGroups = sortedGroups.slice().reverse().filter(function (gk) { return (dailyGroup[d][gk] || 0) > 0; });
+        activeGroups.forEach(function (gk, sIdx) {
+          var val = dailyGroup[d][gk];
+          var segH = (sIdx === activeGroups.length - 1) ? (cumY - topY) : Math.max(1, (val / daySum) * totalBarH);
+          cumY -= segH;
+          segRects += '<rect x="' + bx.toFixed(1) + '" y="' + cumY.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + (segH + 0.5).toFixed(1) + '" fill="' + groupColor[gk] + '" />';
+        });
+        bars += '<g clip-path="url(#' + clipId + ')">' + segRects + '</g>';
+      }
+
+      bars += '<rect class="hist-day-hit" data-date="' + d + '" x="' + (padL + idx * slotW).toFixed(1) + '" y="' + padT + '" width="' + slotW.toFixed(1) + '" height="' + plotH + '" fill="transparent" style="cursor:pointer;" />';
+
+      if (idx === 0 || idx === dates.length - 1 || idx % labelStep === 0) {
+        xLabels += '<text x="' + cx.toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" fill="#6b7280" font-size="10">' + formatYmdMD(d) + '</text>';
+      }
+    });
+
+    var chartEl = document.getElementById("historyBarChart");
+    chartEl.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '"><defs>' + defs + '</defs>' + grid + bars + xLabels + '</svg>';
+    chartEl.querySelectorAll(".hist-day-hit").forEach(function (el) {
+      var d = el.getAttribute("data-date");
+      el.addEventListener("mouseenter", function (e) {
+        var segs = dailyGroup[d] || {};
+        var daySum = 0;
+        Object.keys(segs).forEach(function (k) { daySum += segs[k]; });
+        var html = '<div class="tt-title">' + escapeHtml(d) + ' (' + formatYmdMD(d) + ')</div>' +
+          '<div class="tt-line"><span>' + (isCost ? "当日费用合计" : "当日合计") + '</span><strong class="tabular">' + formatMetricDetail(daySum, state.metric) + '</strong></div>';
+        sortedGroups.forEach(function (gk) {
+          if (segs[gk] > 0) {
+            html += '<div class="tt-line"><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + groupColor[gk] + ';margin-right:5px;"></span>' + escapeHtml(groupLabels[gk]) + '</span><span class="tabular">' + formatMetricCompact(segs[gk], state.metric) + '</span></div>';
+          }
+        });
+        showTooltip(e, html);
+      });
+      el.addEventListener("mouseleave", hideTooltip);
+    });
+
+    var legendEl = document.getElementById("historyLegend");
+    if (sortedGroups.length === 0) {
+      legendEl.innerHTML = '<span style="color:var(--text-muted);font-size:12px;">当前时间窗口暂无记录，点击 &lt; 查看更早日期。</span>';
+    } else {
+      legendEl.innerHTML = sortedGroups.map(function (gk) {
+        var v = groupTotals[gk];
+        var subText = isCost ? formatUsd(v) : (formatCompactCn(v) + " Token");
+        return '<div class="codex-legend-item">' +
+          '<div class="codex-legend-bar" style="background:' + groupColor[gk] + ';"></div>' +
+          '<div class="codex-legend-text">' +
+            '<div class="cl-name">' + escapeHtml(groupLabels[gk]) + '</div>' +
+            '<div class="cl-val tabular">' + formatPercent(v, windowTotal) + '</div>' +
+            '<div class="cl-sub tabular">' + subText + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join("");
+    }
+  }
+
+  function renderChatRankingCard(data) {
+    var isCost = state.metric === "cost";
+    var totalTokensAll = 0;
+    var totalCostAll = 0;
+    var ranked = data.conversations.map(function (c) {
+      var val = getTokenValue(c, state.mode);
+      var costObj = computeConversationCost(c, state.mode);
+      totalTokensAll += val;
+      totalCostAll += costObj.total;
+      return Object.assign({ _val: val, _cost: costObj.total, _costObj: costObj }, c);
+    }).sort(function (a, b) {
+      return isCost ? (b._cost - a._cost) : (b._val - a._val);
+    });
+
+    var container = document.getElementById("chatRankingContainer");
+    if (ranked.length === 0) {
+      container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">暂无归档会话</div>';
+      return;
+    }
+
+    var visible = ranked.slice(0, state.chatLimit);
+    var rowsHtml = visible.map(function (c) {
+      var key = c.machine + ":" + c.source + ":" + c.conv_id;
+      var isOpen = !!state.expandedConvs[key];
+      var sceneLabel = SCENE_LABELS[c.scene] || c.scene;
+      var cacheRate = (Number(c.input) + Number(c.cache_read)) > 0
+        ? formatPercent(c.cache_read, Number(c.input) + Number(c.cache_read))
+        : "0%";
+      var sharePct = isCost ? formatPercent(c._cost, totalCostAll) : formatPercent(c._val, totalTokensAll);
+
+      var costCell = isCost
+        ? '<td class="num tabular"><strong class="cost-accent-text">' + formatUsd(c._cost) + '</strong></td>'
+        : '<td class="num tabular cost-accent-text">' + formatUsd(c._cost) + '</td>';
+      var tokCell = isCost
+        ? '<td class="num tabular">' + formatCompactCn(c._val) + '</td>'
+        : '<td class="num tabular"><strong>' + formatCompactCn(c._val) + '</strong></td>';
+
+      var html = '<tr class="clickable-row" data-convkey="' + escapeHtml(key) + '">' +
+        '<td><div class="title-cell-inner"><span class="expand-arrow' + (isOpen ? " open" : "") + '">&gt;</span><span class="title-text" title="' + escapeHtml(c.title) + '">' + escapeHtml(c.title) + '</span><span class="tag-pill">' + escapeHtml(sceneLabel) + '</span></div></td>' +
+        costCell +
+        tokCell +
+        '<td class="num tabular">' + sharePct + '</td>' +
+        '<td class="num tabular">' + formatInt(c.steps) + '</td>' +
+        '<td class="num tabular">' + formatInt(c.tool_count) + '</td>' +
+      '</tr>';
+
+      if (isOpen) {
+        var convDate = (c.first_at || c.last_at || "").slice(0, 10);
+        var modelParts = (c.models || []).slice().sort(function (a, b) {
+          return isCost
+            ? (computeRecordCost(b, state.mode, convDate).total - computeRecordCost(a, state.mode, convDate).total)
+            : (getTokenValue(b, state.mode) - getTokenValue(a, state.mode));
+        }).map(function (m) {
+          var mc = computeRecordCost(m, state.mode, convDate).total;
+          return escapeHtml(formatModelName(m.model)) + ": " + formatUsd(mc) + " (" + formatCompactCn(getTokenValue(m, state.mode)) + ")";
+        }).join(" / ");
+
+        html += '<tr class="detail-drawer"><td colspan="6">' +
+          '<div class="detail-grid">' +
+            '<div class="detail-kv detail-span-2"><div class="dk">首条提问</div><div class="dv">' + escapeHtml(c.first_prompt || "无记录") + '</div></div>' +
+            '<div class="detail-kv"><div class="dk">设备与模式</div><div class="dv">' + escapeHtml(c.machine) + ' · ' + escapeHtml(sceneLabel) + (c.plan_execute ? ' · 使用过 Plan 模式' : '') + '</div></div>' +
+            '<div class="detail-kv"><div class="dk">最长单轮用时</div><div class="dv tabular">' + formatDurationCn(c.max_turn_sec) + ' (' + (c.turns || 0) + ' 轮对话)</div></div>' +
+            '<div class="detail-kv"><div class="dk">Token 明细 (含缓存命中率 ' + cacheRate + ')</div><div class="dv tabular">新增 ' + formatInt(c.input) + ' / 缓存 ' + formatInt(c.cache_read) + ' / 输出 ' + formatInt(c.output) + '</div></div>' +
+            '<div class="detail-kv"><div class="dk">API 费用明细</div><div class="dv tabular">合计 <strong class="cost-accent-text">' + formatUsd(c._cost) + '</strong> · 新增 ' + formatUsd(c._costObj.input) + ' / 缓存 ' + formatUsd(c._costObj.cache_read) + ' / 输出 ' + formatUsd(c._costObj.output) + (state.mode === "full" ? (' · 缓存省 <span class="cost-saved-text">' + formatUsd(c._costObj.cacheSaved) + '</span>') : '') + '</div></div>' +
+            '<div class="detail-kv detail-span-2"><div class="dk">模型分布</div><div class="dv tabular">' + (modelParts || "暂无") + '</div></div>' +
+          '</div>' +
+        '</td></tr>';
+      }
+      return html;
+    }).join("");
+
+    var toggleBtnHtml = ranked.length > 5
+      ? '<button type="button" class="show-more-btn" id="toggleChatLimitBtn">' + (state.chatLimit < ranked.length ? ("显示更多 (共 " + ranked.length + " 条)") : "收起") + '</button>'
+      : "";
+
+    container.innerHTML = '<div class="table-scroll" style="max-height:none;"><table class="data-table">' +
+      '<thead><tr><th>聊天</th><th class="num">折合费用</th><th class="num">Token 用量</th><th class="num">' + (isCost ? "占总费用 %" : "占总用量 %") + '</th><th class="num">模型步数</th><th class="num">工具调用</th></tr></thead>' +
+      '<tbody>' + rowsHtml + '</tbody>' +
+    '</table></div>' + toggleBtnHtml;
+
+    container.querySelectorAll("tr[data-convkey]").forEach(function (tr) {
+      tr.addEventListener("click", function () {
+        var k = tr.getAttribute("data-convkey");
+        state.expandedConvs[k] = !state.expandedConvs[k];
+        renderChatRankingCard(data);
+      });
+    });
+
+    var btn = document.getElementById("toggleChatLimitBtn");
+    if (btn) {
+      btn.addEventListener("click", function () {
+        state.chatLimit = state.chatLimit < ranked.length ? ranked.length : 5;
+        renderChatRankingCard(data);
+      });
+    }
+  }
+
+  function formatHourWindowLabel(startMs) {
+    var s = new Date(startMs);
+    var e = new Date(startMs + 5 * 3600000);
+    return pad2(s.getUTCMonth() + 1) + "/" + pad2(s.getUTCDate()) + " " +
+      pad2(s.getUTCHours()) + ":00-" + pad2(e.getUTCHours()) + ":00";
+  }
+
+  function renderWindowHistoryCard(data) {
+    var totalTokensAll = 0;
+    var totalCostAll = 0;
+    var items = [];
+    data.hourlyRecords.forEach(function (r) {
+      var val = getTokenValue(r, state.mode);
+      if (val <= 0 || !r.date) return;
+      var costVal = computeRecordCost(r, state.mode, r.date).total;
+      totalTokensAll += val;
+      totalCostAll += costVal;
+      var p = parseDateYMD(r.date);
+      if (!p) return;
+      var h = (r.hour !== undefined && r.hour !== null) ? Number(r.hour) : 12;
+      var epochMs = Date.UTC(p.y, p.m - 1, p.d, h, 0, 0);
+      var gi = getGroupInfo(r, state.windowGroup);
+      items.push({ epochMs: epochMs, date: r.date, val: val, cost: costVal, gKey: gi.key, gLabel: gi.label });
+    });
+
+    items.sort(function (a, b) { return a.epochMs - b.epochMs; });
+
+    // 5-hour rolling windows
+    var windows5h = [];
+    var curWin = null;
+    items.forEach(function (it) {
+      if (!curWin || it.epochMs >= curWin.startMs + 5 * 3600000) {
+        curWin = {
+          id: "w5_" + it.epochMs,
+          startMs: it.epochMs,
+          label: formatHourWindowLabel(it.epochMs),
+          total: 0,
+          cost: 0,
+          groups: {}
+        };
+        windows5h.push(curWin);
+      }
+      curWin.total += it.val;
+      curWin.cost += it.cost;
+      if (!curWin.groups[it.gKey]) curWin.groups[it.gKey] = { label: it.gLabel, val: 0, cost: 0 };
+      curWin.groups[it.gKey].val += it.val;
+      curWin.groups[it.gKey].cost += it.cost;
+    });
+    windows5h.reverse();
+    if (!state.expanded5hInitialized && windows5h.length > 0) {
+      state.expanded5h[windows5h[0].id] = true;
+      state.expanded5hInitialized = true;
+    }
+
+    renderExpandableWindowTable(
+      document.getElementById("fiveHourContainer"),
+      windows5h,
+      totalTokensAll,
+      totalCostAll,
+      state.fiveHourLimit,
+      state.expanded5h,
+      "fiveHourBtn",
+      function (newLim) { state.fiveHourLimit = newLim; renderWindowHistoryCard(data); },
+      function () { renderWindowHistoryCard(data); }
+    );
+
+    // ISO Weekly windows (Monday-Sunday)
+    var weekMap = {};
+    items.forEach(function (it) {
+      var dow = (new Date(ymdToUtcMs(it.date)).getUTCDay() + 6) % 7;
+      var mon = addDaysYmd(it.date, -dow);
+      var sun = addDaysYmd(mon, 6);
+      if (!weekMap[mon]) {
+        weekMap[mon] = {
+          id: "wk_" + mon,
+          startYmd: mon,
+          label: formatYmdMDSlash(mon) + " - " + formatYmdMDSlash(sun),
+          total: 0,
+          cost: 0,
+          groups: {}
+        };
+      }
+      weekMap[mon].total += it.val;
+      weekMap[mon].cost += it.cost;
+      if (!weekMap[mon].groups[it.gKey]) weekMap[mon].groups[it.gKey] = { label: it.gLabel, val: 0, cost: 0 };
+      weekMap[mon].groups[it.gKey].val += it.val;
+      weekMap[mon].groups[it.gKey].cost += it.cost;
+    });
+    var weeks = Object.keys(weekMap).sort().reverse().map(function (k) { return weekMap[k]; });
+    if (!state.expandedWeeksInitialized && weeks.length > 0) {
+      state.expandedWeeks[weeks[0].id] = true;
+      state.expandedWeeksInitialized = true;
+    }
+
+    renderExpandableWindowTable(
+      document.getElementById("weeklyWindowContainer"),
+      weeks,
+      totalTokensAll,
+      totalCostAll,
+      state.weeklyWindowLimit,
+      state.expandedWeeks,
+      "weeklyWinBtn",
+      function (newLim) { state.weeklyWindowLimit = newLim; renderWindowHistoryCard(data); },
+      function () { renderWindowHistoryCard(data); }
+    );
+  }
+
+  function renderExpandableWindowTable(container, rows, totalTokensAll, totalCostAll, limit, expandedMap, btnId, onLimitChange, onToggleRow) {
+    if (rows.length === 0) {
+      container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">暂无时段数据</div>';
+      return;
+    }
+    var isCost = state.metric === "cost";
+    var visible = rows.slice(0, limit);
+    var htmlRows = visible.map(function (w) {
+      var isOpen = !!expandedMap[w.id];
+      var share = isCost ? formatPercent(w.cost, totalCostAll) : formatPercent(w.total, totalTokensAll);
+      var primaryCol = isCost
+        ? '<td class="num tabular"><strong class="cost-accent-text">' + formatUsd(w.cost) + '</strong></td>'
+        : '<td class="num tabular"><strong>' + formatCompactCn(w.total) + '</strong></td>';
+      var secondaryCol = isCost
+        ? '<td class="num tabular">' + formatCompactCn(w.total) + '</td>'
+        : '<td class="num tabular cost-accent-text">' + formatUsd(w.cost) + '</td>';
+
+      var sHtml = '<tr class="clickable-row" data-winid="' + escapeHtml(w.id) + '">' +
+        '<td><span class="expand-arrow' + (isOpen ? " open" : "") + '">&gt;</span><span class="tabular">' + escapeHtml(w.label) + '</span></td>' +
+        primaryCol +
+        secondaryCol +
+        '<td class="num tabular">' + share + '</td>' +
+      '</tr>';
+
+      if (isOpen) {
+        var subItems = Object.keys(w.groups).map(function (gk) { return w.groups[gk]; })
+          .sort(function (a, b) { return isCost ? (b.cost - a.cost) : (b.val - a.val); });
+        subItems.forEach(function (si) {
+          var subPrimary = isCost ? formatUsd(si.cost) : formatCompactCn(si.val);
+          var subSecondary = isCost ? formatCompactCn(si.val) : formatUsd(si.cost);
+          var subShare = isCost ? formatPercent(si.cost, w.cost) : formatPercent(si.val, w.total);
+          sHtml += '<tr class="sub-breakdown-row">' +
+            '<td>' + escapeHtml(si.label) + '</td>' +
+            '<td class="num tabular">' + subPrimary + '</td>' +
+            '<td class="num tabular">' + subSecondary + '</td>' +
+            '<td class="num tabular">' + subShare + '</td>' +
+          '</tr>';
+        });
+      }
+      return sHtml;
+    }).join("");
+
+    var btnHtml = rows.length > 5
+      ? '<button type="button" class="show-more-btn" id="' + btnId + '">' + (limit < rows.length ? ("显示更多 (共 " + rows.length + " 条)") : "收起") + '</button>'
+      : "";
+
+    var headHtml = isCost
+      ? '<thead><tr><th>周期</th><th class="num">折合费用</th><th class="num">Token 消耗</th><th class="num">占总费用 %</th></tr></thead>'
+      : '<thead><tr><th>周期</th><th class="num">Token 消耗</th><th class="num">折合费用</th><th class="num">占总用量 %</th></tr></thead>';
+
+    container.innerHTML = '<table class="data-table">' +
+      headHtml +
+      '<tbody>' + htmlRows + '</tbody>' +
+    '</table>' + btnHtml;
+
+    container.querySelectorAll("tr[data-winid]").forEach(function (tr) {
+      tr.addEventListener("click", function () {
+        var id = tr.getAttribute("data-winid");
+        expandedMap[id] = !expandedMap[id];
+        onToggleRow();
+      });
+    });
+
+    var btn = document.getElementById(btnId);
+    if (btn) {
+      btn.addEventListener("click", function () {
+        onLimitChange(limit < rows.length ? rows.length : 5);
+      });
+    }
+  }
+
+  function computeNiceAxis(maxVal, steps) {
+    var segs = steps || 3;
+    if (!maxVal || maxVal <= 0) {
+      return { yTop: segs, step: 1 };
+    }
+    var rawStep = (maxVal * 1.1) / segs;
+    if (rawStep < 1) {
+      return { yTop: segs, step: 1 };
+    }
+    var mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
+    var norm = rawStep / mag;
+    var mults = mag >= 10 ? [1, 1.5, 2, 2.5, 3, 4, 5, 10] : [1, 2, 3, 4, 5, 10];
+    var chosen = mults[mults.length - 1];
+    for (var i = 0; i < mults.length; i++) {
+      if (mults[i] >= norm - 1e-9) {
+        chosen = mults[i];
+        break;
+      }
+    }
+    var step = Math.round(chosen * mag);
+    if (step < 1) step = 1;
+    return { yTop: step * segs, step: step };
+  }
+
+  function renderMultiLineChart(containerEl, legendEl, totalEl, dates, seriesMap, seriesOrder, unitLabel) {
+    var totalSum = 0;
+    seriesOrder.forEach(function (sk) {
+      dates.forEach(function (d) {
+        totalSum += (seriesMap[sk].byDate[d] || 0);
+      });
+    });
+    totalEl.textContent = formatInt(totalSum);
+
+    var maxY = 0;
+    seriesOrder.forEach(function (sk) {
+      dates.forEach(function (d) {
+        var v = seriesMap[sk].byDate[d] || 0;
+        if (v > maxY) maxY = v;
+      });
+    });
+    var axis = computeNiceAxis(maxY, 3);
+    var yTop = axis.yTop;
+
+    var W = 900, H = 185, padL = 44, padR = 16, padT = 14, padB = 26;
+    var plotW = W - padL - padR, plotH = H - padT - padB;
+
+    var grid = "";
+    for (var g = 0; g <= 3; g++) {
+      var gv = axis.step * g;
+      var gy = padT + plotH - (gv / yTop) * plotH;
+      grid += '<line x1="' + padL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + gy.toFixed(1) + '" stroke="rgba(255,255,255,0.06)" />' +
+        '<text x="' + (padL - 8) + '" y="' + (gy + 4).toFixed(1) + '" text-anchor="end" fill="#6b7280" font-size="10">' + formatInt(gv) + '</text>';
+    }
+
+    var xCoords = dates.map(function (d, idx) {
+      return padL + (dates.length <= 1 ? plotW / 2 : (idx / (dates.length - 1)) * plotW);
+    });
+
+    var linesHtml = "";
+    seriesOrder.forEach(function (sk, idx) {
+      var color = PALETTE[idx % PALETTE.length];
+      var pts = dates.map(function (d, di) {
+        var v = seriesMap[sk].byDate[d] || 0;
+        var x = xCoords[di];
+        var y = padT + plotH - (v / yTop) * plotH;
+        return { x: x, y: y, v: v };
+      });
+      var poly = pts.map(function (p) { return p.x.toFixed(1) + "," + p.y.toFixed(1); }).join(" ");
+      linesHtml += '<polyline fill="none" stroke="' + color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="' + poly + '" />';
+    });
+
+    var xLabels = "";
+    var labelStep = dates.length <= 7 ? 1 : 5;
+    dates.forEach(function (d, idx) {
+      if (idx === 0 || idx === dates.length - 1 || idx % labelStep === 0) {
+        xLabels += '<text x="' + xCoords[idx].toFixed(1) + '" y="' + (H - 6) + '" text-anchor="middle" fill="#6b7280" font-size="10">' + formatYmdMD(d) + '</text>';
+      }
+    });
+
+    var uid = containerEl.id;
+    containerEl.innerHTML = '<svg id="' + uid + '_svg" viewBox="0 0 ' + W + ' ' + H + '">' +
+      grid + linesHtml + xLabels +
+      '<line id="' + uid + '_hl" x1="0" y1="' + padT + '" x2="0" y2="' + (padT + plotH) + '" stroke="rgba(255,255,255,0.28)" stroke-dasharray="3,3" style="display:none;" />' +
+      '<g id="' + uid + '_hdots"></g>' +
+      '<rect id="' + uid + '_ov" x="' + padL + '" y="' + padT + '" width="' + plotW + '" height="' + plotH + '" fill="transparent" style="cursor:crosshair;" />' +
+    '</svg>';
+
+    var svgEl = document.getElementById(uid + "_svg");
+    var ovEl = document.getElementById(uid + "_ov");
+    var hlEl = document.getElementById(uid + "_hl");
+    var hdotsEl = document.getElementById(uid + "_hdots");
+
+    ovEl.addEventListener("mousemove", function (e) {
+      var rect = svgEl.getBoundingClientRect();
+      var svgX = ((e.clientX - rect.left) / rect.width) * W;
+      var ratio = Math.max(0, Math.min(1, (svgX - padL) / plotW));
+      var idx = Math.round(ratio * (dates.length - 1));
+      var d = dates[idx];
+      if (!d) return;
+      hlEl.setAttribute("x1", xCoords[idx]);
+      hlEl.setAttribute("x2", xCoords[idx]);
+      hlEl.style.display = "block";
+
+      var dotsFocus = "";
+      var html = '<div class="tt-title">' + escapeHtml(d) + ' (' + formatYmdMD(d) + ')</div>';
+      seriesOrder.forEach(function (sk, si) {
+        var val = seriesMap[sk].byDate[d] || 0;
+        var color = PALETTE[si % PALETTE.length];
+        if (val > 0) {
+          var cy = padT + plotH - (val / yTop) * plotH;
+          dotsFocus += '<circle cx="' + xCoords[idx].toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="4" fill="' + color + '" stroke="#121212" stroke-width="1.5" />';
+        }
+        html += '<div class="tt-line"><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + color + ';margin-right:5px;"></span>' + escapeHtml(seriesMap[sk].label) + '</span><strong class="tabular">' + formatInt(val) + ' ' + unitLabel + '</strong></div>';
+      });
+      hdotsEl.innerHTML = dotsFocus;
+      showTooltip(e, html);
+    });
+    ovEl.addEventListener("mouseleave", function () {
+      hlEl.style.display = "none";
+      hdotsEl.innerHTML = "";
+      hideTooltip();
+    });
+
+    if (seriesOrder.length === 0) {
+      legendEl.innerHTML = '<span style="color:var(--text-muted);font-size:12px;">当前窗口暂无活动记录</span>';
+    } else {
+      legendEl.innerHTML = seriesOrder.map(function (sk, idx) {
+        var sum = dates.reduce(function (acc, d) { return acc + (seriesMap[sk].byDate[d] || 0); }, 0);
+        return '<span class="dot-legend-item"><span class="dot-legend-circle" style="background:' + PALETTE[idx % PALETTE.length] + ';"></span>' +
+          escapeHtml(seriesMap[sk].label) + ' <span class="tabular" style="color:var(--text-muted);">(' + formatInt(sum) + ')</span></span>';
+      }).join("");
+    }
+  }
+
+  function renderToolActivityCard(data) {
+    var bounds = getWindowDateBounds(data.hourlyRecords, data.toolRecords, state.toolSpan, 0);
+    var dates = bounds.dates;
+    var dateSet = {};
+    dates.forEach(function (d) { dateSet[d] = true; });
+
+    var seriesMap = {};
+    var totals = {};
+    data.toolRecords.forEach(function (r) {
+      if (!dateSet[r.date]) return;
+      var cnt = Number(r.count) || 0;
+      if (cnt <= 0) return;
+      var key = state.toolMode === "category" ? categorizeTool(r.tool) : r.tool;
+      var label = state.toolMode === "category" ? key : (TOOL_DISPLAY[r.tool] ? (TOOL_DISPLAY[r.tool] + " (" + r.tool + ")") : r.tool);
+      if (!seriesMap[key]) seriesMap[key] = { label: label, byDate: {} };
+      seriesMap[key].byDate[r.date] = (seriesMap[key].byDate[r.date] || 0) + cnt;
+      totals[key] = (totals[key] || 0) + cnt;
+    });
+
+    var order = Object.keys(totals).sort(function (a, b) { return totals[b] - totals[a]; }).slice(0, 6);
+    renderMultiLineChart(
+      document.getElementById("toolLineChart"),
+      document.getElementById("toolLegend"),
+      document.getElementById("toolTotalCount"),
+      dates,
+      seriesMap,
+      order,
+      "次"
+    );
+  }
+
+  function renderMessagesCard(data) {
+    var bounds = getWindowDateBounds(data.hourlyRecords, data.toolRecords, state.msgSpan, 0);
+    var dates = bounds.dates;
+    var dateSet = {};
+    dates.forEach(function (d) { dateSet[d] = true; });
+
+    var seriesMap = {};
+    var totals = {};
+    data.hourlyRecords.forEach(function (r) {
+      if (!dateSet[r.date]) return;
+      var steps = Number(r.steps) || 0;
+      if (steps <= 0) return;
+      var gi = getGroupInfo(r, state.msgMode);
+      if (!seriesMap[gi.key]) seriesMap[gi.key] = { label: gi.label, byDate: {} };
+      seriesMap[gi.key].byDate[r.date] = (seriesMap[gi.key].byDate[r.date] || 0) + steps;
+      totals[gi.key] = (totals[gi.key] || 0) + steps;
+    });
+
+    var order = Object.keys(totals).sort(function (a, b) { return totals[b] - totals[a]; }).slice(0, 6);
+    renderMultiLineChart(
+      document.getElementById("msgLineChart"),
+      document.getElementById("msgLegend"),
+      document.getElementById("msgTotalCount"),
+      dates,
+      seriesMap,
+      order,
+      "条"
+    );
+  }
+
+  function renderAll() {
+    var hasBase = window.AGY_USAGE_DATA && Array.isArray(window.AGY_USAGE_DATA.machines);
+    var allMachines = getMergedMachines();
+    var missingBox = document.getElementById("missingDataBox");
+    if (!hasBase && allMachines.length === 0) {
+      if (window.__AGY_MCP_MODE__) {
+        missingBox.innerHTML = '<h2>正在加载 Token 统计数据...</h2><p>首次打开正在扫描本地 Antigravity 日志，请稍候。</p>';
+      }
+      missingBox.style.display = "block";
+      document.getElementById("dashboardMain").style.display = "none";
+      return;
+    }
+
+    missingBox.style.display = "none";
+    document.getElementById("dashboardMain").style.display = "block";
+
+    var data = getFilteredData();
+    var byDate = aggregateDaily(data.hourlyRecords, state.mode);
+
+    renderHeaderAndMeta(data);
+
+    if (state.tab === "overview") {
+      renderKpis(data, byDate);
+      renderCostHeroCard(data, byDate);
+      renderOverviewActivity(byDate);
+      renderPopularAndInsights(data);
+      renderCompositionAndDailyTable(data, byDate);
+    } else {
+      renderUsageHistoryCard(data);
+      renderChatRankingCard(data);
+      renderWindowHistoryCard(data);
+      renderToolActivityCard(data);
+      renderMessagesCard(data);
+    }
+
+    syncAllCustomSelects();
+  }
+
+  var customSelectRegistry = [];
+
+  function closeAllCustomSelects(exceptWrap) {
+    customSelectRegistry.forEach(function (item) {
+      if (item.wrap !== exceptWrap) {
+        item.wrap.classList.remove("open");
+        item.trigger.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  function syncCustomSelect(item) {
+    var sel = item.select;
+    var curVal = sel.value;
+    var activeLabel = "";
+    var optsHtml = "";
+    Array.prototype.slice.call(sel.options || []).forEach(function (opt) {
+      var selected = opt.value === curVal;
+      if (selected) activeLabel = opt.textContent;
+      optsHtml += '<button type="button" class="codex-dd-option' + (selected ? " selected" : "") + '" role="option" aria-selected="' + (selected ? "true" : "false") + '" data-value="' + escapeHtml(opt.value) + '">' +
+        '<span>' + escapeHtml(opt.textContent) + '</span>' +
+        '<svg class="codex-dd-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3.5 8.5 6.5 11.5 12.5 4.5"></polyline></svg>' +
+      '</button>';
+    });
+    if (!activeLabel && sel.options && sel.options.length > 0) {
+      activeLabel = sel.options[0].textContent;
+    }
+    item.labelEl.textContent = activeLabel || "-";
+    item.menu.innerHTML = optsHtml;
+  }
+
+  function syncAllCustomSelects() {
+    customSelectRegistry.forEach(syncCustomSelect);
+  }
+
+  function initCustomSelects() {
+    var selects = document.querySelectorAll("select.select-pill");
+    selects.forEach(function (sel) {
+      if (sel.getAttribute("data-codex-dd") === "1") return;
+      sel.setAttribute("data-codex-dd", "1");
+
+      var wrap = document.createElement("div");
+      wrap.className = "codex-dropdown";
+      if (sel.parentNode) {
+        sel.parentNode.insertBefore(wrap, sel);
+      }
+      wrap.appendChild(sel);
+      sel.classList.add("native-select-hidden");
+
+      var trigger = document.createElement("button");
+      trigger.type = "button";
+      trigger.className = "codex-dd-trigger";
+      trigger.setAttribute("aria-haspopup", "listbox");
+      trigger.setAttribute("aria-expanded", "false");
+      if (sel.getAttribute("aria-label")) {
+        trigger.setAttribute("aria-label", sel.getAttribute("aria-label"));
+      }
+      trigger.innerHTML =
+        '<span class="codex-dd-label">-</span>' +
+        '<svg class="codex-dd-chevron" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 8 10 12 6"></polyline></svg>';
+
+      var menu = document.createElement("div");
+      menu.className = "codex-dd-menu";
+      menu.setAttribute("role", "listbox");
+
+      wrap.appendChild(trigger);
+      wrap.appendChild(menu);
+
+      var item = {
+        select: sel,
+        wrap: wrap,
+        trigger: trigger,
+        labelEl: trigger.querySelector(".codex-dd-label"),
+        menu: menu
+      };
+      customSelectRegistry.push(item);
+
+      trigger.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var willOpen = !wrap.classList.contains("open");
+        closeAllCustomSelects(willOpen ? wrap : null);
+        if (willOpen) {
+          syncCustomSelect(item);
+          wrap.classList.add("open");
+          trigger.setAttribute("aria-expanded", "true");
+          var rect = trigger.getBoundingClientRect();
+          wrap.classList.toggle("align-left", rect.left < 200);
+        } else {
+          wrap.classList.remove("open");
+          trigger.setAttribute("aria-expanded", "false");
+        }
+      });
+
+      menu.addEventListener("click", function (e) {
+        var optBtn = e.target.closest(".codex-dd-option");
+        if (!optBtn) return;
+        var nextVal = optBtn.getAttribute("data-value");
+        wrap.classList.remove("open");
+        trigger.setAttribute("aria-expanded", "false");
+        if (sel.value !== nextVal) {
+          sel.value = nextVal;
+          sel.dispatchEvent(new Event("change", { bubbles: true }));
+        } else {
+          syncCustomSelect(item);
+        }
+      });
+    });
+
+    if (typeof document !== "undefined" && !initCustomSelects._boundGlobal) {
+      initCustomSelects._boundGlobal = true;
+      document.addEventListener("click", function (e) {
+        if (!e.target || !e.target.closest(".codex-dropdown")) {
+          closeAllCustomSelects(null);
+        }
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+          closeAllCustomSelects(null);
+        }
+      });
+    }
+  }
+
+  function bindSegmented(containerId, attr, onChange) {
+    var box = document.getElementById(containerId);
+    if (!box) return;
+    box.querySelectorAll("button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        box.querySelectorAll("button").forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        onChange(btn.getAttribute(attr));
+      });
+    });
+  }
+
+  function setActiveTab(tabName, updateHash) {
+    var nextTab = tabName === "analytics" ? "analytics" : "overview";
+    state.tab = nextTab;
+    document.getElementById("mainTabGroup").querySelectorAll("button").forEach(function (b) {
+      b.classList.toggle("active", b.getAttribute("data-tab") === nextTab);
+    });
+    document.querySelectorAll(".tab-panel").forEach(function (p) {
+      p.classList.toggle("active", p.id === "tab-" + nextTab);
+    });
+    if (updateHash && typeof window.location !== "undefined") {
+      try {
+        if (window.location.hash !== "#" + nextTab) {
+          window.location.hash = "#" + nextTab;
+        }
+      } catch (e) {}
+    }
+  }
+
+  function syncTabFromHash() {
+    if (typeof window.location === "undefined") return;
+    var h = String(window.location.hash || "").replace(/^#/, "");
+    if (h === "analytics" || h === "overview") {
+      setActiveTab(h, false);
+    }
+  }
+
+  function initEvents() {
+    initCustomSelects();
+    syncTabFromHash();
+
+    document.getElementById("mainTabGroup").querySelectorAll("button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        setActiveTab(btn.getAttribute("data-tab"), true);
+        renderAll();
+      });
+    });
+
+    if (typeof window.addEventListener === "function") {
+      window.addEventListener("hashchange", function () {
+        syncTabFromHash();
+        renderAll();
+      });
+    }
+
+    function setMetric(m) {
+      state.metric = m === "cost" ? "cost" : "tokens";
+      var box = document.getElementById("metricToggle");
+      if (box) {
+        box.querySelectorAll("button").forEach(function (b) {
+          b.classList.toggle("active", b.getAttribute("data-metric") === state.metric);
+        });
+      }
+      renderAll();
+    }
+
+    bindSegmented("metricToggle", "data-metric", setMetric);
+    bindSegmented("modeToggle", "data-mode", function (v) { state.mode = v; renderAll(); });
+    bindSegmented("sourceToggle", "data-source", function (v) { state.source = v; renderAll(); });
+    bindSegmented("activityViewToggle", "data-view", function (v) { state.activityView = v; renderAll(); });
+    bindSegmented("popularTypeToggle", "data-ptype", function (v) { state.popularType = v; renderAll(); });
+    bindSegmented("compDimensionToggle", "data-cdim", function (v) { state.compDim = v; renderAll(); });
+    bindSegmented("compGranularityToggle", "data-cspan", function (v) { state.compSpan = v; renderAll(); });
+    bindSegmented("historySpanToggle", "data-span", function (v) { state.historySpan = Number(v); state.historyPageOffset = 0; renderAll(); });
+    bindSegmented("toolSpanToggle", "data-span", function (v) { state.toolSpan = Number(v); renderAll(); });
+    bindSegmented("toolModeToggle", "data-tmode", function (v) { state.toolMode = v; renderAll(); });
+    bindSegmented("msgSpanToggle", "data-span", function (v) { state.msgSpan = Number(v); renderAll(); });
+    bindSegmented("msgModeToggle", "data-mmode", function (v) { state.msgMode = v; renderAll(); });
+
+    document.getElementById("pricingPresetSelect").addEventListener("change", function (e) {
+      var v = e.target.value;
+      if (PRICING_PRESET_LABELS[v]) {
+        state.pricingPreset = v;
+        if (v === "custom" && !state.pricingDrawerOpen) {
+          state.pricingDrawerOpen = true;
+        }
+        savePricingConfig();
+        renderAll();
+      }
+    });
+
+    document.getElementById("togglePricingDrawerBtn").addEventListener("click", function () {
+      state.pricingDrawerOpen = !state.pricingDrawerOpen;
+      renderAll();
+    });
+
+    document.getElementById("machineSelect").addEventListener("change", function (e) {
+      state.machine = e.target.value;
+      state.selectedDate = null;
+      renderAll();
+    });
+
+    document.getElementById("activityRangeSelect").addEventListener("change", function (e) {
+      state.activityRange = e.target.value;
+      renderAll();
+    });
+
+    document.getElementById("historyGroupSelect").addEventListener("change", function (e) {
+      state.historyGroup = e.target.value;
+      renderAll();
+    });
+
+    document.getElementById("windowGroupSelect").addEventListener("change", function (e) {
+      state.windowGroup = e.target.value;
+      renderAll();
+    });
+
+    document.getElementById("historyPrevBtn").addEventListener("click", function () {
+      state.historyPageOffset++;
+      renderAll();
+    });
+
+    document.getElementById("historyNextBtn").addEventListener("click", function () {
+      if (state.historyPageOffset > 0) {
+        state.historyPageOffset--;
+        renderAll();
+      }
+    });
+
+    document.getElementById("importFileInput").addEventListener("change", function (e) {
+      var files = Array.prototype.slice.call(e.target.files || []);
+      if (files.length === 0) return;
+      var pending = files.length;
+      files.forEach(function (file) {
+        var reader = new FileReader();
+        reader.onload = function () {
+          try {
+            var parsed = JSON.parse(String(reader.result || "{}"));
+            var norm = normalizeImportedArchive(parsed);
+            if (norm) {
+              state.importedMachines = state.importedMachines.filter(function (m) { return m.machine !== norm.machine; });
+              state.importedMachines.push(norm);
+            }
+          } catch (err) {
+            // 忽略非法 JSON
+          } finally {
+            pending--;
+            if (pending === 0) {
+              state.machine = "all";
+              renderAll();
+            }
+          }
+        };
+        reader.readAsText(file, "UTF-8");
+      });
+      e.target.value = "";
+    });
+  }
+
+  initEvents();
+  renderAll();
+
+  window.__AGY_DASHBOARD__ = {
+    setUsageData: function (data) {
+      if (!data || typeof data !== "object") return;
+      window.AGY_USAGE_DATA = data;
+      renderAll();
+    },
+    setLoading: function (isLoading) {
+      var missingBox = document.getElementById("missingDataBox");
+      if (isLoading && !(window.AGY_USAGE_DATA && Array.isArray(window.AGY_USAGE_DATA.machines) && window.AGY_USAGE_DATA.machines.length > 0)) {
+        missingBox.innerHTML = '<h2>正在加载 Token 统计数据...</h2><p>正在读取本地统计与双机汇总，请稍候。</p>';
+        missingBox.style.display = "block";
+        document.getElementById("dashboardMain").style.display = "none";
+      }
+    },
+    setSyncStatus: function (text, kind) {
+      var box = document.getElementById("mcpSyncControls");
+      var pill = document.getElementById("mcpSyncStatus");
+      if (!box || !pill) return;
+      box.style.display = "inline-flex";
+      if (!text) {
+        pill.style.display = "none";
+        return;
+      }
+      var dotCls = "sync-dot" + (kind === "syncing" ? " syncing" : (kind === "warn" ? " warn" : ""));
+      pill.innerHTML = '<span class="' + dotCls + '"></span><span>' + escapeHtml(text) + '</span>';
+      pill.style.display = "inline-flex";
+    },
+    bindManualSync: function (fn) {
+      var box = document.getElementById("mcpSyncControls");
+      var btn = document.getElementById("mcpSyncBtn");
+      if (!box || !btn || typeof fn !== "function") return;
+      box.style.display = "inline-flex";
+      btn.onclick = function () {
+        if (btn.disabled) return;
+        btn.disabled = true;
+        btn.classList.add("spinning");
+        btn.textContent = "同步中...";
+        Promise.resolve().then(function () { return fn(); }).finally(function () {
+          btn.disabled = false;
+          btn.classList.remove("spinning");
+          btn.textContent = "刷新同步";
+        });
+      };
+    }
+  };
+})();
+</script>
+</body>
+</html>
