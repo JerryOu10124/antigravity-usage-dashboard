@@ -13,9 +13,24 @@ for arg in "$@"; do
 done
 
 find_node() {
-  for cand in "$(command -v node 2>/dev/null || true)" "${HOME}/.local/antigravity-node/bin/node" "/opt/homebrew/bin/node" "/usr/local/bin/node"; do
+  local candidates=(
+    "${HOME}/.local/antigravity-node/bin/node"
+    "$(command -v node 2>/dev/null || true)"
+    "/opt/homebrew/bin/node"
+    "/usr/local/bin/node"
+    "${HOME}/.volta/bin/node"
+  )
+  local nvm_root="${NVM_DIR:-${HOME}/.nvm}"
+  if [[ -d "${nvm_root}/versions/node" ]]; then
+    local nvm_node
+    while IFS= read -r nvm_node; do
+      candidates+=("$nvm_node")
+    done < <(ls -1d "${nvm_root}/versions/node"/v*/bin/node 2>/dev/null | sort -r || true)
+  fi
+
+  local cand ver major
+  for cand in "${candidates[@]}"; do
     if [[ -n "$cand" && -x "$cand" ]]; then
-      local ver major
       ver="$("$cand" -v 2>/dev/null || true)"
       ver="${ver#v}"
       major="${ver%%.*}"

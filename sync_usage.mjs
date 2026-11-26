@@ -13,6 +13,28 @@ const RX_TYPE = /"type"\s*:\s*"([^"]+)"/;
 const RX_CREATED_AT = /"created_at"\s*:\s*"([^"]+)"/;
 const RX_SKILL_PATH = /[\\/]skills[\\/]([^\\/"]+)[\\/]SKILL\.md/i;
 const RX_PUBLIC_OSS_REPO = /\/antigravity-usage-dashboard(?:\.git)?\/?$/i;
+const RX_YMD = /^\d{4}-\d{2}-\d{2}$/;
+
+function isValidYmd(str) {
+  if (typeof str !== "string" || !RX_YMD.test(str)) return false;
+  const parts = str.split("-").map(Number);
+  const y = parts[0], m = parts[1], d = parts[2];
+  if (m < 1 || m > 12 || d < 1 || d > 31) return false;
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
+}
+
+function clampHour(raw) {
+  if (raw === undefined || raw === null || raw === "") return 12;
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return 12;
+  return Math.max(0, Math.min(23, Math.trunc(n)));
+}
+
+function nonNegNum(raw) {
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
 
 function pad2(n) {
   return n < 10 ? "0" + n : String(n);
@@ -127,8 +149,10 @@ function decodePbtxtTitle(raw) {
       i += 2;
       continue;
     }
-    for (const b of Buffer.from(ch, "utf8")) bytes.push(b);
-    i++;
+    const cp = raw.codePointAt(i);
+    const fullChar = cp > 0xffff ? String.fromCodePoint(cp) : ch;
+    for (const b of Buffer.from(fullChar, "utf8")) bytes.push(b);
+    i += cp > 0xffff ? 2 : 1;
   }
   return Buffer.from(bytes).toString("utf8").replace(/\s+/g, " ").trim();
 }
@@ -144,7 +168,6 @@ function readAnnotationInfo(annotationsDir, convId) {
   if (!fs.existsSync(pbtxtPath)) return result;
   try {
     const st = fs.statSync(pbtxtPath);
-    result.annWriteUtc = st.mtime.toISOString();
     const content = fs.readFileSync(pbtxtPath, "utf8");
     const mTitle = content.match(/title\s*:\s*"((?:[^"\\]|\\.)*)"/);
     if (mTitle) {
@@ -153,6 +176,7 @@ function readAnnotationInfo(annotationsDir, convId) {
     if (/plan_execute\s*:\s*true/.test(content)) {
       result.planExecute = true;
     }
+    result.annWriteUtc = st.mtime.toISOString();
   } catch {
     // 忽略元数据读取异常，不影响主日志扫描
   }
@@ -436,16 +460,20 @@ function getGitBranchName(targetRepo) {
   return "main";
 }
 
-function abortRebaseIfActive(targetRepo) {
-  if (
+function hasRebaseState(targetRepo) {
+  return (
     fs.existsSync(path.join(targetRepo, ".git", "rebase-merge")) ||
     fs.existsSync(path.join(targetRepo, ".git", "rebase-apply"))
-  ) {
+  );
+}
+
+function abortRebaseIfActive(targetRepo) {
+  if (hasRebaseState(targetRepo)) {
     invokeGit(targetRepo, ["rebase", "--abort"]);
   }
 }
 
-function syncGitPull(dataDir) {
+function syncGitPull(dataDir, codeRepoRoot) {
   const msgs = [];
   const checkGit = invokeGit(dataDir, ["--version"]);
   if (checkGit.exitCode !== 0) {
@@ -459,16 +487,37 @@ function syncGitPull(dataDir) {
     return { ready: false, repoRoot: null, messages: msgs };
   }
 
-  const remoteRes = invokeGit(targetRepo, ["remote", "get-url", "origin"]);
-  if (remoteRes.exitCode !== 0 || !remoteRes.output) {
+  if (codeRepoRoot && path.resolve(targetRepo) === path.resolve(codeRepoRoot)) {
+    msgs.push(
+      "[Git 同步] 检测到当前数据目录位于开源代码仓库内（而非独立私有数据仓库），为保护隐私已自动跳过推送；如需多机同步，请在 config.json 将 dataDir 指向独立数据仓库。"
+    );
+    return { ready: false, repoRoot: null, messages: msgs };
+  }
+
+  const fetchRes = invokeGit(targetRepo, ["remote", "get-url", "origin"]);
+  const pushRes = invokeGit(targetRepo, ["remote", "get-url", "--push", "--all", "origin"]);
+  const candidateUrls = [];
+  if (fetchRes.exitCode === 0 && fetchRes.output) candidateUrls.push(fetchRes.output.trim());
+  if (pushRes.exitCode === 0 && pushRes.output) {
+    for (const line of pushRes.output.split(/\r?\n/)) {
+      if (line.trim()) candidateUrls.push(line.trim());
+    }
+  }
+
+  if (candidateUrls.length === 0) {
     msgs.push("[Git 同步] 数据目录尚未绑定远程仓库 origin，当前仅本地归档。");
     return { ready: false, repoRoot: null, messages: msgs };
   }
 
-  if (RX_PUBLIC_OSS_REPO.test(remoteRes.output.trim())) {
+  if (candidateUrls.some((u) => RX_PUBLIC_OSS_REPO.test(u))) {
     msgs.push(
-      "[Git 同步] 检测到当前 origin 为公开开源代码仓库，为保护隐私已自动跳过推送；如需多机同步，请在 config.json 将 dataDir 指向你的私有数据仓库。"
+      "[Git 同步] 检测到 origin（含 push URL）指向公开开源代码仓库，为保护隐私已自动跳过推送。"
     );
+    return { ready: false, repoRoot: null, messages: msgs };
+  }
+
+  if (hasRebaseState(targetRepo)) {
+    msgs.push("[Git 同步] 数据仓库存在未完成的 rebase 操作，已跳过本次自动同步（保留本地归档）。");
     return { ready: false, repoRoot: null, messages: msgs };
   }
 
@@ -478,9 +527,9 @@ function syncGitPull(dataDir) {
     if (pullRes.exitCode !== 0) {
       abortRebaseIfActive(targetRepo);
       msgs.push(`[Git 同步] 拉取失败，已降级为本地模式: ${pullRes.output}`);
-    } else {
-      msgs.push("[Git 同步] 已从私有远端仓库拉取最新多设备归档。");
+      return { ready: false, repoRoot: null, messages: msgs };
     }
+    msgs.push("[Git 同步] 已从远端数据仓库拉取最新多设备归档。");
   } else {
     const branch = getGitBranchName(targetRepo);
     const lsRes = invokeGit(targetRepo, ["ls-remote", "--heads", "origin", branch]);
@@ -488,10 +537,11 @@ function syncGitPull(dataDir) {
       const pullRes = invokeGit(targetRepo, ["pull", "--rebase", "--autostash", "origin", branch]);
       if (pullRes.exitCode === 0) {
         invokeGit(targetRepo, ["branch", `--set-upstream-to=origin/${branch}`, branch]);
-        msgs.push("[Git 同步] 已关联私有远端分支并拉取多设备归档。");
+        msgs.push("[Git 同步] 已关联远端分支并拉取多设备归档。");
       } else {
         abortRebaseIfActive(targetRepo);
         msgs.push(`[Git 同步] 首次拉取远端失败，已降级为本地模式: ${pullRes.output}`);
+        return { ready: false, repoRoot: null, messages: msgs };
       }
     }
   }
@@ -552,29 +602,29 @@ function syncGitPush(targetRepo, archivePath, machineName, onRebuildBundle) {
   }
 
   if (!needsPush) {
-    console.log("[Git 同步] 本机与私有远端仓库均已是最新状态。");
+    console.log("[Git 同步] 本机与数据远端仓库均已是最新状态。");
     return;
   }
 
   const branch = getGitBranchName(targetRepo);
-  const pushArgs = hasUpstream ? ["push"] : ["push", "-u", "origin", branch];
+  const pushArgs = hasUpstream ? ["push", "origin", branch] : ["push", "-u", "origin", branch];
   let pushRes = invokeGit(targetRepo, pushArgs);
 
   if (pushRes.exitCode !== 0) {
-    const pullArgs = hasUpstream
-      ? ["pull", "--rebase", "--autostash"]
-      : ["pull", "--rebase", "--autostash", "origin", branch];
-    const retryPull = invokeGit(targetRepo, pullArgs);
-    if (retryPull.exitCode === 0) {
-      if (typeof onRebuildBundle === "function") onRebuildBundle();
-      pushRes = invokeGit(targetRepo, pushArgs);
-    } else {
-      abortRebaseIfActive(targetRepo);
+    if (!hasRebaseState(targetRepo)) {
+      const pullArgs = ["pull", "--rebase", "--autostash", "origin", branch];
+      const retryPull = invokeGit(targetRepo, pullArgs);
+      if (retryPull.exitCode === 0) {
+        if (typeof onRebuildBundle === "function") onRebuildBundle();
+        pushRes = invokeGit(targetRepo, pushArgs);
+      } else {
+        abortRebaseIfActive(targetRepo);
+      }
     }
   }
 
   if (pushRes.exitCode === 0) {
-    console.log(`[Git 同步] 已将 ${relArchive} 推送到私有远程仓库。`);
+    console.log(`[Git 同步] 已将 ${relArchive} 推送到数据远程仓库。`);
   } else {
     console.log(`[Git 同步] 本地已保存，远端推送失败（可联网后重试）: ${pushRes.output}`);
   }
@@ -610,9 +660,9 @@ function buildUsageBundle(dataDir, bundlePath, machineName) {
       const convsObj = doc.conversations;
       if (!mName || !convsObj || typeof convsObj !== "object" || Array.isArray(convsObj)) continue;
 
-      const hourlyAgg = {};
-      const toolAgg = {};
-      const skillAgg = {};
+      const hourlyAgg = Object.create(null);
+      const toolAgg = Object.create(null);
+      const skillAgg = Object.create(null);
       const convSummaries = [];
 
       const convKeys = Object.keys(convsObj);
@@ -628,16 +678,16 @@ function buildUsageBundle(dataDir, bundlePath, machineName) {
         const cPlan = Boolean(conv.plan_execute);
         const cFirstAt = conv.first_at ? String(conv.first_at) : "";
         const cLastAt = conv.last_at ? String(conv.last_at) : "";
-        const cTurns = Number(conv.turns) || 0;
-        const cMaxSec = Number(conv.max_turn_sec) || 0;
-        const cMaxDate = conv.max_turn_date ? String(conv.max_turn_date) : "";
+        const cTurns = nonNegNum(conv.turns);
+        const cMaxSec = nonNegNum(conv.max_turn_sec);
+        const cMaxDate = isValidYmd(conv.max_turn_date) ? String(conv.max_turn_date) : "";
 
         let cSteps = 0;
         let cIn = 0;
         let cCache = 0;
         let cOut = 0;
         let cToolCount = 0;
-        const cModelMap = {};
+        const cModelMap = Object.create(null);
 
         const bucketObj =
           conv.hourly_buckets && typeof conv.hourly_buckets === "object"
@@ -651,14 +701,14 @@ function buildUsageBundle(dataDir, bundlePath, machineName) {
             const b = bucketObj[bKey];
             if (!b || typeof b !== "object") continue;
             const bDate = b.date ? String(b.date).trim() : "";
-            if (!bDate) continue;
-            const bHour = b.hour !== undefined && b.hour !== null ? Number(b.hour) : 12;
+            if (!isValidYmd(bDate)) continue;
+            const bHour = clampHour(b.hour);
             const bModel = b.model ? String(b.model) : "unknown";
 
-            const bSteps = Number(b.steps) || 0;
-            const bIn = Number(b.input) || 0;
-            const bCache = Number(b.cache_read) || 0;
-            const bOut = Number(b.output) || 0;
+            const bSteps = nonNegNum(b.steps);
+            const bIn = nonNegNum(b.input);
+            const bCache = nonNegNum(b.cache_read);
+            const bOut = nonNegNum(b.output);
 
             cSteps += bSteps;
             cIn += bIn;
@@ -834,7 +884,7 @@ async function main() {
   let gitSyncInfo = { ready: false, repoRoot: null, messages: [] };
   if (gitSync) {
     fs.mkdirSync(dataDir, { recursive: true });
-    gitSyncInfo = syncGitPull(dataDir);
+    gitSyncInfo = syncGitPull(dataDir, repoRoot);
     for (const msg of gitSyncInfo.messages) {
       console.log(msg);
     }
@@ -875,20 +925,26 @@ async function main() {
   }
 
   const archivePath = path.join(dataDir, `${machineName}.json`);
-  const conversations = {};
-  if (fs.existsSync(archivePath)) {
+  const archiveExists = fs.existsSync(archivePath);
+  const conversations = Object.create(null);
+  if (archiveExists) {
+    let loaded = null;
     try {
       const rawArchive = fs.readFileSync(archivePath, "utf8");
-      if (rawArchive.trim()) {
-        const loaded = JSON.parse(rawArchive);
-        if (loaded && loaded.conversations && typeof loaded.conversations === "object") {
-          for (const k of Object.keys(loaded.conversations)) {
-            conversations[k] = loaded.conversations[k];
-          }
-        }
+      if (!rawArchive.trim()) {
+        throw new Error("归档文件为空");
       }
+      loaded = JSON.parse(rawArchive);
     } catch (err) {
-      console.warn(`[归档警告] 读取历史归档失败，将重建索引: ${err.message}`);
+      console.error(`[错误] 历史归档读取或解析失败，已停止写入以防覆盖丢失历史数据 (${archivePath}): ${err.message}`);
+      process.exit(1);
+    }
+    if (!loaded || typeof loaded !== "object" || !loaded.conversations || typeof loaded.conversations !== "object" || Array.isArray(loaded.conversations)) {
+      console.error(`[错误] 历史归档结构无效，已停止写入以防覆盖丢失历史数据 (${archivePath})`);
+      process.exit(1);
+    }
+    for (const k of Object.keys(loaded.conversations)) {
+      conversations[k] = loaded.conversations[k];
     }
   }
 
@@ -965,13 +1021,15 @@ async function main() {
     if (!seenKeys.has(k)) archivedOnlyCount++;
   }
 
-  const archiveObj = {
-    schema_version: 2,
-    machine: machineName,
-    updated_at: formatLocalIso(new Date()),
-    conversations,
-  };
-  writeUtf8Atomic(archivePath, JSON.stringify(archiveObj));
+  if (!archiveExists || newCount > 0 || updatedCount > 0) {
+    const archiveObj = {
+      schema_version: 2,
+      machine: machineName,
+      updated_at: formatLocalIso(new Date()),
+      conversations,
+    };
+    writeUtf8Atomic(archivePath, JSON.stringify(archiveObj));
+  }
 
   let bundleInfo = buildUsageBundle(dataDir, bundleOut, machineName);
 

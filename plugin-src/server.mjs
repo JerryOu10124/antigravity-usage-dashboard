@@ -19,7 +19,6 @@ const USAGE_DIR =
   process.env.AGY_USAGE_DIR || path.resolve(BASE_DIR, "..", "..", "..");
 const RESOURCE_URI = "ui://token-usage/dashboard.html";
 const RESOURCE_MIME = "text/html;profile=mcp-app";
-const INLINE_PAYLOAD_BYTE_LIMIT = 700 * 1024;
 
 function resolveAppHtmlPath() {
   if (process.env.AGY_APP_HTML && fs.existsSync(process.env.AGY_APP_HTML)) {
@@ -101,7 +100,7 @@ function runSyncScript(usageDir, gitSyncArg) {
   });
 }
 
-function summarizeUsage(usageData) {
+function summarizeUsage(usageData, includeMachineNames = false) {
   if (!usageData || !Array.isArray(usageData.machines)) {
     return "暂无本地 Token 统计数据。";
   }
@@ -121,7 +120,10 @@ function summarizeUsage(usageData) {
   }
   const full = inp + cache + out;
   const net = inp + out;
-  return `已汇总 ${usageData.machines.length} 台设备（${names.join(", ") || "本机"}），共 ${convs} 个会话；全量合计 ${full.toLocaleString("en-US")} Token，净新增 ${net.toLocaleString("en-US")} Token。`;
+  const devLabel = includeMachineNames
+    ? `${usageData.machines.length} 台设备（${names.join(", ") || "本机"}）`
+    : `${usageData.machines.length} 台设备`;
+  return `已汇总 ${devLabel}，共 ${convs} 个会话；全量合计 ${full.toLocaleString("en-US")} Token，净新增 ${net.toLocaleString("en-US")} Token。`;
 }
 
 function extractGitNotice(stdout) {
@@ -236,27 +238,29 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     let source = "cached";
+    let ok = true;
+    let errorMsg = null;
     if (!usageData) {
       const syncRes = await runSyncScript(USAGE_DIR, false);
       usageData = syncRes.usageData;
+      ok = syncRes.ok;
+      errorMsg = syncRes.ok ? null : syncRes.stderr || syncRes.stdout || "初始化扫描失败";
       source = "local_init";
     }
 
-    const summary = summarizeUsage(usageData);
-    const payloadSize = usageData
-      ? Buffer.byteLength(JSON.stringify(usageData), "utf8")
-      : 0;
-
-    if (usageData && payloadSize > INLINE_PAYLOAD_BYTE_LIMIT) {
-      return {
-        content: [{ type: "text", text: summary }],
-        structuredContent: { ok: true, deferred: true, source },
-      };
-    }
+    const summary = ok
+      ? summarizeUsage(usageData, false) + "（明细仅在 UI 面板内读取）"
+      : errorMsg;
 
     return {
       content: [{ type: "text", text: summary }],
-      structuredContent: { ok: true, usageData, source },
+      structuredContent: {
+        ok,
+        deferred: true,
+        source,
+        gitSyncConfigured: isGitSyncConfigured(USAGE_DIR),
+        error: errorMsg,
+      },
     };
   }
 

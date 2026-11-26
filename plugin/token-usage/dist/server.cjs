@@ -17048,7 +17048,6 @@ var BASE_DIR = typeof __dirname !== "undefined" ? __dirname : import_node_path.d
 var USAGE_DIR = process.env.AGY_USAGE_DIR || import_node_path.default.resolve(BASE_DIR, "..", "..", "..");
 var RESOURCE_URI = "ui://token-usage/dashboard.html";
 var RESOURCE_MIME = "text/html;profile=mcp-app";
-var INLINE_PAYLOAD_BYTE_LIMIT = 700 * 1024;
 function resolveAppHtmlPath() {
   if (process.env.AGY_APP_HTML && import_node_fs.default.existsSync(process.env.AGY_APP_HTML)) {
     return process.env.AGY_APP_HTML;
@@ -17121,7 +17120,7 @@ function runSyncScript(usageDir, gitSyncArg) {
     );
   });
 }
-function summarizeUsage(usageData) {
+function summarizeUsage(usageData, includeMachineNames = false) {
   if (!usageData || !Array.isArray(usageData.machines)) {
     return "\u6682\u65E0\u672C\u5730 Token \u7EDF\u8BA1\u6570\u636E\u3002";
   }
@@ -17141,7 +17140,8 @@ function summarizeUsage(usageData) {
   }
   const full = inp + cache + out;
   const net = inp + out;
-  return `\u5DF2\u6C47\u603B ${usageData.machines.length} \u53F0\u8BBE\u5907\uFF08${names.join(", ") || "\u672C\u673A"}\uFF09\uFF0C\u5171 ${convs} \u4E2A\u4F1A\u8BDD\uFF1B\u5168\u91CF\u5408\u8BA1 ${full.toLocaleString("en-US")} Token\uFF0C\u51C0\u65B0\u589E ${net.toLocaleString("en-US")} Token\u3002`;
+  const devLabel = includeMachineNames ? `${usageData.machines.length} \u53F0\u8BBE\u5907\uFF08${names.join(", ") || "\u672C\u673A"}\uFF09` : `${usageData.machines.length} \u53F0\u8BBE\u5907`;
+  return `\u5DF2\u6C47\u603B ${devLabel}\uFF0C\u5171 ${convs} \u4E2A\u4F1A\u8BDD\uFF1B\u5168\u91CF\u5408\u8BA1 ${full.toLocaleString("en-US")} Token\uFF0C\u51C0\u65B0\u589E ${net.toLocaleString("en-US")} Token\u3002`;
 }
 function extractGitNotice(stdout) {
   const lines = String(stdout || "").split(/\r?\n/);
@@ -17245,22 +17245,25 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       usageData = null;
     }
     let source = "cached";
+    let ok = true;
+    let errorMsg = null;
     if (!usageData) {
       const syncRes = await runSyncScript(USAGE_DIR, false);
       usageData = syncRes.usageData;
+      ok = syncRes.ok;
+      errorMsg = syncRes.ok ? null : syncRes.stderr || syncRes.stdout || "\u521D\u59CB\u5316\u626B\u63CF\u5931\u8D25";
       source = "local_init";
     }
-    const summary = summarizeUsage(usageData);
-    const payloadSize = usageData ? Buffer.byteLength(JSON.stringify(usageData), "utf8") : 0;
-    if (usageData && payloadSize > INLINE_PAYLOAD_BYTE_LIMIT) {
-      return {
-        content: [{ type: "text", text: summary }],
-        structuredContent: { ok: true, deferred: true, source }
-      };
-    }
+    const summary = ok ? summarizeUsage(usageData, false) + "\uFF08\u660E\u7EC6\u4EC5\u5728 UI \u9762\u677F\u5185\u8BFB\u53D6\uFF09" : errorMsg;
     return {
       content: [{ type: "text", text: summary }],
-      structuredContent: { ok: true, usageData, source }
+      structuredContent: {
+        ok,
+        deferred: true,
+        source,
+        gitSyncConfigured: isGitSyncConfigured(USAGE_DIR),
+        error: errorMsg
+      }
     };
   }
   if (name === "sync_usage") {

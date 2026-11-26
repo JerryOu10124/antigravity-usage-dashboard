@@ -76,6 +76,7 @@ app.ontoolinput = () => {
 app.ontoolresult = async (result) => {
   const dash = window.__AGY_DASHBOARD__;
   const sc = result && result.structuredContent ? result.structuredContent : null;
+
   if (sc && sc.usageData && dash) {
     dash.setUsageData(sc.usageData);
   } else if (sc && sc.deferred) {
@@ -87,13 +88,27 @@ app.ontoolresult = async (result) => {
       const fullSc = fullRes && fullRes.structuredContent ? fullRes.structuredContent : null;
       if (fullSc && fullSc.usageData && dash) {
         dash.setUsageData(fullSc.usageData);
+      } else if (dash) {
+        dash.setSyncStatus("暂无本地汇总，尝试自动同步...", "warn");
       }
-    } catch {}
+    } catch {
+      if (dash) {
+        dash.setSyncStatus("读取本地数据失败，请点击刷新", "warn");
+      }
+    }
   }
 
   if (!initialSyncDone) {
     initialSyncDone = true;
-    runBackgroundSync(true);
+    const alreadySyncedLocal =
+      sc && sc.ok && sc.source === "local_init" && !sc.gitSyncConfigured;
+    if (alreadySyncedLocal) {
+      if (dash) {
+        dash.setSyncStatus(`已更新本机 · ${formatNowTime()}`, "ok");
+      }
+    } else {
+      runBackgroundSync(true);
+    }
   }
 };
 

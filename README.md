@@ -13,23 +13,25 @@
 - **使用情况分析（Analytics）**
   - **用量历史记录**：7 天 / 30 天圆角堆叠柱状图，支持前后翻页、按场景 / 按模型 / 按设备分组切换。
   - **聊天用量排行**：按会话展示累计 Token、折合费用与工具步数，点击展开首条提问、单轮最长耗时与模型构成。
-  - **时段用量历史**：5 小时滚动窗口与自然周左右并排对比，展示本地真实消耗与占比。
-  - **工具活动与消息**：7 天 / 30 天多系列折线图。
+  - **时段用量历史**：非重叠 5 小时时段与自然周左右并排对比，展示本地真实消耗与占比。
+  - **工具活动与消息**：7 天 / 30 天 Top 6 系列多线趋势图。
 - **多设备汇总（可选）**：支持多台电脑各自生成 `<设备名>.json` 并按人/按设备隔离聚合；开源仓库本身不包含且永不上传任何用户数据。
 
 ---
 
-## 隐私与安全说明
+## 隐私与数据边界说明
 
 - **100% 本地只读扫描**：仅只读解析本机 `~/.gemini/antigravity/brain` 与 `~/.gemini/antigravity-cli/brain` 中的 `transcript.jsonl` 和 `annotations/`，绝不修改、清理或上传你的原始对话日志。
-- **零联网遥测**：看板页面为纯离线静态页，无任何外部统计脚本或后端收集服务。
-- **代码与数据严格隔离**：`.gitignore` 已屏蔽 `data/*.json`、`data/usage_bundle.js` 与 `config.json`；并且内建安全保护——即使开启了 Git 同步，只要检测到远端为本公开仓库，会自动跳过推送，防止个人对话记录意外上传到公开仓库。
+- **三种运行模式的数据流向**：
+  1. **独立浏览器模式**（`open-dashboard.bat` / `open-dashboard.sh`）：全程纯本地离线运行，零任何网络请求。
+  2. **Antigravity 侧边栏模式（MCP App）**：会话标题、首问摘录与按日/小时明细严格通过前端 UI 专属通道（`visibility: ["app"]`）在本地插件页面内读取渲染，不随默认工具结果暴露给对话模型上下文；宿主工具返回值仅含汇总数字。
+  3. **可选私有 Git 同步模式**：仅当你手动在 `config.json` 中启用 `gitSync: true` 并指向自己的私有数据仓库时，才会将本机 `<设备名>.json` 推送至你自己的远程仓库；脚本内置双重防护（检测代码仓、fetch URL 与 push URL），只要指向本公开仓库会自动拒绝推送。
 
 ---
 
 ## 一键安装（Quick Start）
 
-> **全自动环境检测**：无需预先手动装好 Node.js 或 Git。安装脚本会自动检测本机是否存在 **Node.js 20+**；若缺失会优先通过 `winget` / `brew` 安装，或在无管理员权限时自动从官方下载便携版 Node.js 到本地用户目录（`~/.local/antigravity-node` / `%LOCALAPPDATA%\antigravity-node`），不污染系统环境。
+> **支持环境与自动补齐**：支持 Windows (`x64` / `arm64`)、macOS (`arm64` / `x64`) 与主流 Linux (`x64` / `arm64`，需自带 `bash`、`curl`、`tar`)。无需预先手动安装 Node.js 或 Git：若缺少 **Node.js 20+**，Windows 会自动尝试 `winget` 或免管理员便携版（`%LOCALAPPDATA%\antigravity-node`）；macOS/Linux 会尝试 Homebrew 或无 `sudo` 便携版（`~/.local/antigravity-node`），不污染系统环境。
 
 ### 方式一：一行命令远程一键安装（推荐，零前置步骤）
 
@@ -91,13 +93,12 @@
 
 ## 更新看板到最新版
 
-在仓库目录拉取最新代码即可：
-
-```bash
-git pull
-```
-
-- 如果已是新版 `install.mjs` 安装的侧边栏插件，`git pull` 后只需关掉 Antigravity 中的「Token 统计」标签页重新打开，界面即会自动更新（若插件架构有升级，重新执行一次 `install.bat` / `./install.sh` 即可）。
+- **Git 克隆安装的用户**：在仓库目录拉取最新代码即可：
+  ```bash
+  git pull
+  ```
+- **通过 ZIP / 无 Git 一键脚本安装的用户**：直接重新运行上方对应系统的一行命令（会自动覆盖程序代码并完整保留已有的 `data/` 归档与 `config.json`），或下载最新 ZIP 解压覆盖除 `data/` 与 `config.json` 外的文件。
+- 如果是前端界面更新，拉取后关掉 Antigravity 中的「Token 统计」标签页再重新打开即自动生效；若服务端（`plugin-src/server.mjs`）有升级，请重新运行一次 `install.bat` / `./install.sh`。
 - 如果你从源码二次开发插件（修改了 `plugin-src/` 下的 `.mjs`）：
   ```bash
   npm ci --prefix plugin-src
@@ -108,7 +109,7 @@ git pull
 
 ## English Quick Start
 
-One-line install (automatically detects or installs Node.js 20+ without admin privileges, clones/downloads the dashboard, installs the Antigravity sidebar plugin, and scans local transcripts):
+One-line install (supports Windows x64/arm64, macOS arm64/x64, Linux x64/arm64; automatically detects or installs Node.js 20+ without admin/sudo into user-local storage, downloads/clones the repo, installs the Antigravity sidebar plugin, and runs the initial scan):
 
 - **Windows (PowerShell)**:
   ```powershell
@@ -121,7 +122,7 @@ One-line install (automatically detects or installs Node.js 20+ without admin pr
 
 Or clone manually and run `install.bat` / `./install.sh` (sidebar plugin) or `open-dashboard.bat` / `./open-dashboard.sh` (standalone browser).
 
-All transcript parsing runs 100% locally in read-only mode (`~/.gemini/antigravity/brain` & `~/.gemini/antigravity-cli/brain`). Nothing is ever sent to any external server.
+All transcript parsing runs 100% locally in read-only mode (`~/.gemini/antigravity/brain` & `~/.gemini/antigravity-cli/brain`). Standalone mode makes zero network calls; MCP App mode keeps detailed prompts/titles inside UI-only tool calls (`visibility: ["app"]`); Git push sync is off by default and strictly restricted to user-configured private data repositories.
 
 ---
 

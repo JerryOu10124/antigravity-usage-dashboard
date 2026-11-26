@@ -1985,7 +1985,7 @@
         <div class="card-header">
           <div class="card-title-wrap">
             <h2>时段用量历史</h2>
-            <div class="card-desc">按 5 小时滚动窗口与自然周统计本地实际消耗及占比（基于本地小时日志还原，不含云端配额上限）</div>
+            <div class="card-desc">按非重叠 5 小时时段与自然周统计本地实际消耗及占比（基于本地小时日志还原，不含云端配额上限）</div>
           </div>
           <div class="card-actions">
             <select class="select-pill" id="windowGroupSelect" aria-label="时段分组维度">
@@ -2011,7 +2011,7 @@
         <div class="card-header">
           <div class="card-title-wrap">
             <h2>工具活动</h2>
-            <div class="card-desc">查看一段时间内调用了哪些工具操作</div>
+            <div class="card-desc">查看一段时间内调用了哪些工具操作（展示 Top 6 系列与合计）</div>
           </div>
           <div class="card-actions">
             <div class="segmented" id="toolSpanToggle">
@@ -2036,7 +2036,7 @@
         <div class="card-header">
           <div class="card-title-wrap">
             <h2>消息</h2>
-            <div class="card-desc">追踪一段时间内模型响应的消息步数</div>
+            <div class="card-desc">追踪一段时间内模型响应的消息步数（展示 Top 6 系列与合计）</div>
           </div>
           <div class="card-actions">
             <div class="segmented" id="msgSpanToggle">
@@ -2269,13 +2269,18 @@
   }
 
   function parseDateYMD(ymd) {
-    var parts = String(ymd || "").split("-");
-    if (parts.length !== 3) return null;
-    return {
-      y: parseInt(parts[0], 10),
-      m: parseInt(parts[1], 10),
-      d: parseInt(parts[2], 10)
-    };
+    var s = String(ymd || "").trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return null;
+    var parts = s.split("-");
+    var y = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10);
+    var d = parseInt(parts[2], 10);
+    if (m < 1 || m > 12 || d < 1 || d > 31) return null;
+    var dt = new Date(Date.UTC(y, m - 1, d));
+    if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== m - 1 || dt.getUTCDate() !== d) {
+      return null;
+    }
+    return { y: y, m: m, d: d };
   }
 
   function ymdToUtcMs(ymd) {
@@ -2525,31 +2530,46 @@
     return getTokenValue(rec, mode);
   }
 
+  function clampHourSafe(raw) {
+    if (raw === undefined || raw === null || raw === "") return 12;
+    var n = Number(raw);
+    if (!isFinite(n)) return 12;
+    return Math.max(0, Math.min(23, Math.floor(n)));
+  }
+
+  function nonNegFinite(raw) {
+    var n = Number(raw);
+    return (isFinite(n) && n > 0) ? n : 0;
+  }
+
   function normalizeImportedArchive(doc) {
-    if (!doc || typeof doc !== "object" || !doc.machine || !doc.conversations) return null;
-    var hourlyMap = {};
-    var toolMap = {};
-    var skillMap = {};
+    if (!doc || typeof doc !== "object" || !doc.machine || !doc.conversations || typeof doc.conversations !== "object" || Array.isArray(doc.conversations)) return null;
+    var hourlyMap = Object.create(null);
+    var toolMap = Object.create(null);
+    var skillMap = Object.create(null);
     var convList = [];
     var convs = doc.conversations;
 
     Object.keys(convs).forEach(function (ck) {
       var c = convs[ck];
       if (!c || typeof c !== "object") return;
-      var src = c.source || "desktop";
-      var scene = c.scene || (src === "cli" ? "cli" : "chat");
+      var src = c.source ? String(c.source) : "desktop";
+      var scene = c.scene ? String(c.scene) : (src === "cli" ? "cli" : "chat");
       var cIn = 0, cCache = 0, cOut = 0, cSteps = 0, cTools = 0;
-      var cModels = {};
-      var bObj = c.hourly_buckets || c.buckets || {};
+      var cModels = Object.create(null);
+      var bObj = (c.hourly_buckets && typeof c.hourly_buckets === "object")
+        ? c.hourly_buckets
+        : ((c.buckets && typeof c.buckets === "object") ? c.buckets : {});
       Object.keys(bObj).forEach(function (bk) {
         var b = bObj[bk];
-        if (!b || !b.date) return;
-        var h = (b.hour !== undefined && b.hour !== null) ? Number(b.hour) : 12;
-        var model = b.model || "unknown";
-        var steps = Number(b.steps) || 0;
-        var inp = Number(b.input) || 0;
-        var cache = Number(b.cache_read) || 0;
-        var out = Number(b.output) || 0;
+        if (!b || typeof b !== "object" || !parseDateYMD(b.date)) return;
+        var bDate = String(b.date).trim();
+        var h = clampHourSafe(b.hour);
+        var model = b.model ? String(b.model) : "unknown";
+        var steps = nonNegFinite(b.steps);
+        var inp = nonNegFinite(b.input);
+        var cache = nonNegFinite(b.cache_read);
+        var out = nonNegFinite(b.output);
         cSteps += steps; cIn += inp; cCache += cache; cOut += out;
 
         if (!cModels[model]) cModels[model] = { model: model, steps: 0, input: 0, cache_read: 0, output: 0 };
@@ -2558,8 +2578,8 @@
         cModels[model].cache_read += cache;
         cModels[model].output += out;
 
-        var hk = b.date + "|" + h + "|" + src + "|" + scene + "|" + model;
-        if (!hourlyMap[hk]) hourlyMap[hk] = { date: b.date, hour: h, source: src, scene: scene, model: model, steps: 0, input: 0, cache_read: 0, output: 0 };
+        var hk = bDate + "|" + h + "|" + src + "|" + scene + "|" + model;
+        if (!hourlyMap[hk]) hourlyMap[hk] = { date: bDate, hour: h, source: src, scene: scene, model: model, steps: 0, input: 0, cache_read: 0, output: 0 };
         hourlyMap[hk].steps += steps;
         hourlyMap[hk].input += inp;
         hourlyMap[hk].cache_read += cache;
@@ -3084,7 +3104,7 @@
             '<div class="cost-mini-card">' +
               '<div class="cost-mini-label">单日最高费用</div>' +
               '<div class="cost-mini-val tabular">' + formatUsd(peakCost) + '</div>' +
-              '<div class="cost-mini-sub tabular">' + (peakCostDay ? formatYmdMD(peakCostDay) : '暂无数据') + '</div>' +
+              '<div class="cost-mini-sub tabular">' + (peakCostDay ? escapeHtml(formatYmdMD(peakCostDay)) : '暂无数据') + '</div>' +
             '</div>' +
             '<div class="cost-mini-card">' +
               '<div class="cost-mini-label">单次会话均价</div>' +
@@ -3218,7 +3238,10 @@
   function getActivityBounds(byDate) {
     var allDates = Object.keys(byDate).sort();
     var yearsMap = {};
-    allDates.forEach(function (d) { yearsMap[d.slice(0, 4)] = true; });
+    allDates.forEach(function (d) {
+      var yr = String(d).slice(0, 4);
+      if (/^\d{4}$/.test(yr)) yearsMap[yr] = true;
+    });
     var today = getTodayLocalYmd();
     yearsMap[today.slice(0, 4)] = true;
     var years = Object.keys(yearsMap).sort().reverse();
@@ -3226,7 +3249,7 @@
     var select = document.getElementById("activityRangeSelect");
     var html = '<option value="1y">近 1 年</option>';
     years.forEach(function (y) {
-      html += '<option value="' + y + '">' + y + ' 年</option>';
+      html += '<option value="' + escapeHtml(y) + '">' + escapeHtml(y) + ' 年</option>';
     });
     select.innerHTML = html;
     if (state.activityRange === "1y" || yearsMap[state.activityRange]) {

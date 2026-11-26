@@ -44,6 +44,11 @@ while (($# > 0)); do
   esac
 done
 
+case "$INSTALL_DIR" in
+  /*) ;;
+  *) INSTALL_DIR="$(pwd)/$INSTALL_DIR" ;;
+esac
+
 test_node20() {
   local exe="$1"
   [[ -n "$exe" && -x "$exe" ]] || return 1
@@ -65,11 +70,19 @@ find_node20() {
     "/usr/local/bin/node"
     "${HOME}/.volta/bin/node"
   )
-  if [[ -d "${HOME}/.nvm/versions/node" ]]; then
+  if command -v brew >/dev/null 2>&1; then
+    local brew_node_prefix
+    brew_node_prefix="$(brew --prefix node 2>/dev/null || true)"
+    if [[ -n "$brew_node_prefix" ]]; then
+      candidates+=("$brew_node_prefix/bin/node")
+    fi
+  fi
+  local nvm_root="${NVM_DIR:-${HOME}/.nvm}"
+  if [[ -d "${nvm_root}/versions/node" ]]; then
     local nvm_node
     while IFS= read -r nvm_node; do
       candidates+=("$nvm_node")
-    done < <(ls -1d "${HOME}/.nvm/versions/node"/v*/bin/node 2>/dev/null | sort -r || true)
+    done < <(ls -1d "${nvm_root}/versions/node"/v*/bin/node 2>/dev/null | sort -r || true)
   fi
 
   local c
@@ -109,10 +122,32 @@ install_portable_node() {
     echo "[Error] curl is required to download Node.js 20+." >&2
     return 1
   fi
+  if ! command -v tar >/dev/null 2>&1; then
+    echo "[Error] tar is required to extract portable Node.js." >&2
+    return 1
+  fi
 
-  echo "[Setup] Resolving latest Node.js LTS from nodejs.org..."
+  echo "[Setup] Resolving latest Node.js LTS from nodejs.org..." >&2
   local lts_ver
-  lts_ver="$(curl -fsSL "https://nodejs.org/dist/index.json" | grep -oE '"version":"v(2[0-9]|[3-9][0-9])\.[0-9]+\.[0-9]+","date":"[^"]+","files":\[[^]]*\],"lts":"[^"]+"' | head -n 1 | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -n 1 || true)"
+  lts_ver="$(curl -fsSL "https://nodejs.org/dist/index.tab" | awk -F '\t' '
+    NR == 1 {
+      for (i = 1; i <= NF; i++) {
+        if ($i == "version") vc = i
+        if ($i == "lts") lc = i
+      }
+      next
+    }
+    vc && lc {
+      v = $vc
+      sub(/^v/, "", v)
+      split(v, a, ".")
+      if ($lc != "-" && $lc != "" && (a[1] + 0) >= 20) {
+        print $vc
+        exit
+      }
+    }
+  ' || true)"
+
   if [[ -z "$lts_ver" ]]; then
     echo "[Error] Could not resolve Node.js 20+ LTS version. Please install manually from https://nodejs.org/." >&2
     return 1
@@ -122,26 +157,40 @@ install_portable_node() {
   local tar_url="https://nodejs.org/dist/${lts_ver}/${tar_name}"
   local tmp_dir
   tmp_dir="$(mktemp -d)"
-  trap 'rm -rf "$tmp_dir"' RETURN
 
-  echo "[Setup] Downloading portable Node.js ${lts_ver} (${os_tag}-${arch_tag})..."
-  curl -fsSL "$tar_url" -o "$tmp_dir/$tar_name"
-  tar -xzf "$tmp_dir/$tar_name" -C "$tmp_dir"
+  echo "[Setup] Downloading portable Node.js ${lts_ver} (${os_tag}-${arch_tag})..." >&2
+  if ! curl -fsSL "$tar_url" -o "$tmp_dir/$tar_name"; then
+    rm -rf "$tmp_dir"
+    echo "[Error] Failed to download $tar_url" >&2
+    return 1
+  fi
+  if ! tar -xzf "$tmp_dir/$tar_name" -C "$tmp_dir"; then
+    rm -rf "$tmp_dir"
+    echo "[Error] Failed to extract $tar_name" >&2
+    return 1
+  fi
 
   local inner_dir="$tmp_dir/node-${lts_ver}-${os_tag}-${arch_tag}"
-  if [[ ! -x "$inner_dir/bin/node" ]]; then
-    echo "[Error] Extracted archive did not contain bin/node." >&2
+  if ! test_node20 "$inner_dir/bin/node"; then
+    rm -rf "$tmp_dir"
+    echo "[Error] Extracted Node.js binary failed version check." >&2
     return 1
   fi
 
-  rm -rf "$PORTABLE_NODE_DIR"
+  local stage_old="${PORTABLE_NODE_DIR}.old.$$"
   mkdir -p "$(dirname "$PORTABLE_NODE_DIR")"
-  mv "$inner_dir" "$PORTABLE_NODE_DIR"
-
-  if ! test_node20 "$PORTABLE_NODE_DIR/bin/node"; then
-    echo "[Error] Portable Node.js verification failed." >&2
+  if [[ -d "$PORTABLE_NODE_DIR" ]]; then
+    mv "$PORTABLE_NODE_DIR" "$stage_old"
+  fi
+  if mv "$inner_dir" "$PORTABLE_NODE_DIR"; then
+    rm -rf "$stage_old" "$tmp_dir"
+  else
+    [[ -d "$stage_old" && ! -d "$PORTABLE_NODE_DIR" ]] && mv "$stage_old" "$PORTABLE_NODE_DIR" || true
+    rm -rf "$tmp_dir"
+    echo "[Error] Failed to place portable Node.js in $PORTABLE_NODE_DIR" >&2
     return 1
   fi
+
   printf '%s\n' "$PORTABLE_NODE_DIR/bin/node"
 }
 
@@ -163,7 +212,9 @@ ensure_node20() {
     fi
   fi
 
-  node_exe="$(install_portable_node)"
+  if ! node_exe="$(install_portable_node)"; then
+    return 1
+  fi
   echo "[Setup] Installed portable Node.js $("$node_exe" -v) ($node_exe)" >&2
   printf '%s\n' "$node_exe"
 }
@@ -181,12 +232,24 @@ resolve_repo_dir() {
 
   if command -v git >/dev/null 2>&1; then
     if [[ -d "$INSTALL_DIR/.git" ]]; then
+      local existing_remote
+      existing_remote="$(git -C "$INSTALL_DIR" remote get-url origin 2>/dev/null || true)"
+      if [[ ! -f "$INSTALL_DIR/install.mjs" && "$existing_remote" != *antigravity-usage-dashboard* ]]; then
+        echo "[Error] Target $INSTALL_DIR is an unrelated git repository ($existing_remote). Pass --install-dir to pick another folder." >&2
+        return 1
+      fi
       echo "[Setup] Updating existing repository at $INSTALL_DIR ..." >&2
-      git -C "$INSTALL_DIR" pull --ff-only >&2 || true
+      if ! git -C "$INSTALL_DIR" pull --ff-only >&2; then
+        echo "[Warning] git pull --ff-only failed; continuing with existing files in $INSTALL_DIR." >&2
+      fi
       printf '%s\n' "$INSTALL_DIR"
       return 0
     fi
-    if [[ ! -f "$INSTALL_DIR/install.mjs" ]]; then
+    if [[ ! -e "$INSTALL_DIR" || ! -f "$INSTALL_DIR/install.mjs" ]]; then
+      if [[ -e "$INSTALL_DIR" && -n "$(ls -A "$INSTALL_DIR" 2>/dev/null || true)" ]]; then
+        echo "[Error] Directory $INSTALL_DIR is not empty and does not look like this repository. Pass --install-dir to specify an empty path." >&2
+        return 1
+      fi
       echo "[Setup] Cloning antigravity-usage-dashboard into $INSTALL_DIR ..." >&2
       git clone --depth 1 "$REPO_URL" "$INSTALL_DIR" >&2
       printf '%s\n' "$INSTALL_DIR"
@@ -194,34 +257,65 @@ resolve_repo_dir() {
     fi
   fi
 
+  if ! command -v curl >/dev/null 2>&1 || ! command -v tar >/dev/null 2>&1; then
+    echo "[Error] curl and tar are required to download the repository archive." >&2
+    return 1
+  fi
+
   echo "[Setup] Downloading antigravity-usage-dashboard archive from GitHub..." >&2
   local tmp_dir
   tmp_dir="$(mktemp -d)"
-  trap 'rm -rf "$tmp_dir"' RETURN
-  curl -fsSL "$REPO_TAR_URL" -o "$tmp_dir/repo.tar.gz"
-  tar -xzf "$tmp_dir/repo.tar.gz" -C "$tmp_dir"
+  if ! curl -fsSL "$REPO_TAR_URL" -o "$tmp_dir/repo.tar.gz"; then
+    rm -rf "$tmp_dir"
+    echo "[Error] Failed to download $REPO_TAR_URL" >&2
+    return 1
+  fi
+  if ! tar -xzf "$tmp_dir/repo.tar.gz" -C "$tmp_dir"; then
+    rm -rf "$tmp_dir"
+    echo "[Error] Failed to extract repository archive." >&2
+    return 1
+  fi
+
   local extracted
-  extracted="$(find "$tmp_dir" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+  extracted="$(find "$tmp_dir" -mindepth 1 -maxdepth 1 -type d | head -n 1 || true)"
+  if [[ -z "$extracted" || ! -f "$extracted/install.mjs" || ! -f "$extracted/plugin/token-usage/dist/server.cjs" ]]; then
+    rm -rf "$tmp_dir"
+    echo "[Error] Downloaded archive did not contain expected antigravity-usage-dashboard files." >&2
+    return 1
+  fi
+
   mkdir -p "$INSTALL_DIR/data"
   (
-    cd "$extracted"
-    for item in *; do
-      if [[ "$item" == "data" ]]; then
-        [[ -f "data/.gitkeep" && ! -f "$INSTALL_DIR/data/.gitkeep" ]] && cp "data/.gitkeep" "$INSTALL_DIR/data/.gitkeep"
+    shopt -s dotglob nullglob
+    local src_item base
+    for src_item in "$extracted"/*; do
+      base="$(basename "$src_item")"
+      if [[ "$base" == "." || "$base" == ".." || "$base" == ".git" ]]; then
         continue
       fi
-      if [[ "$item" == "config.json" && -f "$INSTALL_DIR/config.json" ]]; then
+      if [[ "$base" == "data" ]]; then
+        if [[ -f "$src_item/.gitkeep" && ! -f "$INSTALL_DIR/data/.gitkeep" ]]; then
+          cp "$src_item/.gitkeep" "$INSTALL_DIR/data/.gitkeep"
+        fi
         continue
       fi
-      rm -rf "$INSTALL_DIR/$item"
-      cp -R "$item" "$INSTALL_DIR/$item"
+      if [[ "$base" == "config.json" && -f "$INSTALL_DIR/config.json" ]]; then
+        continue
+      fi
+      rm -rf "${INSTALL_DIR:?}/$base"
+      cp -R "$src_item" "$INSTALL_DIR/$base"
     done
   )
+  rm -rf "$tmp_dir"
   printf '%s\n' "$INSTALL_DIR"
 }
 
-NODE_EXE="$(ensure_node20)"
-REPO_DIR="$(resolve_repo_dir)"
+if ! NODE_EXE="$(ensure_node20)"; then
+  exit 1
+fi
+if ! REPO_DIR="$(resolve_repo_dir)"; then
+  exit 1
+fi
 echo "[Setup] Repository directory: $REPO_DIR"
 
 if [[ -f "$REPO_DIR/install.sh" ]]; then chmod +x "$REPO_DIR/install.sh" || true; fi
@@ -249,5 +343,5 @@ fi
 
 echo ""
 echo "[Setup] All done!"
-echo "[Setup] Restart (or reopen) Antigravity and open 'Token 统计' from the left sidebar or '+' pane menu."
+echo "[Setup] Restart (or reopen) Antigravity and open 'Token Usage' from the left sidebar or '+' pane menu."
 echo "[Setup] Standalone browser launcher: $REPO_DIR/open-dashboard.sh"
