@@ -422,13 +422,105 @@ async function parseTranscriptFile(filePath, fileStat, sourceName, convId, annIn
   };
 }
 
-function invokeGit(targetRepo, gitArgs) {
+let cachedGitExe = null;
+
+function readWindowsRegistryPath() {
   try {
-    const stdout = execFileSync("git", ["-C", targetRepo, ...gitArgs], {
+    const psCmd =
+      "[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; " +
+      "(@([Environment]::GetEnvironmentVariable('Path','Machine'),[Environment]::GetEnvironmentVariable('Path','User')) -join ';')";
+    const out = execFileSync(
+      "powershell.exe",
+      ["-NoProfile", "-NonInteractive", "-Command", psCmd],
+      {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+        windowsHide: true,
+        timeout: 8000,
+      }
+    );
+    return String(out || "").trim();
+  } catch {
+    return "";
+  }
+}
+
+function resolveGitExecutable(configGitPath) {
+  if (cachedGitExe) return cachedGitExe;
+
+  if (configGitPath && fs.existsSync(configGitPath)) {
+    cachedGitExe = configGitPath;
+    return cachedGitExe;
+  }
+
+  try {
+    execFileSync("git", ["--version"], {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
       windowsHide: true,
-      env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
+    });
+    cachedGitExe = "git";
+    return cachedGitExe;
+  } catch {
+    // Fall through to Windows Registry Path & standard install locations
+  }
+
+  if (process.platform === "win32") {
+    const dirs = [];
+    const seen = new Set();
+    const pushDirs = (pathStr) => {
+      for (const part of String(pathStr || "").split(";")) {
+        const d = part.trim().replace(/^"+|"+$/g, "");
+        if (d && !seen.has(d.toLowerCase())) {
+          seen.add(d.toLowerCase());
+          dirs.push(d);
+        }
+      }
+    };
+
+    pushDirs(readWindowsRegistryPath());
+    pushDirs([
+      "C:\\Program Files\\Git\\cmd",
+      "C:\\Program Files\\Git\\bin",
+      "C:\\Program Files (x86)\\Git\\cmd",
+      process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, "Programs", "Git", "cmd") : "",
+    ].filter(Boolean).join(";"));
+
+    for (const dir of dirs) {
+      const cand = path.join(dir, "git.exe");
+      try {
+        if (fs.existsSync(cand)) {
+          execFileSync(cand, ["--version"], {
+            encoding: "utf8",
+            stdio: ["ignore", "pipe", "pipe"],
+            windowsHide: true,
+          });
+          cachedGitExe = cand;
+          return cachedGitExe;
+        }
+      } catch {
+        continue;
+      }
+    }
+  }
+
+  cachedGitExe = "git";
+  return cachedGitExe;
+}
+
+function invokeGit(targetRepo, gitArgs) {
+  const gitExe = resolveGitExecutable();
+  const childEnv = { ...process.env, GIT_TERMINAL_PROMPT: "0" };
+  if (gitExe !== "git" && path.isAbsolute(gitExe)) {
+    const gitDir = path.dirname(gitExe);
+    childEnv.PATH = childEnv.PATH ? `${gitDir}${path.delimiter}${childEnv.PATH}` : gitDir;
+  }
+  try {
+    const stdout = execFileSync(gitExe, ["-C", targetRepo, ...gitArgs], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: true,
+      env: childEnv,
     });
     return { exitCode: 0, output: String(stdout || "").trim() };
   } catch (err) {
@@ -880,6 +972,10 @@ async function main() {
   );
   const gitSync =
     cli.gitSync !== null ? cli.gitSync : Boolean(cfg.gitSync === true);
+
+  if (cfg.gitPath) {
+    resolveGitExecutable(path.resolve(repoRoot, String(cfg.gitPath)));
+  }
 
   let gitSyncInfo = { ready: false, repoRoot: null, messages: [] };
   if (gitSync) {
