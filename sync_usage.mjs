@@ -722,7 +722,38 @@ function syncGitPush(targetRepo, archivePath, machineName, onRebuildBundle) {
   }
 }
 
-function buildUsageBundle(dataDir, bundlePath, machineName) {
+function loadMachineAliases(dataDir, configAliases) {
+  const aliases = Object.create(null);
+  const aliasPath = path.join(dataDir, "aliases.json");
+  if (fs.existsSync(aliasPath)) {
+    try {
+      const raw = fs.readFileSync(aliasPath, "utf8");
+      if (raw.trim()) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+          for (const [k, v] of Object.entries(parsed)) {
+            const ks = String(k).trim();
+            const vs = typeof v === "string" ? v.trim() : "";
+            if (ks && vs) aliases[ks] = vs;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn(`跳过无效设备别名文件 aliases.json: ${err.message}`);
+    }
+  }
+  if (configAliases && typeof configAliases === "object" && !Array.isArray(configAliases)) {
+    for (const [k, v] of Object.entries(configAliases)) {
+      const ks = String(k).trim();
+      const vs = typeof v === "string" ? v.trim() : "";
+      if (ks && vs) aliases[ks] = vs;
+    }
+  }
+  return aliases;
+}
+
+function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null) {
+  const aliases = loadMachineAliases(dataDir, configAliases);
   const machineList = [];
   let grandIn = 0;
   let grandCache = 0;
@@ -734,7 +765,7 @@ function buildUsageBundle(dataDir, bundlePath, machineName) {
   if (fs.existsSync(dataDir)) {
     files = fs
       .readdirSync(dataDir, { withFileTypes: true })
-      .filter((d) => d.isFile() && d.name.endsWith(".json") && !d.name.endsWith(".tmp"))
+      .filter((d) => d.isFile() && d.name.endsWith(".json") && !d.name.endsWith(".tmp") && d.name.toLowerCase() !== "aliases.json")
       .map((d) => d.name)
       .sort();
   }
@@ -917,8 +948,10 @@ function buildUsageBundle(dataDir, bundlePath, machineName) {
         .sort()
         .map((k) => skillAgg[k]);
 
+      const displayName = aliases[mName] || mName;
       machineList.push({
-        machine: mName,
+        machine: displayName,
+        raw_machine: mName,
         updated_at: doc.updated_at ? String(doc.updated_at) : "",
         conversation_count: convKeys.length,
         hourly_records: hourlyList,
@@ -935,7 +968,7 @@ function buildUsageBundle(dataDir, bundlePath, machineName) {
   const bundleObj = {
     schema_version: 2,
     generated_at: formatLocalIso(new Date()),
-    current_machine: machineName,
+    current_machine: aliases[machineName] || machineName,
     machines: machineList,
   };
 
@@ -1127,11 +1160,11 @@ async function main() {
     writeUtf8Atomic(archivePath, JSON.stringify(archiveObj));
   }
 
-  let bundleInfo = buildUsageBundle(dataDir, bundleOut, machineName);
+  let bundleInfo = buildUsageBundle(dataDir, bundleOut, machineName, cfg.machineAliases);
 
   if (gitSync && gitSyncInfo.ready && gitSyncInfo.repoRoot) {
     syncGitPush(gitSyncInfo.repoRoot, archivePath, machineName, () => {
-      bundleInfo = buildUsageBundle(dataDir, bundleOut, machineName);
+      bundleInfo = buildUsageBundle(dataDir, bundleOut, machineName, cfg.machineAliases);
     });
   }
 

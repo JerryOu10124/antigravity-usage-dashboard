@@ -1,5 +1,6 @@
 {
   "dataDir": "",
   "gitSync": false,
-  "machineName": ""
+  "machineName": "",
+  "machineAliases": {}
 }
