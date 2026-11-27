@@ -2393,22 +2393,23 @@
     return pct.toFixed(1).replace(/\.0$/, "") + "%";
   }
 
+  function normalizeModelSlug(slug) {
+    if (!slug) return "unknown";
+    var s = String(slug).trim().toLowerCase();
+    if (!s || s === "unknown") return "unknown";
+    s = s.replace(/-(xhigh|high|medium|low)$/, "");
+    s = s.replace(/-tiered$/, "");
+    s = s.replace(/-(xhigh|high|medium|low)$/, "");
+    return s || "unknown";
+  }
+
   function formatModelName(slug) {
-    if (!slug || slug === "unknown") return "未知模型";
-    var parts = String(slug).split("-");
-    var tiers = { low: "Low", medium: "Medium", high: "High", xhigh: "XHigh" };
-    var last = parts[parts.length - 1].toLowerCase();
-    var tierLabel = null;
-    var coreParts = parts;
-    if (tiers[last] && parts.length > 1) {
-      tierLabel = tiers[last];
-      coreParts = parts.slice(0, -1);
-    }
-    var titled = coreParts.map(function (w) {
+    var norm = normalizeModelSlug(slug);
+    if (norm === "unknown") return "未知模型";
+    return norm.split("-").map(function (w) {
       if (/^\d+(\.\d+)?$/.test(w)) return w;
       return w.charAt(0).toUpperCase() + w.slice(1);
     }).join(" ");
-    return tierLabel ? titled + " (" + tierLabel + ")" : titled;
   }
 
   function extractEffortTier(slug) {
@@ -3842,7 +3843,7 @@
         if (slotIndex[skey] === undefined) return;
         var val = getRecordMetricValue(r, state.mode, state.metric, r.date);
         if (val <= 0) return;
-        var m = r.model || "unknown";
+        var m = normalizeModelSlug(r.model);
         if (!seriesMap[m]) {
           seriesMap[m] = { label: formatModelName(m), color: PALETTE[0], bySlot: {} };
           totals[m] = 0;
@@ -4076,7 +4077,8 @@
 
   function getGroupInfo(rec, groupBy) {
     if (groupBy === "model") {
-      return { key: rec.model || "unknown", label: formatModelName(rec.model) };
+      var normModel = normalizeModelSlug(rec.model);
+      return { key: normModel, label: formatModelName(normModel) };
     }
     if (groupBy === "source") {
       var s = rec.source || "desktop";
@@ -4278,13 +4280,21 @@
 
       if (isOpen) {
         var convDate = (c.first_at || c.last_at || "").slice(0, 10);
-        var modelParts = (c.models || []).slice().sort(function (a, b) {
-          return isCost
-            ? (computeRecordCost(b, state.mode, convDate).total - computeRecordCost(a, state.mode, convDate).total)
-            : (getTokenValue(b, state.mode) - getTokenValue(a, state.mode));
+        var mergedModels = Object.create(null);
+        (c.models || []).forEach(function (m) {
+          var mk = normalizeModelSlug(m.model);
+          if (!mergedModels[mk]) {
+            mergedModels[mk] = { key: mk, label: formatModelName(mk), cost: 0, tokens: 0 };
+          }
+          mergedModels[mk].cost += computeRecordCost(m, state.mode, convDate).total;
+          mergedModels[mk].tokens += getTokenValue(m, state.mode);
+        });
+        var modelParts = Object.keys(mergedModels).map(function (mk) {
+          return mergedModels[mk];
+        }).sort(function (a, b) {
+          return isCost ? (b.cost - a.cost) : (b.tokens - a.tokens);
         }).map(function (m) {
-          var mc = computeRecordCost(m, state.mode, convDate).total;
-          return escapeHtml(formatModelName(m.model)) + ": " + formatUsd(mc) + " (" + formatCompactCn(getTokenValue(m, state.mode)) + ")";
+          return escapeHtml(m.label) + ": " + formatUsd(m.cost) + " (" + formatCompactCn(m.tokens) + ")";
         }).join(" / ");
 
         html += '<tr class="detail-drawer"><td colspan="6">' +
