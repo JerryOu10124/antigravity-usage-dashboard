@@ -5,6 +5,23 @@ import os from "node:os";
 import readline from "node:readline";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import {
+  RETENTION_MS,
+  annotateCacheAnomalies,
+  extractRequestEvents,
+  fetchLiveFxRate,
+  fetchLiveOfficialPricing,
+  getDbStamp,
+  isRequestWithinRetention,
+  loadPricingCache,
+  mergeRequestLists,
+  pruneRequestList,
+  readConversationDb,
+  refreshTelemetryFromRequests,
+  robustPeakTps,
+  savePricingCache,
+  summarizeDbTelemetry,
+} from "./lib/telemetry.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -84,6 +101,7 @@ function parseArgs(argv) {
     bundleOut: null,
     machineName: null,
     gitSync: null,
+    refreshPricing: false,
     sourceRoots: null,
   };
   for (let i = 0; i < argv.length; i++) {
@@ -98,6 +116,8 @@ function parseArgs(argv) {
       opts.gitSync = true;
     } else if (a === "--no-git-sync") {
       opts.gitSync = false;
+    } else if (a === "--refresh-pricing") {
+      opts.refreshPricing = true;
     } else if (a === "--source-roots" && i + 1 < argv.length) {
       const val = argv[++i];
       if (!opts.sourceRoots) opts.sourceRoots = [];
@@ -752,7 +772,7 @@ function loadMachineAliases(dataDir, configAliases) {
   return aliases;
 }
 
-function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null) {
+function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null, pricingCache = null) {
   const aliases = loadMachineAliases(dataDir, configAliases);
   const machineList = [];
   let grandIn = 0;
@@ -765,7 +785,7 @@ function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null
   if (fs.existsSync(dataDir)) {
     files = fs
       .readdirSync(dataDir, { withFileTypes: true })
-      .filter((d) => d.isFile() && d.name.endsWith(".json") && !d.name.endsWith(".tmp") && d.name.toLowerCase() !== "aliases.json")
+      .filter((d) => d.isFile() && d.name.endsWith(".json") && !d.name.endsWith(".tmp") && d.name.toLowerCase() !== "aliases.json" && d.name.toLowerCase() !== "pricing_cache.json")
       .map((d) => d.name)
       .sort();
   }
@@ -787,6 +807,16 @@ function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null
       const toolAgg = Object.create(null);
       const skillAgg = Object.create(null);
       const convSummaries = [];
+      const machineRequests = [];
+      let mThink = 0;
+      let mResp = 0;
+      let mTtftSum = 0;
+      let mTtftCount = 0;
+      let mStreamMs = 0;
+      let mTimedOut = 0;
+      let mErrCount = 0;
+      let mRetryCount = 0;
+      let mCompactions = 0;
 
       const convKeys = Object.keys(convsObj);
       for (const cKey of convKeys) {
@@ -811,6 +841,7 @@ function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null
         let cOut = 0;
         let cToolCount = 0;
         const cModelMap = Object.create(null);
+        const cDailyModelMap = Object.create(null);
 
         const bucketObj =
           conv.hourly_buckets && typeof conv.hourly_buckets === "object"
@@ -849,6 +880,14 @@ function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null
             cModelMap[bModel].input += bIn;
             cModelMap[bModel].cache_read += bCache;
             cModelMap[bModel].output += bOut;
+
+            const dmKey = `${bDate}|${bModel}`;
+            if (!cDailyModelMap[dmKey]) {
+              cDailyModelMap[dmKey] = { date: bDate, model: bModel, input: 0, cache_read: 0, output: 0 };
+            }
+            cDailyModelMap[dmKey].input += bIn;
+            cDailyModelMap[dmKey].cache_read += bCache;
+            cDailyModelMap[dmKey].output += bOut;
 
             const hKey = `${bDate}|${pad2(bHour)}|${cSource}|${cScene}|${bModel}`;
             if (!hourlyAgg[hKey]) {
@@ -916,6 +955,29 @@ function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null
         const cModelList = Object.keys(cModelMap)
           .sort()
           .map((mk) => cModelMap[mk]);
+        const cDailyModels = Object.keys(cDailyModelMap)
+          .sort()
+          .map((dk) => cDailyModelMap[dk]);
+
+        if (conv.db_telemetry && typeof conv.db_telemetry === "object") {
+          const dt = conv.db_telemetry;
+          mThink += Number(dt.thinking_tokens) || 0;
+          mResp += Number(dt.response_tokens) || 0;
+          mTtftSum += Number(dt.ttft_sum_ms) || 0;
+          mTtftCount += Number(dt.ttft_count) || 0;
+          mStreamMs += Number(dt.stream_ms) || 0;
+          mTimedOut += Number(dt.timed_output) || 0;
+          mErrCount += Number(dt.error_count) || 0;
+          mRetryCount += Number(dt.retry_count) || 0;
+          mCompactions += Number(dt.compactions) || 0;
+        }
+        if (Array.isArray(conv.requests)) {
+          const bundleCutoff = Date.now() - RETENTION_MS;
+          for (const req of conv.requests) {
+            if (!isRequestWithinRetention(req, bundleCutoff)) continue;
+            machineRequests.push({ ...req, src: cSource, title: cTitle });
+          }
+        }
 
         convSummaries.push({
           conv_id: cId,
@@ -935,8 +997,20 @@ function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null
           output: cOut,
           tool_count: cToolCount,
           models: cModelList,
+          daily_models: cDailyModels,
+          ...(conv.db_telemetry ? { db_telemetry: conv.db_telemetry } : {}),
         });
       }
+
+      const anomalies = annotateCacheAnomalies(machineRequests);
+      const sortedReqs = machineRequests
+        .slice()
+        .sort((a, b) => (b.ts || 0) - (a.ts || 0))
+        .slice(0, 10000)
+        .map((r) => {
+          const anom = anomalies.get(r.id);
+          return anom ? { ...r, ca_anom: anom } : r;
+        });
 
       const hourlyList = Object.keys(hourlyAgg)
         .sort()
@@ -958,6 +1032,21 @@ function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null
         tool_records: toolList,
         skill_totals: skillList,
         conversations: convSummaries,
+        requests: sortedReqs,
+        telemetry_summary: {
+          req_count: machineRequests.length,
+          thinking_tokens: mThink,
+          response_tokens: mResp,
+          ttft_sum_ms: mTtftSum,
+          ttft_count: mTtftCount,
+          stream_ms: mStreamMs,
+          timed_output: mTimedOut,
+          peak_tps: robustPeakTps(machineRequests),
+          error_count: mErrCount,
+          retry_count: mRetryCount,
+          anomaly_count: anomalies.size,
+          compactions: mCompactions,
+        },
       });
       grandConvs += convKeys.length;
     } catch (err) {
@@ -970,6 +1059,7 @@ function buildUsageBundle(dataDir, bundlePath, machineName, configAliases = null
     generated_at: formatLocalIso(new Date()),
     current_machine: aliases[machineName] || machineName,
     machines: machineList,
+    pricing_cache: pricingCache || null,
   };
 
   writeUtf8Atomic(bundlePath, `window.AGY_USAGE_DATA = ${JSON.stringify(bundleObj)};\n`);
@@ -1034,8 +1124,9 @@ async function main() {
         sPath = rawRoot.trim();
         sTag = sPath.includes("antigravity-cli") ? "cli" : "desktop";
       }
-      const annDir = path.join(path.dirname(sPath), "annotations");
-      scanSpecs.push({ source: sTag, path: sPath, annotationsDir: annDir });
+      const baseDir = path.dirname(sPath);
+      const annDir = path.join(baseDir, "annotations");
+      scanSpecs.push({ source: sTag, path: sPath, baseDir, annotationsDir: annDir });
     }
   } else {
     const home = os.homedir();
@@ -1044,13 +1135,44 @@ async function main() {
     scanSpecs.push({
       source: "desktop",
       path: path.join(desktopBase, "brain"),
+      baseDir: desktopBase,
       annotationsDir: path.join(desktopBase, "annotations"),
     });
     scanSpecs.push({
       source: "cli",
       path: path.join(cliBase, "brain"),
+      baseDir: cliBase,
       annotationsDir: path.join(cliBase, "annotations"),
     });
+  }
+
+  let pricingCache = loadPricingCache(repoRoot);
+  if (cli.refreshPricing) {
+    const [pRes, fRes] = await Promise.allSettled([
+      fetchLiveOfficialPricing(),
+      fetchLiveFxRate(),
+    ]);
+    const pricingOk = pRes.status === "fulfilled" && Boolean(pRes.value);
+    const fxOk = fRes.status === "fulfilled" && Boolean(fRes.value);
+    const nowIso = new Date().toISOString();
+    const nextCache = { ...(pricingCache || {}) };
+    if (pricingOk) {
+      nextCache.families = { ...(pricingCache?.families || {}), ...pRes.value.families };
+      nextCache.pricingSource = pRes.value.source;
+      nextCache.pricingUpdatedAt = nowIso;
+    } else {
+      console.warn("[定价更新] 官方价格刷新失败，已保留离线/缓存费率。");
+    }
+    if (fxOk) {
+      nextCache.fx = fRes.value;
+      nextCache.fxUpdatedAt = nowIso;
+    } else {
+      console.warn("[汇率更新] 实时汇率刷新失败，已保留默认/缓存汇率。");
+    }
+    if (pricingOk || fxOk) {
+      nextCache.checkedAt = nowIso;
+      pricingCache = savePricingCache(repoRoot, nextCache);
+    }
   }
 
   const archivePath = path.join(dataDir, `${machineName}.json`);
@@ -1113,27 +1235,59 @@ async function main() {
       const fileSize = fileStat.size;
       const lastWriteUtc = fileStat.mtime.toISOString();
       const annWriteUtc = annInfo.annWriteUtc || "";
+      const fileSig = `${fileSize}|${lastWriteUtc}|${annWriteUtc}`;
+      const dbStamp = getDbStamp(spec.baseDir, convId);
 
       const existing = conversations[key];
       if (existing && typeof existing === "object") {
         const hasV2 = existing.hourly_buckets && existing.tool_daily;
-        if (
-          hasV2 &&
-          Number(existing.file_size) === fileSize &&
-          String(existing.last_write_utc || "") === lastWriteUtc &&
-          String(existing.ann_write_utc || "") === annWriteUtc
-        ) {
+        const transcriptSame =
+          (Number(existing.file_size) === fileSize &&
+            String(existing.last_write_utc || "") === lastWriteUtc &&
+            String(existing.ann_write_utc || "") === annWriteUtc) ||
+          String(existing.observed_truncated_sig || "") === fileSig;
+        if (hasV2 && transcriptSame && String(existing.db_stamp || "") === dbStamp) {
           skippedCount++;
           continue;
         }
       }
 
+      const nowMs = Date.now();
       const parsed = await parseTranscriptFile(tPath, fileStat, spec.source, convId, annInfo);
+      const dbData = dbStamp ? readConversationDb(spec.baseDir, convId) : null;
+      const prevRequests = Array.isArray(existing?.requests) ? existing.requests : [];
+      const mergedRequests = dbData
+        ? mergeRequestLists(prevRequests, extractRequestEvents(dbData, convId), { now: nowMs })
+        : pruneRequestList(prevRequests, { now: nowMs });
+      const dbTelemetry = dbData
+        ? summarizeDbTelemetry(dbData, mergedRequests)
+        : existing?.db_telemetry
+        ? refreshTelemetryFromRequests(existing.db_telemetry, mergedRequests)
+        : null;
+      const effectiveDbStamp = dbStamp ? (dbData ? dbStamp : String(existing?.db_stamp || "")) : "";
 
       if (existing && typeof existing === "object") {
         const exSteps = Number(existing.total_steps) || 0;
         if (parsed.total_steps < exSteps) {
-          protectedCount++;
+          const prevSig = String(existing.observed_truncated_sig || "");
+          const prevStamp = String(existing.db_stamp || "");
+          const reqsChanged = JSON.stringify(prevRequests) !== JSON.stringify(mergedRequests);
+          const dbChanged =
+            effectiveDbStamp !== prevStamp ||
+            reqsChanged ||
+            (dbData &&
+              JSON.stringify(existing.db_telemetry || null) !== JSON.stringify(dbTelemetry));
+          if (prevSig !== fileSig || dbChanged) {
+            existing.observed_truncated_sig = fileSig;
+            if (effectiveDbStamp) existing.db_stamp = effectiveDbStamp;
+            else delete existing.db_stamp;
+            if (mergedRequests.length > 0) existing.requests = mergedRequests;
+            else delete existing.requests;
+            if (dbTelemetry) existing.db_telemetry = dbTelemetry;
+            updatedCount++;
+          } else {
+            protectedCount++;
+          }
           continue;
         }
         updatedCount++;
@@ -1141,7 +1295,28 @@ async function main() {
         newCount++;
       }
 
+      parsed.db_stamp = effectiveDbStamp;
+      if (mergedRequests.length > 0) parsed.requests = mergedRequests;
+      if (dbTelemetry) parsed.db_telemetry = dbTelemetry;
       conversations[key] = parsed;
+    }
+  }
+
+  const pruneNow = Date.now();
+  let prunedChanged = false;
+  for (const k of Object.keys(conversations)) {
+    const conv = conversations[k];
+    if (!conv || typeof conv !== "object") continue;
+    if (Array.isArray(conv.requests) && conv.requests.length > 0) {
+      const pruned = pruneRequestList(conv.requests, { now: pruneNow });
+      if (JSON.stringify(pruned) !== JSON.stringify(conv.requests)) {
+        if (pruned.length > 0) conv.requests = pruned;
+        else delete conv.requests;
+        if (conv.db_telemetry) {
+          conv.db_telemetry = refreshTelemetryFromRequests(conv.db_telemetry, pruned);
+        }
+        prunedChanged = true;
+      }
     }
   }
 
@@ -1150,7 +1325,7 @@ async function main() {
     if (!seenKeys.has(k)) archivedOnlyCount++;
   }
 
-  if (!archiveExists || newCount > 0 || updatedCount > 0) {
+  if (!archiveExists || newCount > 0 || updatedCount > 0 || prunedChanged) {
     const archiveObj = {
       schema_version: 2,
       machine: machineName,
@@ -1160,11 +1335,11 @@ async function main() {
     writeUtf8Atomic(archivePath, JSON.stringify(archiveObj));
   }
 
-  let bundleInfo = buildUsageBundle(dataDir, bundleOut, machineName, cfg.machineAliases);
+  let bundleInfo = buildUsageBundle(dataDir, bundleOut, machineName, cfg.machineAliases, pricingCache);
 
   if (gitSync && gitSyncInfo.ready && gitSyncInfo.repoRoot) {
     syncGitPush(gitSyncInfo.repoRoot, archivePath, machineName, () => {
-      bundleInfo = buildUsageBundle(dataDir, bundleOut, machineName, cfg.machineAliases);
+      bundleInfo = buildUsageBundle(dataDir, bundleOut, machineName, cfg.machineAliases, pricingCache);
     });
   }
 

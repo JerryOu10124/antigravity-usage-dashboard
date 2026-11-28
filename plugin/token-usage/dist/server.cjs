@@ -32,9 +32,9 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/codegen/code.js
+// plugin-src/node_modules/ajv/dist/compile/codegen/code.js
 var require_code = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/codegen/code.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/codegen/code.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.regexpCode = exports2.getEsmExportName = exports2.getProperty = exports2.safeStringify = exports2.stringify = exports2.strConcat = exports2.addCodeArg = exports2.str = exports2._ = exports2.nil = exports2._Code = exports2.Name = exports2.IDENTIFIER = exports2._CodeOrName = void 0;
@@ -186,9 +186,9 @@ var require_code = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/codegen/scope.js
+// plugin-src/node_modules/ajv/dist/compile/codegen/scope.js
 var require_scope = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/codegen/scope.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/codegen/scope.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ValueScope = exports2.ValueScopeName = exports2.Scope = exports2.varKinds = exports2.UsedValueState = void 0;
@@ -331,9 +331,9 @@ var require_scope = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/codegen/index.js
+// plugin-src/node_modules/ajv/dist/compile/codegen/index.js
 var require_codegen = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/codegen/index.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/codegen/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.or = exports2.and = exports2.not = exports2.CodeGen = exports2.operators = exports2.varKinds = exports2.ValueScopeName = exports2.ValueScope = exports2.Scope = exports2.Name = exports2.regexpCode = exports2.stringify = exports2.getProperty = exports2.nil = exports2.strConcat = exports2.str = exports2._ = void 0;
@@ -1051,9 +1051,9 @@ var require_codegen = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/util.js
+// plugin-src/node_modules/ajv/dist/compile/util.js
 var require_util = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/util.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/util.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.checkStrictMode = exports2.getErrorPath = exports2.Type = exports2.useFunc = exports2.setEvaluated = exports2.evaluatedPropsToName = exports2.mergeEvaluated = exports2.eachItem = exports2.unescapeJsonPointer = exports2.escapeJsonPointer = exports2.escapeFragment = exports2.unescapeFragment = exports2.schemaRefOrVal = exports2.schemaHasRulesButRef = exports2.schemaHasRules = exports2.checkUnknownRules = exports2.alwaysValidSchema = exports2.toHash = void 0;
@@ -1218,9 +1218,9 @@ var require_util = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/names.js
+// plugin-src/node_modules/ajv/dist/compile/names.js
 var require_names = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/names.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/names.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -1257,9 +1257,9 @@ var require_names = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/errors.js
+// plugin-src/node_modules/ajv/dist/compile/errors.js
 var require_errors = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/errors.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/errors.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.extendErrors = exports2.resetErrorsCount = exports2.reportExtraError = exports2.reportError = exports2.keyword$DataError = exports2.keywordError = void 0;
@@ -1379,9 +1379,9 @@ var require_errors = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/boolSchema.js
+// plugin-src/node_modules/ajv/dist/compile/validate/boolSchema.js
 var require_boolSchema = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/validate/boolSchema.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.boolOrEmptySchema = exports2.topBoolOrEmptySchema = void 0;
@@ -1430,9 +1430,9 @@ var require_boolSchema = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/rules.js
+// plugin-src/node_modules/ajv/dist/compile/rules.js
 var require_rules = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/rules.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/rules.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getRules = exports2.isJSONType = void 0;
@@ -1461,9 +1461,9 @@ var require_rules = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/applicability.js
+// plugin-src/node_modules/ajv/dist/compile/validate/applicability.js
 var require_applicability = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/applicability.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/validate/applicability.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.shouldUseRule = exports2.shouldUseGroup = exports2.schemaHasRulesForType = void 0;
@@ -1484,9 +1484,9 @@ var require_applicability = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/dataType.js
+// plugin-src/node_modules/ajv/dist/compile/validate/dataType.js
 var require_dataType = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/dataType.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/validate/dataType.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.reportTypeError = exports2.checkDataTypes = exports2.checkDataType = exports2.coerceAndCheckDataType = exports2.getJSONTypes = exports2.getSchemaTypes = exports2.DataType = void 0;
@@ -1668,9 +1668,9 @@ var require_dataType = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/defaults.js
+// plugin-src/node_modules/ajv/dist/compile/validate/defaults.js
 var require_defaults = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/defaults.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/validate/defaults.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.assignDefaults = void 0;
@@ -1705,9 +1705,9 @@ var require_defaults = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/code.js
+// plugin-src/node_modules/ajv/dist/vocabularies/code.js
 var require_code2 = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/code.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/code.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.validateUnion = exports2.validateArray = exports2.usePattern = exports2.callValidateCode = exports2.schemaProperties = exports2.allSchemaProperties = exports2.noPropertyInData = exports2.propertyInData = exports2.isOwnProperty = exports2.hasPropFunc = exports2.reportMissingProp = exports2.checkMissingProp = exports2.checkReportMissingProp = void 0;
@@ -1838,9 +1838,9 @@ var require_code2 = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/keyword.js
+// plugin-src/node_modules/ajv/dist/compile/validate/keyword.js
 var require_keyword = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/keyword.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/validate/keyword.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.validateKeywordUsage = exports2.validSchemaType = exports2.funcKeywordCode = exports2.macroKeywordCode = void 0;
@@ -1956,9 +1956,9 @@ var require_keyword = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/subschema.js
+// plugin-src/node_modules/ajv/dist/compile/validate/subschema.js
 var require_subschema = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/subschema.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/validate/subschema.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.extendSubschemaMode = exports2.extendSubschemaData = exports2.getSubschema = void 0;
@@ -2039,9 +2039,9 @@ var require_subschema = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/fast-deep-equal/index.js
+// plugin-src/node_modules/fast-deep-equal/index.js
 var require_fast_deep_equal = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/fast-deep-equal/index.js"(exports2, module2) {
+  "plugin-src/node_modules/fast-deep-equal/index.js"(exports2, module2) {
     "use strict";
     module2.exports = function equal(a, b) {
       if (a === b) return true;
@@ -2074,9 +2074,9 @@ var require_fast_deep_equal = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/json-schema-traverse/index.js
+// plugin-src/node_modules/json-schema-traverse/index.js
 var require_json_schema_traverse = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/json-schema-traverse/index.js"(exports2, module2) {
+  "plugin-src/node_modules/json-schema-traverse/index.js"(exports2, module2) {
     "use strict";
     var traverse = module2.exports = function(schema, opts, cb) {
       if (typeof opts == "function") {
@@ -2162,9 +2162,9 @@ var require_json_schema_traverse = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/resolve.js
+// plugin-src/node_modules/ajv/dist/compile/resolve.js
 var require_resolve = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/resolve.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/resolve.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getSchemaRefs = exports2.resolveUrl = exports2.normalizeId = exports2._getFullPath = exports2.getFullPath = exports2.inlineRef = void 0;
@@ -2318,9 +2318,9 @@ var require_resolve = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/index.js
+// plugin-src/node_modules/ajv/dist/compile/validate/index.js
 var require_validate = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/validate/index.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/validate/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getData = exports2.KeywordCxt = exports2.validateFunctionCode = void 0;
@@ -2826,9 +2826,9 @@ var require_validate = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/runtime/validation_error.js
+// plugin-src/node_modules/ajv/dist/runtime/validation_error.js
 var require_validation_error = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/runtime/validation_error.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/runtime/validation_error.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var ValidationError = class extends Error {
@@ -2842,9 +2842,9 @@ var require_validation_error = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/ref_error.js
+// plugin-src/node_modules/ajv/dist/compile/ref_error.js
 var require_ref_error = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/ref_error.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/ref_error.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var resolve_1 = require_resolve();
@@ -2859,9 +2859,9 @@ var require_ref_error = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/index.js
+// plugin-src/node_modules/ajv/dist/compile/index.js
 var require_compile = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/compile/index.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/compile/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.resolveSchema = exports2.getCompilingSchema = exports2.resolveRef = exports2.compileSchema = exports2.SchemaEnv = void 0;
@@ -3083,9 +3083,9 @@ var require_compile = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/refs/data.json
+// plugin-src/node_modules/ajv/dist/refs/data.json
 var require_data = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/refs/data.json"(exports2, module2) {
+  "plugin-src/node_modules/ajv/dist/refs/data.json"(exports2, module2) {
     module2.exports = {
       $id: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#",
       description: "Meta-schema for $data reference (JSON AnySchema extension proposal)",
@@ -3102,9 +3102,9 @@ var require_data = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/fast-uri/lib/utils.js
+// plugin-src/node_modules/fast-uri/lib/utils.js
 var require_utils = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/fast-uri/lib/utils.js"(exports2, module2) {
+  "plugin-src/node_modules/fast-uri/lib/utils.js"(exports2, module2) {
     "use strict";
     var isUUID = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu);
     var isIPv4 = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u);
@@ -3261,8 +3261,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path2) {
-      let input = path2;
+    function removeDotSegments(path3) {
+      let input = path3;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3336,11 +3336,11 @@ var require_utils = __commonJS({
       }
       return output.join("");
     }
-    function removeDotSegmentsRelative(path2) {
-      if (path2 === "" || path2[0] === "/") {
-        return removeDotSegments(path2);
+    function removeDotSegmentsRelative(path3) {
+      if (path3 === "" || path3[0] === "/") {
+        return removeDotSegments(path3);
       }
-      const segments = path2.split("/");
+      const segments = path3.split("/");
       const last = segments.length - 1;
       const output = [];
       let trailingDirectory = false;
@@ -3636,9 +3636,9 @@ var require_utils = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/fast-uri/lib/schemes.js
+// plugin-src/node_modules/fast-uri/lib/schemes.js
 var require_schemes = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/fast-uri/lib/schemes.js"(exports2, module2) {
+  "plugin-src/node_modules/fast-uri/lib/schemes.js"(exports2, module2) {
     "use strict";
     var { isUUID } = require_utils();
     var URN_REG = /^([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-./:;=@]|%[\da-f]{2})+)$/iu;
@@ -3703,8 +3703,8 @@ var require_schemes = __commonJS({
       }
       if (wsComponent.resourceName) {
         const queryIndex = wsComponent.resourceName.indexOf("?");
-        const path2 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
-        wsComponent.path = path2 && path2 !== "/" ? path2 : void 0;
+        const path3 = queryIndex === -1 ? wsComponent.resourceName : wsComponent.resourceName.slice(0, queryIndex);
+        wsComponent.path = path3 && path3 !== "/" ? path3 : void 0;
         wsComponent.query = queryIndex === -1 ? void 0 : wsComponent.resourceName.slice(queryIndex + 1);
         wsComponent.resourceName = void 0;
       }
@@ -3847,9 +3847,9 @@ var require_schemes = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/fast-uri/index.js
+// plugin-src/node_modules/fast-uri/index.js
 var require_fast_uri = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/fast-uri/index.js"(exports2, module2) {
+  "plugin-src/node_modules/fast-uri/index.js"(exports2, module2) {
     "use strict";
     var { normalizeIPv6, removeDotSegments, removeDotSegmentsRelative, recomposeAuthority, normalizePercentEncoding, normalizePathEncoding, serializePathEncoding, normalizeQueryFragmentEncoding, encodeQuery, encodeFragment, reescapeHostDelimiters, isIPv4, nonSimpleDomain } = require_utils();
     var { SCHEMES, getSchemeHandler } = require_schemes();
@@ -4277,9 +4277,9 @@ var require_fast_uri = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/runtime/uri.js
+// plugin-src/node_modules/ajv/dist/runtime/uri.js
 var require_uri = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/runtime/uri.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/runtime/uri.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var uri = require_fast_uri();
@@ -4288,9 +4288,9 @@ var require_uri = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/core.js
+// plugin-src/node_modules/ajv/dist/core.js
 var require_core = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/core.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/core.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.CodeGen = exports2.Name = exports2.nil = exports2.stringify = exports2.str = exports2._ = exports2.KeywordCxt = void 0;
@@ -4899,9 +4899,9 @@ var require_core = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/core/id.js
+// plugin-src/node_modules/ajv/dist/vocabularies/core/id.js
 var require_id = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/core/id.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/core/id.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var def = {
@@ -4914,9 +4914,9 @@ var require_id = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/core/ref.js
+// plugin-src/node_modules/ajv/dist/vocabularies/core/ref.js
 var require_ref = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/core/ref.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/core/ref.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.callRef = exports2.getValidate = void 0;
@@ -5036,9 +5036,9 @@ var require_ref = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/core/index.js
+// plugin-src/node_modules/ajv/dist/vocabularies/core/index.js
 var require_core2 = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/core/index.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/core/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var id_1 = require_id();
@@ -5057,9 +5057,9 @@ var require_core2 = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/limitNumber.js
 var require_limitNumber = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/limitNumber.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5089,9 +5089,9 @@ var require_limitNumber = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/multipleOf.js
 var require_multipleOf = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/multipleOf.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5117,9 +5117,9 @@ var require_multipleOf = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/runtime/ucs2length.js
+// plugin-src/node_modules/ajv/dist/runtime/ucs2length.js
 var require_ucs2length = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/runtime/ucs2length.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/runtime/ucs2length.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     function ucs2length(str) {
@@ -5143,9 +5143,9 @@ var require_ucs2length = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/limitLength.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/limitLength.js
 var require_limitLength = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/limitLength.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5175,9 +5175,9 @@ var require_limitLength = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/pattern.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/pattern.js
 var require_pattern = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/pattern.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5212,9 +5212,9 @@ var require_pattern = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/limitProperties.js
 var require_limitProperties = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/limitProperties.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5241,9 +5241,9 @@ var require_limitProperties = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/required.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/required.js
 var require_required = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/required.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/required.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -5323,9 +5323,9 @@ var require_required = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/limitItems.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/limitItems.js
 var require_limitItems = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/limitItems.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5352,9 +5352,9 @@ var require_limitItems = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/runtime/equal.js
+// plugin-src/node_modules/ajv/dist/runtime/equal.js
 var require_equal = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/runtime/equal.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/runtime/equal.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var equal = require_fast_deep_equal();
@@ -5363,9 +5363,9 @@ var require_equal = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js
 var require_uniqueItems = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/uniqueItems.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var dataType_1 = require_dataType();
@@ -5430,9 +5430,9 @@ var require_uniqueItems = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/const.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/const.js
 var require_const = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/const.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/const.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5459,9 +5459,9 @@ var require_const = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/enum.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/enum.js
 var require_enum = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/enum.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5508,9 +5508,9 @@ var require_enum = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/index.js
+// plugin-src/node_modules/ajv/dist/vocabularies/validation/index.js
 var require_validation = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/validation/index.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/validation/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var limitNumber_1 = require_limitNumber();
@@ -5546,9 +5546,9 @@ var require_validation = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js
 var require_additionalItems = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/additionalItems.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.validateAdditionalItems = void 0;
@@ -5599,9 +5599,9 @@ var require_additionalItems = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/items.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/items.js
 var require_items = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/items.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.validateTuple = void 0;
@@ -5656,9 +5656,9 @@ var require_items = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js
 var require_prefixItems = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/prefixItems.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var items_1 = require_items();
@@ -5673,9 +5673,9 @@ var require_prefixItems = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/items2020.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/items2020.js
 var require_items2020 = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/items2020.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5708,9 +5708,9 @@ var require_items2020 = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/contains.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/contains.js
 var require_contains = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/contains.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5802,9 +5802,9 @@ var require_contains = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/dependencies.js
 var require_dependencies = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/dependencies.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.validateSchemaDeps = exports2.validatePropertyDeps = exports2.error = void 0;
@@ -5896,9 +5896,9 @@ var require_dependencies = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js
 var require_propertyNames = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/propertyNames.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -5939,9 +5939,9 @@ var require_propertyNames = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js
 var require_additionalProperties = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/additionalProperties.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -6045,9 +6045,9 @@ var require_additionalProperties = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/properties.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/properties.js
 var require_properties = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/properties.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var validate_1 = require_validate();
@@ -6103,9 +6103,9 @@ var require_properties = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js
 var require_patternProperties = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/patternProperties.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -6177,9 +6177,9 @@ var require_patternProperties = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/not.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/not.js
 var require_not = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/not.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6208,9 +6208,9 @@ var require_not = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/anyOf.js
 var require_anyOf = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/anyOf.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var code_1 = require_code2();
@@ -6225,9 +6225,9 @@ var require_anyOf = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/oneOf.js
 var require_oneOf = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/oneOf.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6283,9 +6283,9 @@ var require_oneOf = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/allOf.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/allOf.js
 var require_allOf = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/allOf.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6310,9 +6310,9 @@ var require_allOf = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/if.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/if.js
 var require_if = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/if.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6379,9 +6379,9 @@ var require_if = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/thenElse.js
 var require_thenElse = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/thenElse.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var util_1 = require_util();
@@ -6397,9 +6397,9 @@ var require_thenElse = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/index.js
+// plugin-src/node_modules/ajv/dist/vocabularies/applicator/index.js
 var require_applicator = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/applicator/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var additionalItems_1 = require_additionalItems();
@@ -6445,9 +6445,9 @@ var require_applicator = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/format/format.js
+// plugin-src/node_modules/ajv/dist/vocabularies/format/format.js
 var require_format = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/format/format.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/format/format.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6535,9 +6535,9 @@ var require_format = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/format/index.js
+// plugin-src/node_modules/ajv/dist/vocabularies/format/index.js
 var require_format2 = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/format/index.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/format/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var format_1 = require_format();
@@ -6546,9 +6546,9 @@ var require_format2 = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/metadata.js
+// plugin-src/node_modules/ajv/dist/vocabularies/metadata.js
 var require_metadata = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/metadata.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/metadata.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.contentVocabulary = exports2.metadataVocabulary = void 0;
@@ -6569,9 +6569,9 @@ var require_metadata = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/draft7.js
+// plugin-src/node_modules/ajv/dist/vocabularies/draft7.js
 var require_draft7 = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/draft7.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/draft7.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var core_1 = require_core2();
@@ -6591,9 +6591,9 @@ var require_draft7 = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/discriminator/types.js
+// plugin-src/node_modules/ajv/dist/vocabularies/discriminator/types.js
 var require_types = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/discriminator/types.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.DiscrError = void 0;
@@ -6605,9 +6605,9 @@ var require_types = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/discriminator/index.js
+// plugin-src/node_modules/ajv/dist/vocabularies/discriminator/index.js
 var require_discriminator = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports2) {
+  "plugin-src/node_modules/ajv/dist/vocabularies/discriminator/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var codegen_1 = require_codegen();
@@ -6710,9 +6710,9 @@ var require_discriminator = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/refs/json-schema-draft-07.json
+// plugin-src/node_modules/ajv/dist/refs/json-schema-draft-07.json
 var require_json_schema_draft_07 = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports2, module2) {
+  "plugin-src/node_modules/ajv/dist/refs/json-schema-draft-07.json"(exports2, module2) {
     module2.exports = {
       $schema: "http://json-schema.org/draft-07/schema#",
       $id: "http://json-schema.org/draft-07/schema#",
@@ -6867,9 +6867,9 @@ var require_json_schema_draft_07 = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/ajv.js
+// plugin-src/node_modules/ajv/dist/ajv.js
 var require_ajv = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv/dist/ajv.js"(exports2, module2) {
+  "plugin-src/node_modules/ajv/dist/ajv.js"(exports2, module2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.MissingRefError = exports2.ValidationError = exports2.CodeGen = exports2.Name = exports2.nil = exports2.stringify = exports2.str = exports2._ = exports2.KeywordCxt = exports2.Ajv = void 0;
@@ -6937,9 +6937,9 @@ var require_ajv = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv-formats/dist/formats.js
+// plugin-src/node_modules/ajv-formats/dist/formats.js
 var require_formats = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv-formats/dist/formats.js"(exports2) {
+  "plugin-src/node_modules/ajv-formats/dist/formats.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.formatNames = exports2.fastFormats = exports2.fullFormats = void 0;
@@ -7140,9 +7140,9 @@ var require_formats = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv-formats/dist/limit.js
+// plugin-src/node_modules/ajv-formats/dist/limit.js
 var require_limit = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv-formats/dist/limit.js"(exports2) {
+  "plugin-src/node_modules/ajv-formats/dist/limit.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.formatLimitDefinition = void 0;
@@ -7212,9 +7212,9 @@ var require_limit = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv-formats/dist/index.js
+// plugin-src/node_modules/ajv-formats/dist/index.js
 var require_dist = __commonJS({
-  "D:/antigravity-usage-dashboard/plugin-src/node_modules/ajv-formats/dist/index.js"(exports2, module2) {
+  "plugin-src/node_modules/ajv-formats/dist/index.js"(exports2, module2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var formats_1 = require_formats();
@@ -7241,12 +7241,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs2, exportName) {
+    function addFormats(ajv, list, fs3, exportName) {
       var _a3;
       var _b;
       (_a3 = (_b = ajv.opts.code).formats) !== null && _a3 !== void 0 ? _a3 : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs2[f]);
+        ajv.addFormat(f, fs3[f]);
     }
     module2.exports = exports2 = formatsPlugin;
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -7254,12 +7254,12 @@ var require_dist = __commonJS({
   }
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/server.mjs
-var import_node_fs = __toESM(require("node:fs"), 1);
-var import_node_path = __toESM(require("node:path"), 1);
+// plugin-src/server.mjs
+var import_node_fs2 = __toESM(require("node:fs"), 1);
+var import_node_path2 = __toESM(require("node:path"), 1);
 var import_node_child_process = require("node:child_process");
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/util.js
+// plugin-src/node_modules/zod/v4/core/util.js
 var util_exports = {};
 __export(util_exports, {
   BIGINT_FORMAT_RANGES: () => BIGINT_FORMAT_RANGES,
@@ -7496,10 +7496,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path2) {
-  if (!path2)
+function getElementAtPath(obj, path3) {
+  if (!path3)
     return obj;
-  return path2.reduce((acc, key) => acc?.[key], obj);
+  return path3.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -7839,11 +7839,11 @@ function explicitlyAborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path2, issues) {
+function prefixIssues(path3, issues) {
   return issues.map((iss) => {
     var _a3;
     (_a3 = iss).path ?? (_a3.path = []);
-    iss.path.unshift(path2);
+    iss.path.unshift(path3);
     return iss;
   });
 }
@@ -8115,7 +8115,7 @@ function constantCatch(value) {
   return fn;
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/core.js
+// plugin-src/node_modules/zod/v4/core/core.js
 var _a;
 var _zodDesc = { value: void 0, enumerable: false };
 var _E = "captureStackTrace" in Error ? Error : null;
@@ -8233,7 +8233,7 @@ function config(newConfig) {
   return globalConfig;
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/errors.js
+// plugin-src/node_modules/zod/v4/core/errors.js
 function _getMessage() {
   const internals = this._zod;
   internals.message ?? (internals.message = JSON.stringify(internals.def, jsonStringifyReplacer, 2));
@@ -8301,16 +8301,16 @@ function flattenError(error2, mapper = (issue2) => issue2.message) {
 }
 function formatError(error2, mapper = (issue2) => issue2.message) {
   const fieldErrors = { _errors: [] };
-  const processError = (error3, path2 = []) => {
+  const processError = (error3, path3 = []) => {
     for (const issue2 of error3.issues) {
       if (issue2.code === "invalid_union" && issue2.errors.length) {
-        issue2.errors.map((issues) => processError({ issues }, [...path2, ...issue2.path]));
+        issue2.errors.map((issues) => processError({ issues }, [...path3, ...issue2.path]));
       } else if (issue2.code === "invalid_key") {
-        processError({ issues: issue2.issues }, [...path2, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
       } else if (issue2.code === "invalid_element") {
-        processError({ issues: issue2.issues }, [...path2, ...issue2.path]);
+        processError({ issues: issue2.issues }, [...path3, ...issue2.path]);
       } else {
-        const fullpath = [...path2, ...issue2.path];
+        const fullpath = [...path3, ...issue2.path];
         if (fullpath.length === 0) {
           fieldErrors._errors.push(mapper(issue2));
         } else {
@@ -8348,7 +8348,7 @@ function formatError(error2, mapper = (issue2) => issue2.message) {
   return fieldErrors;
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/parse.js
+// plugin-src/node_modules/zod/v4/core/parse.js
 function finalizeParams(callee, params) {
   return { callee: params?.callee ?? callee, Err: params?.Err };
 }
@@ -8497,7 +8497,7 @@ var _safeDecodeAsync = (_Err) => async (schema, value, _ctx) => {
   return _safeParseAsync(_Err)(schema, value, _ctx);
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/regexes.js
+// plugin-src/node_modules/zod/v4/core/regexes.js
 var cuid = /^[cC][0-9a-z]{6,}$/;
 var cuid2 = /^[0-9a-z]+$/;
 var ulid = /^[0-7][0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{25}$/;
@@ -8556,7 +8556,7 @@ var _null = /^null$/i;
 var lowercase = /^[^A-Z]*$/;
 var uppercase = /^[^a-z]*$/;
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/checks.js
+// plugin-src/node_modules/zod/v4/core/checks.js
 var $ZodCheck = /* @__PURE__ */ $constructor("$ZodCheck", (inst, def) => {
   var _a3;
   inst._zod ?? (inst._zod = {});
@@ -8876,7 +8876,7 @@ var $ZodCheckOverwrite = /* @__PURE__ */ $constructor("$ZodCheckOverwrite", (ins
   };
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/doc.js
+// plugin-src/node_modules/zod/v4/core/doc.js
 var Doc = class {
   constructor(args = [], closed = {}) {
     this.content = [];
@@ -8917,14 +8917,14 @@ ${content.join("\n")}
   }
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/versions.js
+// plugin-src/node_modules/zod/v4/core/versions.js
 var version = {
   major: 4,
   minor: 6,
   patch: 7
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/schemas.js
+// plugin-src/node_modules/zod/v4/core/schemas.js
 var $ZodType = /* @__PURE__ */ $constructor("$ZodType", (inst, def) => {
   var _a3;
   inst ?? (inst = {});
@@ -10591,7 +10591,7 @@ function handleRefineResult(result, payload, input, inst) {
   }
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/memoizer.js
+// plugin-src/node_modules/zod/v4/core/memoizer.js
 var $ZodCyclicError = class extends Error {
   constructor() {
     super(`Cannot parse a reference cycle that closes through a transform`);
@@ -10865,7 +10865,7 @@ function isBackEdge(ctx, value) {
   return backEdges !== void 0 && isRef(value) && backEdges.has(value);
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/locales/en.js
+// plugin-src/node_modules/zod/v4/locales/en.js
 var error = () => {
   const Sizable = {
     string: { unit: "characters", verb: "to have" },
@@ -10990,7 +10990,7 @@ function en_default() {
   };
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/registries.js
+// plugin-src/node_modules/zod/v4/core/registries.js
 var _a2;
 var $ZodRegistry = class {
   constructor() {
@@ -11038,7 +11038,7 @@ function registry() {
 (_a2 = globalThis).__zod_globalRegistry ?? (_a2.__zod_globalRegistry = registry());
 var globalRegistry = globalThis.__zod_globalRegistry;
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/api.js
+// plugin-src/node_modules/zod/v4/core/api.js
 function snapshotChecks(def) {
   if (def.checks)
     def.checks = [...def.checks];
@@ -11565,7 +11565,7 @@ function _check(fn, params) {
   return ch;
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/to-json-schema.js
+// plugin-src/node_modules/zod/v4/core/to-json-schema.js
 function assignProps(target, ...sources) {
   for (const source of sources) {
     for (const key of Reflect.ownKeys(source)) {
@@ -12095,7 +12095,7 @@ var createStandardJSONSchemaMethod = (schema, io, processors = {}) => (params) =
   return finalize(ctx, schema);
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/core/json-schema-processors.js
+// plugin-src/node_modules/zod/v4/core/json-schema-processors.js
 var narrowMin = (agg, key, value) => {
   if (agg[key] === void 0 || value > agg[key])
     agg[key] = value;
@@ -12633,7 +12633,7 @@ var optionalProcessor = (schema, ctx, _json, params) => {
   seen.ref = def.innerType;
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-compat.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-compat.js
 function isZ4Schema(s) {
   const schema = s;
   return !!schema._zod;
@@ -12696,7 +12696,7 @@ function getLiteralValue(schema) {
   return void 0;
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/classic/errors.js
+// plugin-src/node_modules/zod/v4/classic/errors.js
 var _installedErrorProtos = /* @__PURE__ */ new WeakSet([Object.prototype, Error.prototype]);
 function _lazyMethod(proto, key, make) {
   Object.defineProperty(proto, key, {
@@ -12741,7 +12741,7 @@ var ZodRealError = /* @__PURE__ */ $constructor("ZodError", initializer2, void 0
   Parent: Error
 });
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/classic/parse.js
+// plugin-src/node_modules/zod/v4/classic/parse.js
 var parse2 = /* @__PURE__ */ _parse(ZodRealError);
 var parseAsync2 = /* @__PURE__ */ _parseAsync(ZodRealError);
 var safeParse3 = /* @__PURE__ */ _safeParse(ZodRealError);
@@ -12755,7 +12755,7 @@ var safeDecode2 = /* @__PURE__ */ _safeDecode(ZodRealError);
 var safeEncodeAsync2 = /* @__PURE__ */ _safeEncodeAsync(ZodRealError);
 var safeDecodeAsync2 = /* @__PURE__ */ _safeDecodeAsync(ZodRealError);
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/classic/schemas.js
+// plugin-src/node_modules/zod/v4/classic/schemas.js
 function _ensureDefaultLocale() {
   if (!globalConfig.localeError)
     config(en_default());
@@ -13699,7 +13699,7 @@ function preprocess(fn, schema) {
   });
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod/v4/classic/iso.js
+// plugin-src/node_modules/zod/v4/classic/iso.js
 var iso_exports = {};
 __export(iso_exports, {
   ZodISODate: () => ZodISODate,
@@ -13724,7 +13724,7 @@ function duration2(params) {
   return _isoDuration(ZodISODuration, params);
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/types.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/types.js
 var LATEST_PROTOCOL_VERSION = "2025-11-25";
 var SUPPORTED_PROTOCOL_VERSIONS = [LATEST_PROTOCOL_VERSION, "2025-06-18", "2025-03-26", "2024-11-05", "2024-10-07"];
 var RELATED_TASK_META_KEY = "io.modelcontextprotocol/related-task";
@@ -15243,15 +15243,15 @@ var UrlElicitationRequiredError = class extends McpError {
   }
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js
 function isTerminal(status) {
   return status === "completed" || status === "failed" || status === "cancelled";
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/zod-to-json-schema/dist/esm/parsers/string.js
+// plugin-src/node_modules/zod-to-json-schema/dist/esm/parsers/string.js
 var ALPHA_NUMERIC = new Set("ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvxyz0123456789");
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-json-schema-compat.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-json-schema-compat.js
 function getMethodLiteral(schema) {
   const shape = getObjectShape(schema);
   const methodSchema = shape?.method;
@@ -15272,7 +15272,7 @@ function parseWithCompat(schema, data) {
   return result.data;
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js
 var DEFAULT_REQUEST_TIMEOUT_MSEC = 6e4;
 var Protocol = class {
   constructor(_options) {
@@ -16249,7 +16249,7 @@ function mergeCapabilities(base, additional) {
   return result;
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/validation/ajv-provider.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/validation/ajv-provider.js
 var import_ajv = __toESM(require_ajv(), 1);
 var import_ajv_formats = __toESM(require_dist(), 1);
 function createDefaultAjvInstance() {
@@ -16317,7 +16317,7 @@ var AjvJsonSchemaValidator = class {
   }
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.js
 var ExperimentalServerTasks = class {
   constructor(_server) {
     this._server = _server;
@@ -16530,7 +16530,7 @@ var ExperimentalServerTasks = class {
   }
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.js
 function assertToolsCallTaskCapability(requests, method, entityName) {
   if (!requests) {
     throw new Error(`${entityName} does not support task creation (required for ${method})`);
@@ -16565,7 +16565,7 @@ function assertClientRequestTaskCapability(requests, method, entityName) {
   }
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.js
 var Server = class extends Protocol {
   /**
    * Initializes this server with the given name and version information.
@@ -16936,10 +16936,10 @@ var Server = class extends Protocol {
   }
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
 var import_node_process = __toESM(require("node:process"), 1);
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js
 var STDIO_DEFAULT_MAX_BUFFER_SIZE = 10 * 1024 * 1024;
 var ReadBuffer = class {
   constructor(options) {
@@ -16976,7 +16976,7 @@ function serializeMessage(message) {
   return JSON.stringify(message) + "\n";
 }
 
-// D:/antigravity-usage-dashboard/plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
+// plugin-src/node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js
 var StdioServerTransport = class {
   constructor(_stdin = import_node_process.default.stdin, _stdout = import_node_process.default.stdout, options) {
     this._stdin = _stdin;
@@ -17043,43 +17043,212 @@ var StdioServerTransport = class {
   }
 };
 
-// D:/antigravity-usage-dashboard/plugin-src/server.mjs
-var BASE_DIR = typeof __dirname !== "undefined" ? __dirname : import_node_path.default.dirname(import_node_path.default.resolve(process.argv[1] || "."));
-var USAGE_DIR = process.env.AGY_USAGE_DIR || import_node_path.default.resolve(BASE_DIR, "..", "..", "..");
+// lib/telemetry.mjs
+var import_node_fs = __toESM(require("node:fs"), 1);
+var import_node_path = __toESM(require("node:path"), 1);
+var RETENTION_MS = 90 * 864e5;
+var DAY_MS = 864e5;
+var FX_URLS = [
+  "https://open.er-api.com/v6/latest/USD",
+  "https://api.frankfurter.app/latest?from=USD&to=CNY"
+];
+var GOOGLE_PRICING_URL = "https://aistudio.google.com/docs/pricing";
+var PARTNER_PRICING_URL = "https://cloud.google.com/model-garden/partner-models/pricing";
+async function fetchLiveFxRate({ timeoutMs = 5e3 } = {}) {
+  for (const url of FX_URLS) {
+    try {
+      const res = await fetch(url, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(timeoutMs),
+        redirect: "error"
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data?.result != null && data.result !== "success") continue;
+      const val = data?.rates?.CNY;
+      if (typeof val === "number" && Number.isFinite(val) && val >= 3 && val <= 15) {
+        return {
+          rate: Number(val.toFixed(4)),
+          source: new URL(url).hostname,
+          updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+        };
+      }
+    } catch {
+    }
+  }
+  return null;
+}
+function parseOfficialPricingMarkdown(markdown) {
+  if (typeof markdown !== "string" || !markdown) return {};
+  const updates = {};
+  const mapModelToFamily = (id) => {
+    const s = String(id || "").toLowerCase();
+    if (s.includes("neon")) return "neon";
+    if (s.includes("hydrogen")) return "hydrogen";
+    if (s.includes("carbon")) return "carbon";
+    if (s.includes("argon")) return "argon";
+    if (s.includes("flash")) return "flash";
+    return null;
+  };
+  for (const section of markdown.split(/^## /m).slice(1)) {
+    const id = section.match(/id="(gemini-[^"]+)"/i)?.[1];
+    const fam = mapModelToFamily(id);
+    if (!fam || /image|live|tts|embedding|robotics/.test(id)) continue;
+    const standard = section.split(/tab title="Standard"/)[1]?.split(/\{% \/tab %\}/)[0];
+    if (!standard) continue;
+    const extract = (label) => {
+      const chunk = standard.split(new RegExp(`\\* ${label}[^\\n]*\\n`, "i"))[1]?.split(/\n\s*---/)[0];
+      return chunk?.match(/\$([\d.]+)/g)?.map((s) => Number(s.slice(1))) || [];
+    };
+    const input = extract("Input price");
+    const output = extract("Output price");
+    const cache = extract("Context caching price");
+    if (!input.length || !output.length || !cache.length) continue;
+    const entry = {
+      standard: { input: input[0], cache_read: cache[0], output: output[0] }
+    };
+    const future = standard.match(/starting ([A-Z][a-z]+ \d{1,2}, \d{4})/i);
+    if (future && input[1] != null && output[1] != null && cache[1] != null) {
+      const dt = /* @__PURE__ */ new Date(`${future[1]} 00:00:00 UTC`);
+      if (!Number.isNaN(dt.getTime())) {
+        entry.promo = { input: input[0], cache_read: cache[0], output: output[0] };
+        entry.promoEnd = new Date(dt.getTime() - DAY_MS).toISOString().slice(0, 10);
+        entry.standard = { input: input[1], cache_read: cache[1], output: output[1] };
+      }
+    } else if ([input, output, cache].some((v) => v.length > 1)) {
+      continue;
+    }
+    updates[fam] = entry;
+  }
+  return updates;
+}
+function parsePartnerPricingHtml(html) {
+  if (typeof html !== "string" || !html) return {};
+  const matches = [];
+  const re = />\s*(?:Claude\s+)?(Opus|Sonnet)\s+(5\.5)\s*</gi;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    matches.push({ family: m[1].toLowerCase(), index: m.index });
+  }
+  const updates = {};
+  for (let i = 0; i < matches.length; i++) {
+    const cur = matches[i];
+    const fam = cur.family === "opus" ? "claude_opus_5_5" : "claude_sonnet_5_5";
+    if (updates[fam]) continue;
+    const end = Math.min(
+      i + 1 < matches.length ? matches[i + 1].index : html.length,
+      cur.index + 6500
+    );
+    const text = html.slice(cur.index, end).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+    const input = Number(text.match(/\bInput\s*\$([\d.]+)/i)?.[1]);
+    const output = Number(text.match(/\bOutput\s*\$([\d.]+)/i)?.[1]);
+    const cache = Number(text.match(/\bCache\s+(?:Hit|Read)\s*\$([\d.]+)/i)?.[1]);
+    if ([input, output, cache].every(Number.isFinite)) {
+      updates[fam] = {
+        standard: { input, cache_read: cache, output }
+      };
+    }
+  }
+  return updates;
+}
+async function fetchLiveOfficialPricing({ timeoutMs = 1e4 } = {}) {
+  const [mainRes, partnerRes] = await Promise.allSettled([
+    fetch(GOOGLE_PRICING_URL, {
+      headers: { Accept: "text/markdown" },
+      signal: AbortSignal.timeout(timeoutMs)
+    }),
+    fetch(PARTNER_PRICING_URL, {
+      signal: AbortSignal.timeout(Math.min(timeoutMs, 8e3))
+    })
+  ]);
+  let families = {};
+  if (mainRes.status === "fulfilled" && mainRes.value.ok) {
+    families = {
+      ...families,
+      ...parseOfficialPricingMarkdown(await mainRes.value.text())
+    };
+  }
+  if (partnerRes.status === "fulfilled" && partnerRes.value.ok) {
+    try {
+      families = {
+        ...families,
+        ...parsePartnerPricingHtml(await partnerRes.value.text())
+      };
+    } catch {
+    }
+  }
+  if (!Object.keys(families).length) {
+    throw new Error("\u672A\u80FD\u4ECE\u5B98\u65B9\u4EF7\u683C\u9875\u89E3\u6790\u5230\u8D39\u7387");
+  }
+  return {
+    families,
+    checkedAt: (/* @__PURE__ */ new Date()).toISOString(),
+    source: GOOGLE_PRICING_URL
+  };
+}
+function loadPricingCache(repoRoot) {
+  try {
+    const file = import_node_path.default.join(repoRoot, "data", "pricing_cache.json");
+    if (!import_node_fs.default.existsSync(file)) return null;
+    const parsed = JSON.parse(import_node_fs.default.readFileSync(file, "utf8"));
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+function savePricingCache(repoRoot, payload) {
+  const file = import_node_path.default.join(repoRoot, "data", "pricing_cache.json");
+  import_node_fs.default.mkdirSync(import_node_path.default.dirname(file), { recursive: true });
+  const tmp = `${file}.${process.pid}.tmp`;
+  import_node_fs.default.writeFileSync(tmp, JSON.stringify(payload, null, 2) + "\n", "utf8");
+  import_node_fs.default.renameSync(tmp, file);
+  return payload;
+}
+
+// plugin-src/server.mjs
+var BASE_DIR = typeof __dirname !== "undefined" ? __dirname : import_node_path2.default.dirname(import_node_path2.default.resolve(process.argv[1] || "."));
+var USAGE_DIR = process.env.AGY_USAGE_DIR || import_node_path2.default.resolve(BASE_DIR, "..", "..", "..");
 var RESOURCE_URI = "ui://token-usage/dashboard.html";
 var RESOURCE_MIME = "text/html;profile=mcp-app";
 function resolveAppHtmlPath() {
-  if (process.env.AGY_APP_HTML && import_node_fs.default.existsSync(process.env.AGY_APP_HTML)) {
+  if (process.env.AGY_APP_HTML && import_node_fs2.default.existsSync(process.env.AGY_APP_HTML)) {
     return process.env.AGY_APP_HTML;
   }
-  const repoAppHtml = import_node_path.default.join(USAGE_DIR, "plugin", "token-usage", "dist", "app.html");
-  if (import_node_fs.default.existsSync(repoAppHtml)) {
+  const repoAppHtml = import_node_path2.default.join(USAGE_DIR, "plugin", "token-usage", "dist", "app.html");
+  if (import_node_fs2.default.existsSync(repoAppHtml)) {
     return repoAppHtml;
   }
-  return import_node_path.default.join(BASE_DIR, "app.html");
+  return import_node_path2.default.join(BASE_DIR, "app.html");
 }
 function readBundleData(usageDir) {
-  const bundlePath = import_node_path.default.join(usageDir, "data", "usage_bundle.js");
-  if (!import_node_fs.default.existsSync(bundlePath)) return null;
-  const raw = import_node_fs.default.readFileSync(bundlePath, "utf8").trim();
+  const bundlePath = import_node_path2.default.join(usageDir, "data", "usage_bundle.js");
+  if (!import_node_fs2.default.existsSync(bundlePath)) return null;
+  const raw = import_node_fs2.default.readFileSync(bundlePath, "utf8").trim();
   const jsonStr = raw.replace(/^\s*window\.AGY_USAGE_DATA\s*=\s*/, "").replace(/;\s*$/, "");
   if (!jsonStr) return null;
-  return JSON.parse(jsonStr);
+  const data = JSON.parse(jsonStr);
+  if (data && typeof data === "object") {
+    const diskCache = loadPricingCache(usageDir);
+    if (diskCache && (!data.pricing_cache || String(diskCache.checkedAt || "") >= String(data.pricing_cache.checkedAt || ""))) {
+      data.pricing_cache = diskCache;
+    }
+  }
+  return data;
 }
 function isGitSyncConfigured(usageDir) {
-  const cfgPath = import_node_path.default.join(usageDir, "config.json");
-  if (!import_node_fs.default.existsSync(cfgPath)) return false;
+  const cfgPath = import_node_path2.default.join(usageDir, "config.json");
+  if (!import_node_fs2.default.existsSync(cfgPath)) return false;
   try {
-    const parsed = JSON.parse(import_node_fs.default.readFileSync(cfgPath, "utf8"));
+    const parsed = JSON.parse(import_node_fs2.default.readFileSync(cfgPath, "utf8"));
     return Boolean(parsed && parsed.gitSync === true);
   } catch {
     return false;
   }
 }
 function runSyncScript(usageDir, gitSyncArg) {
-  const scriptPath = import_node_path.default.join(usageDir, "sync_usage.mjs");
+  const scriptPath = import_node_path2.default.join(usageDir, "sync_usage.mjs");
   return new Promise((resolve) => {
-    if (!import_node_fs.default.existsSync(scriptPath)) {
+    if (!import_node_fs2.default.existsSync(scriptPath)) {
       resolve({
         ok: false,
         stdout: "",
@@ -17169,7 +17338,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   if (request.params.uri !== RESOURCE_URI) {
     throw new Error(`Unknown resource URI: ${request.params.uri}`);
   }
-  const html = import_node_fs.default.readFileSync(resolveAppHtmlPath(), "utf8");
+  const html = import_node_fs2.default.readFileSync(resolveAppHtmlPath(), "utf8");
   return {
     contents: [
       {
@@ -17222,6 +17391,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         name: "get_usage_data",
         title: "\u8BFB\u53D6\u672C\u5730\u6C47\u603B\u6570\u636E",
         description: "\u8BFB\u53D6\u5F53\u524D\u5DF2\u5F52\u6863\u7684 usage_bundle \u6570\u636E\u3002",
+        inputSchema: {
+          type: "object",
+          properties: {},
+          additionalProperties: false
+        },
+        _meta: {
+          ui: { visibility: ["app"] }
+        }
+      },
+      {
+        name: "refresh_pricing",
+        title: "\u5237\u65B0\u5B98\u65B9\u5355\u4EF7\u4E0E\u6C47\u7387",
+        description: "\u6309\u9700\u4ECE\u5B98\u65B9\u5B9A\u4EF7\u9875\u4E0E\u516C\u5F00\u6C47\u7387\u63A5\u53E3\u5237\u65B0\u53C2\u8003\u8D39\u7387\u5E76\u672C\u5730\u7F13\u5B58\u3002",
         inputSchema: {
           type: "object",
           properties: {},
@@ -17295,6 +17477,51 @@ ${summary}` : summary
     return {
       content: [{ type: "text", text: summarizeUsage(usageData) }],
       structuredContent: { ok: true, usageData }
+    };
+  }
+  if (name === "refresh_pricing") {
+    const prev = loadPricingCache(USAGE_DIR) || {};
+    const [pRes, fRes] = await Promise.allSettled([
+      fetchLiveOfficialPricing(),
+      fetchLiveFxRate()
+    ]);
+    const pricingOk = Boolean(pRes.status === "fulfilled" && pRes.value);
+    const fxOk = Boolean(fRes.status === "fulfilled" && fRes.value);
+    const nowIso = (/* @__PURE__ */ new Date()).toISOString();
+    const next = { ...prev };
+    const errs = [];
+    if (pricingOk) {
+      next.families = { ...prev.families || {}, ...pRes.value.families };
+      next.pricingSource = pRes.value.source;
+      next.pricingUpdatedAt = nowIso;
+    } else {
+      errs.push("\u5B98\u65B9\u5355\u4EF7\u62C9\u53D6\u5931\u8D25");
+    }
+    if (fxOk) {
+      next.fx = fRes.value;
+      next.fxUpdatedAt = nowIso;
+    } else {
+      errs.push("\u6C47\u7387\u62C9\u53D6\u5931\u8D25");
+    }
+    const ok = pricingOk || fxOk;
+    if (ok) {
+      next.checkedAt = nowIso;
+      savePricingCache(USAGE_DIR, next);
+    }
+    return {
+      content: [
+        {
+          type: "text",
+          text: ok ? `\u5DF2\u66F4\u65B0\u53C2\u8003\u8D39\u7387${errs.length ? `\uFF08${errs.join("\uFF0C")}\uFF09` : ""}` : `\u5237\u65B0\u5931\u8D25\uFF1A${errs.join("\uFF0C")}`
+        }
+      ],
+      structuredContent: {
+        ok,
+        pricingOk,
+        fxOk,
+        pricingCache: ok ? next : prev,
+        error: errs.length ? errs.join("\uFF0C") : null
+      }
     };
   }
   throw new Error(`Unknown tool: ${name}`);

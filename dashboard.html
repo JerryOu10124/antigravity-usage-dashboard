@@ -7,13 +7,28 @@
 <style>
   :root {
     --bg-canvas: #121212;
+    --bg-sidebar: #0e0e11;
     --bg-surface: #18181b;
     --bg-card: #1d1d20;
     --bg-card-hover: #242428;
     --bg-pill: #252529;
+    --bg-active: #2b2b31;
+    --bg-nav-active: #24242b;
+    --bg-elevated: #232327;
+    --bg-drawer: #151518;
+    --bg-mini: rgba(18, 18, 22, 0.72);
+    --bg-input: #141418;
+    --bg-bar-track: #26272b;
+    --bg-tooltip: #1f2025;
+    --hero-grad: linear-gradient(180deg, #1d1d22 0%, #18181b 100%);
     --border: rgba(255, 255, 255, 0.08);
+    --border-subtle: rgba(255, 255, 255, 0.05);
     --border-strong: rgba(255, 255, 255, 0.14);
+    --hover-row: rgba(255, 255, 255, 0.03);
+    --hover-opt: rgba(255, 255, 255, 0.08);
+    --shadow-elevated: 0 12px 32px rgba(0, 0, 0, 0.55);
     --text-primary: #f3f4f6;
+    --text-strong: #f9fafb;
     --text-secondary: #9ca3af;
     --text-muted: #6b7280;
     --heat-0: #26272b;
@@ -28,8 +43,55 @@
     --accent-pink: #f472b6;
     --accent-teal: #2dd4bf;
     --accent-amber: #fbbf24;
+    --cost-accent: #5ec2a6;
+    --danger: #f87171;
+    --danger-bg: rgba(248, 113, 113, 0.14);
+    --warn: #fbbf24;
+    --warn-bg: rgba(251, 191, 36, 0.14);
+    --ok: #34d399;
+    --ok-bg: rgba(52, 211, 153, 0.14);
     --font-sans: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  [data-theme="light"] {
+    --bg-canvas: #f4f6f9;
+    --bg-sidebar: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-card: #f8fafc;
+    --bg-card-hover: #eef2f7;
+    --bg-pill: #eef2f6;
+    --bg-active: #ffffff;
+    --bg-nav-active: #edf4ff;
+    --bg-elevated: #ffffff;
+    --bg-drawer: #f8fafc;
+    --bg-mini: #f8fafc;
+    --bg-input: #ffffff;
+    --bg-bar-track: #e5e7eb;
+    --bg-tooltip: #ffffff;
+    --hero-grad: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    --border: rgba(15, 23, 42, 0.10);
+    --border-subtle: rgba(15, 23, 42, 0.06);
+    --border-strong: rgba(15, 23, 42, 0.20);
+    --hover-row: rgba(15, 23, 42, 0.03);
+    --hover-opt: rgba(15, 23, 42, 0.06);
+    --shadow-elevated: 0 10px 28px rgba(15, 23, 42, 0.14);
+    --text-primary: #111827;
+    --text-strong: #030712;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    --heat-0: #ebedf0;
+    --heat-1: #bae6fd;
+    --heat-2: #60a5fa;
+    --heat-3: #2563eb;
+    --heat-4: #1d4ed8;
+    --cost-accent: #0f9d78;
+    --danger: #dc2626;
+    --danger-bg: rgba(220, 38, 38, 0.10);
+    --warn: #d97706;
+    --warn-bg: rgba(217, 119, 6, 0.10);
+    --ok: #059669;
+    --ok-bg: rgba(5, 150, 105, 0.10);
   }
 
   * {
@@ -61,8 +123,8 @@
   .side-nav {
     width: 216px;
     flex-shrink: 0;
-    background: #0e0e11;
-    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
     padding: 22px 14px;
     display: flex;
     flex-direction: column;
@@ -79,7 +141,7 @@
 
   .side-brand {
     padding: 0 8px 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   .side-brand-title {
@@ -128,11 +190,11 @@
 
   .tab-btn:hover {
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--hover-row);
   }
 
   .tab-btn.active {
-    background: #24242b;
+    background: var(--bg-nav-active);
     color: var(--text-primary);
     font-weight: 600;
   }
@@ -158,7 +220,7 @@
     flex-direction: column;
     gap: 10px;
     padding-top: 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--border-subtle);
   }
 
   .side-footer .meta-strip {
@@ -271,8 +333,9 @@
   }
 
   .segmented button.active {
-    background: #2b2b31;
+    background: var(--bg-active);
     color: var(--text-primary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   }
 
   .select-pill {
@@ -346,11 +409,11 @@
     right: 0;
     min-width: 176px;
     max-width: 280px;
-    background: #232327;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
     border-radius: 12px;
     padding: 5px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    box-shadow: var(--shadow-elevated);
     z-index: 120;
     display: none;
   }
@@ -383,7 +446,7 @@
   }
 
   .codex-dd-option:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--hover-opt);
     color: var(--text-primary);
   }
 
@@ -579,20 +642,20 @@
   }
 
   .cost-accent-text {
-    color: #5ec2a6;
+    color: var(--cost-accent);
   }
 
   .cost-saved-text {
-    color: #5ec2a6;
+    color: var(--cost-accent);
   }
 
   /* Prominent API Cost Hero Card */
   .cost-hero-card {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(180deg, #1d1d22 0%, #18181b 100%);
-    border: 1px solid rgba(255, 255, 255, 0.13);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+    background: var(--hero-grad);
+    border: 1px solid var(--border-strong);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
   }
 
   .cost-hero-grid {
@@ -619,7 +682,7 @@
   .cost-big-amount {
     font-size: 34px;
     font-weight: 700;
-    color: #f9fafb;
+    color: var(--text-strong);
     letter-spacing: -0.03em;
     line-height: 1.15;
   }
@@ -636,7 +699,7 @@
   }
 
   .cost-mini-card {
-    background: rgba(18, 18, 22, 0.72);
+    background: var(--bg-mini);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 9px 11px;
@@ -664,7 +727,7 @@
   }
 
   .cost-savings-box {
-    background: rgba(18, 18, 22, 0.72);
+    background: var(--bg-mini);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 10px 12px;
@@ -683,7 +746,7 @@
   .cost-savings-bar {
     height: 7px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-bar-track);
     overflow: hidden;
     display: flex;
   }
@@ -727,7 +790,7 @@
   }
 
   .cost-models-col {
-    background: rgba(18, 18, 22, 0.62);
+    background: var(--bg-mini);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 13px 15px;
@@ -783,7 +846,7 @@
     font-size: 10px;
     padding: 1px 6px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--bg-pill);
     color: var(--text-muted);
     white-space: nowrap;
   }
@@ -799,7 +862,7 @@
 
   .cost-stack-track {
     height: 7px;
-    background: #26272b;
+    background: var(--bg-bar-track);
     border-radius: 999px;
     overflow: hidden;
     display: flex;
@@ -817,7 +880,7 @@
     justify-content: space-between;
     gap: 8px;
     padding-top: 6px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--border-subtle);
     font-size: 11px;
     color: var(--text-muted);
   }
@@ -832,7 +895,7 @@
   .pricing-drawer {
     margin-top: 16px;
     padding-top: 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid var(--border);
   }
 
   .pricing-drawer-head {
@@ -857,7 +920,7 @@
 
   .rate-input {
     width: 78px;
-    background: #141418;
+    background: var(--bg-input);
     border: 1px solid var(--border-strong);
     border-radius: 6px;
     color: var(--text-primary);
@@ -1017,10 +1080,14 @@
     display: grid;
     gap: 3px;
     flex: 1;
-    --dot-empty: #232428;
+    --dot-empty: var(--heat-0);
     --dot-lit: #1580ff;
     --dot-hover-lit: #7cc4ff;
     --dot-hover-dim: #172d47;
+  }
+
+  [data-theme="light"] .week-dots-matrix {
+    --dot-hover-dim: #dbeafe;
   }
 
   .week-dots-matrix.cost-mode {
@@ -1112,7 +1179,7 @@
     width: 30px;
     height: 30px;
     border-radius: 8px;
-    background: #26262c;
+    background: var(--bg-pill);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1143,7 +1210,7 @@
     justify-content: space-between;
     gap: 16px;
     padding: 10px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-subtle);
   }
 
   .insight-row:last-child {
@@ -1228,7 +1295,7 @@
     gap: 8px 14px;
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--border-subtle);
     font-size: 11px;
     color: var(--text-secondary);
   }
@@ -1312,7 +1379,7 @@
 
   .bar-track {
     height: 6px;
-    background: #26272b;
+    background: var(--bg-bar-track);
     border-radius: 999px;
     overflow: hidden;
   }
@@ -1355,7 +1422,7 @@
 
   table.data-table td {
     padding: 9px 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid var(--border-subtle);
     color: var(--text-primary);
     white-space: nowrap;
   }
@@ -1366,7 +1433,7 @@
   }
 
   table.data-table tr.clickable-row:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--hover-row);
   }
 
   table.data-table tr.highlight-row {
@@ -1387,7 +1454,7 @@
   }
 
   table.data-table tr.detail-drawer td {
-    background: #151518;
+    background: var(--bg-drawer);
     padding: 12px 16px;
     white-space: normal;
   }
@@ -1420,7 +1487,7 @@
   }
 
   .sub-breakdown-row td {
-    background: #151518;
+    background: var(--bg-drawer);
     color: var(--text-secondary);
     padding-top: 6px;
     padding-bottom: 6px;
@@ -1504,7 +1571,7 @@
     gap: 16px 24px;
     margin-top: 16px;
     padding-top: 14px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--border-subtle);
   }
 
   /* 5-Hour & Weekly Side-by-Side Split */
@@ -1653,21 +1720,98 @@
     white-space: nowrap;
   }
 
-  /* Floating Dark Tooltip */
   .floating-tooltip {
     position: fixed;
     z-index: 9999;
     pointer-events: none;
-    background: #1f2025;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: var(--bg-tooltip);
+    border: 1px solid var(--border-strong);
     border-radius: 10px;
     padding: 9px 12px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+    box-shadow: var(--shadow-elevated);
     font-size: 12px;
     color: var(--text-primary);
     min-width: 170px;
     max-width: 280px;
     display: none;
+  }
+
+  .search-input {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    min-width: 190px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-input:focus { border-color: var(--accent-blue); }
+  .search-input::placeholder { color: var(--text-muted); }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .status-pill.ok { background: var(--ok-bg); color: var(--ok); }
+  .status-pill.warn { background: var(--warn-bg); color: var(--warn); }
+  .status-pill.danger { background: var(--danger-bg); color: var(--danger); }
+
+  .ctx-stack-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--bg-bar-track);
+    gap: 1px;
+    margin: 6px 0;
+  }
+  .ctx-legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .ctx-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+  .insight-link {
+    background: none;
+    border: none;
+    color: var(--accent-blue);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .error-box {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    margin-top: 6px;
+  }
+  .theme-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
   }
 
   .tt-title {
@@ -1787,11 +1931,22 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
           <span>使用情况分析</span>
         </button>
+        <button type="button" class="tab-btn" data-tab="diagnostics">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+          <span>诊断与明细</span>
+        </button>
       </nav>
     </div>
 
     <div class="side-footer">
       <div class="meta-strip" id="metaStrip"></div>
+      <div class="theme-row">
+        <span>界面主题</span>
+        <div class="segmented" id="themeToggle">
+          <button type="button" data-theme="dark" class="active">深色</button>
+          <button type="button" data-theme="light">浅色</button>
+        </div>
+      </div>
       <label class="btn-pill" for="importFileInput" title="仅在浏览器内临时预览合并；永久合并请将他机 data/设备名.json 放入数据目录后重新同步">
         导入设备 JSON
         <input type="file" id="importFileInput" class="hidden-input" accept=".json" multiple>
@@ -1810,9 +1965,13 @@
           <div class="subtitle" id="pageSubtitle">累计 Token 概览、活动热力图、技能洞察与模型趋势</div>
         </div>
         <div class="controls-bar">
-          <div class="segmented" id="metricToggle" title="在 Token 数量与等效 API 费用 (USD) 之间一键切换所有图表">
+          <div class="segmented" id="metricToggle" title="在 Token 数量与等效 API 费用之间一键切换所有图表">
             <button type="button" data-metric="tokens" class="active">按 Token</button>
-            <button type="button" data-metric="cost">按费用 ($)</button>
+            <button type="button" data-metric="cost">按费用</button>
+          </div>
+          <div class="segmented" id="currencyToggle" title="切换费用显示币种（美元 USD / 人民币 CNY）">
+            <button type="button" data-currency="USD" class="active">$</button>
+            <button type="button" data-currency="CNY">¥</button>
           </div>
           <div class="segmented" id="modeToggle" title="全量含缓存与 Codex 个人主页口径一致；净新增仅统计未缓存输入与输出">
             <button type="button" data-mode="full" class="active">全量 (含缓存)</button>
@@ -1977,6 +2136,9 @@
             <h2>聊天用量排行</h2>
             <div class="card-desc">比较每个会话的累计 Token、步数与工具调用情况，点击行可展开详情</div>
           </div>
+          <div class="card-actions">
+            <input type="search" class="search-input" id="chatSearchInput" placeholder="搜索标题、首问或模型...">
+          </div>
         </div>
         <div id="chatRankingContainer"></div>
       </div>
@@ -2057,6 +2219,50 @@
         <div class="dot-legend" id="msgLegend"></div>
       </div>
     </section>
+
+    <!-- TAB 3: DIAGNOSTICS -->
+    <section id="tab-diagnostics" class="tab-panel">
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>模型速度与健康度</h2>
+            <div class="card-desc">基于本地 SQLite <code>gen_metadata</code> 只读解析：统计思考 Token 占比、首字延迟 (TTFT)、纯流式均速与 Tukey 稳健峰值速度</div>
+          </div>
+        </div>
+        <div class="table-scroll" style="max-height:none;" id="diagModelHealthTable"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>请求明细与掉缓存诊断</h2>
+            <div class="card-desc">筛选单次请求，标出 3 分钟内上下文保留 ≥60% 却突发缓存清零/骤降的「疑似掉缓存」记录及报错重试详情</div>
+          </div>
+          <div class="card-actions">
+            <div class="segmented" id="diagStatusToggle">
+              <button type="button" data-dstatus="all" class="active">全部</button>
+              <button type="button" data-dstatus="anomaly">疑似掉缓存</button>
+              <button type="button" data-dstatus="error">报错或重试</button>
+            </div>
+            <select class="select-pill" id="diagModelSelect" aria-label="按模型筛选"></select>
+            <input type="search" class="search-input" id="diagSearchInput" placeholder="搜会话标题/模型/报错...">
+            <button type="button" class="btn-pill" id="diagExportCsvBtn">导出 CSV</button>
+            <button type="button" class="btn-pill" id="diagExportJsonBtn">导出 JSON</button>
+          </div>
+        </div>
+        <div id="diagRequestsContainer"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="card-header">
+          <div class="card-title-wrap">
+            <h2>上下文构成排行（近期会话 Top 10）</h2>
+            <div class="card-desc">展示各会话最新请求的上下文窗口占用拆解（System / Rules / Skills / MCP / Tools / Chat Messages），快速定位上下文膨胀源</div>
+          </div>
+        </div>
+        <div id="diagContextContainer"></div>
+      </div>
+    </section>
   </main>
     </div>
   </div>
@@ -2072,7 +2278,11 @@
   var PALETTE = ["#58b4ff", "#fb923c", "#34d399", "#a78bfa", "#f472b6", "#2dd4bf", "#fbbf24", "#94a3b8"];
   var HEAT_COLORS = ["#26272b", "#0f3a6b", "#155ea8", "#1e88e5", "#58b4ff"];
   var HEAT_COLORS_COST = ["#26272b", "#103b31", "#165c4b", "#1f836b", "#39b596"];
+  var HEAT_COLORS_LIGHT = ["#ebedf0", "#bae6fd", "#60a5fa", "#2563eb", "#1d4ed8"];
+  var HEAT_COLORS_COST_LIGHT = ["#ebedf0", "#a7f3d0", "#34d399", "#059669", "#047857"];
   var PRICING_STORAGE_KEY = "agy_usage_pricing_v1";
+  var DEFAULT_FX_RATE = 6.7;
+  var pricingRefreshHandler = null;
 
   // Official API pricing (USD per 1M tokens, flat across 1M context window)
   var MODEL_FAMILIES = [
@@ -2125,6 +2335,14 @@
       color: "#f472b6",
       promo: { input: 4.00, cache_read: 0.20, output: 20.00 },
       standard: { input: 4.00, cache_read: 0.20, output: 20.00 },
+      note: "Anthropic 官方标准价（缓存读取 0.05x）"
+    },
+    {
+      id: "claude_sonnet_5_5",
+      label: "Claude Sonnet 5.5",
+      color: "#ec4899",
+      promo: { input: 2.00, cache_read: 0.10, output: 10.00 },
+      standard: { input: 2.00, cache_read: 0.10, output: 10.00 },
       note: "Anthropic 官方标准价（缓存读取 0.05x）"
     },
     {
@@ -2183,9 +2401,15 @@
     tab: "overview",
     metric: "tokens",
     mode: "full",
+    currency: "USD",
+    fxRate: DEFAULT_FX_RATE,
+    fxManual: false,
+    theme: "auto",
+    resolvedTheme: "dark",
     pricingPreset: "auto",
     customRates: {},
     pricingDrawerOpen: false,
+    pricingRefreshMsg: "",
     machine: "all",
     source: "all",
     activityView: "daily",
@@ -2198,6 +2422,7 @@
     historyPageOffset: 0,
     historyGroup: "scene",
     chatLimit: 5,
+    chatSearch: "",
     expandedConvs: {},
     windowGroup: "scene",
     fiveHourLimit: 5,
@@ -2210,8 +2435,28 @@
     toolMode: "category",
     msgSpan: 7,
     msgMode: "model",
+    diagStatus: "all",
+    diagModel: "all",
+    diagSearch: "",
+    diagLimit: 30,
+    expandedReqs: {},
     importedMachines: []
   };
+
+  function applyTheme(themePref) {
+    var next = themePref === "light" || themePref === "dark" ? themePref : "dark";
+    state.resolvedTheme = next;
+    if (typeof document !== "undefined" && document.documentElement) {
+      document.documentElement.setAttribute("data-theme", next);
+      document.documentElement.style.colorScheme = next;
+    }
+    var box = typeof document !== "undefined" ? document.getElementById("themeToggle") : null;
+    if (box) {
+      box.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-theme") === next);
+      });
+    }
+  }
 
   function loadPricingConfig() {
     try {
@@ -2220,6 +2465,16 @@
       if (!raw) return;
       var parsed = JSON.parse(raw);
       if (parsed && typeof parsed === "object") {
+        if (parsed.currency === "CNY" || parsed.currency === "USD") {
+          state.currency = parsed.currency;
+        }
+        if (isFinite(Number(parsed.fxRate)) && Number(parsed.fxRate) >= 3 && Number(parsed.fxRate) <= 15) {
+          state.fxRate = Number(parsed.fxRate);
+          state.fxManual = !!parsed.fxManual;
+        }
+        if (parsed.theme === "light" || parsed.theme === "dark" || parsed.theme === "auto") {
+          state.theme = parsed.theme;
+        }
         if (parsed.pricingPreset && PRICING_PRESET_LABELS[parsed.pricingPreset]) {
           state.pricingPreset = parsed.pricingPreset;
         }
@@ -2247,12 +2502,57 @@
       if (typeof window === "undefined" || !window.localStorage) return;
       window.localStorage.setItem(PRICING_STORAGE_KEY, JSON.stringify({
         pricingPreset: state.pricingPreset,
-        customRates: state.customRates
+        customRates: state.customRates,
+        currency: state.currency,
+        fxRate: state.fxRate,
+        fxManual: state.fxManual,
+        theme: state.theme
       }));
     } catch (e) {}
   }
 
+  function hasValidRates(obj) {
+    return Boolean(
+      obj && typeof obj === "object" &&
+      rValid(obj.input) && rValid(obj.cache_read) && rValid(obj.output)
+    );
+  }
+
+  function applyPricingCache(cacheObj) {
+    if (!cacheObj || typeof cacheObj !== "object") return;
+    if (cacheObj.families && typeof cacheObj.families === "object") {
+      Object.keys(cacheObj.families).forEach(function (fid) {
+        var fam = MODEL_FAMILY_MAP[fid];
+        var upd = cacheObj.families[fid];
+        if (!fam || !upd || typeof upd !== "object") return;
+        if (hasValidRates(upd.standard)) {
+          fam.standard = {
+            input: Number(upd.standard.input),
+            cache_read: Number(upd.standard.cache_read),
+            output: Number(upd.standard.output)
+          };
+        }
+        if (hasValidRates(upd.promo) && upd.promoEnd && parseDateYMD(upd.promoEnd)) {
+          fam.promo = {
+            input: Number(upd.promo.input),
+            cache_read: Number(upd.promo.cache_read),
+            output: Number(upd.promo.output)
+          };
+          fam.promoEnd = String(upd.promoEnd).trim();
+        }
+      });
+    }
+    if (!state.fxManual && cacheObj.fx && isFinite(Number(cacheObj.fx.rate))) {
+      var r = Number(cacheObj.fx.rate);
+      if (r >= 3 && r <= 15) state.fxRate = r;
+    }
+  }
+
   loadPricingConfig();
+  applyTheme(state.theme === "light" ? "light" : "dark");
+  if (window.AGY_USAGE_DATA && window.AGY_USAGE_DATA.pricing_cache) {
+    applyPricingCache(window.AGY_USAGE_DATA.pricing_cache);
+  }
 
   function escapeHtml(str) {
     if (str === null || str === undefined) return "";
@@ -2344,23 +2644,34 @@
     return formatInt(num);
   }
 
+  function convertMoney(usdVal) {
+    var n = Number(usdVal) || 0;
+    return state.currency === "CNY" ? n * (Number(state.fxRate) || DEFAULT_FX_RATE) : n;
+  }
+
+  function currencySymbol() {
+    return state.currency === "CNY" ? "¥" : "$";
+  }
+
   function formatUsd(val) {
-    var n = Number(val) || 0;
-    if (n <= 0) return "$0.00";
-    if (n < 0.01) return "$" + n.toFixed(4);
+    var n = convertMoney(val);
+    var sym = currencySymbol();
+    if (n <= 0) return sym + "0.00";
+    if (n < 0.01) return sym + n.toFixed(4);
     if (n >= 1000) {
-      return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return sym + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-    return "$" + n.toFixed(2);
+    return sym + n.toFixed(2);
   }
 
   function formatUsdAxis(val) {
-    var n = Number(val) || 0;
-    if (n <= 0) return "$0";
-    if (n < 0.1) return "$" + n.toFixed(3);
-    if (n < 10) return "$" + n.toFixed(2);
-    if (n < 1000) return "$" + n.toFixed(1).replace(/\.0$/, "");
-    return "$" + (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+    var n = convertMoney(val);
+    var sym = currencySymbol();
+    if (n <= 0) return sym + "0";
+    if (n < 0.1) return sym + n.toFixed(3);
+    if (n < 10) return sym + n.toFixed(2);
+    if (n < 1000) return sym + n.toFixed(1).replace(/\.0$/, "");
+    return sym + (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
   }
 
   function formatMetricCompact(val, metric) {
@@ -2397,9 +2708,11 @@
     if (!slug) return "unknown";
     var s = String(slug).trim().toLowerCase();
     if (!s || s === "unknown") return "unknown";
-    s = s.replace(/-(xhigh|high|medium|low)$/, "");
-    s = s.replace(/-tiered$/, "");
-    s = s.replace(/-(xhigh|high|medium|low)$/, "");
+    s = s.replace(/\((minimal|low|medium|high|xhigh|extra\s+high|max|thinking)\)/g, "").trim();
+    s = s.replace(/\s+/g, "-");
+    s = s.replace(/-(xhigh|high|medium|low|minimal|max|extra-high|tiered)$/g, "");
+    s = s.replace(/-(xhigh|high|medium|low|minimal|max|extra-high|tiered)$/g, "");
+    s = s.replace(/(claude-(?:opus|sonnet|haiku)-\d+)\.(\d+)/, "$1-$2");
     return s || "unknown";
   }
 
@@ -2414,7 +2727,7 @@
 
   function extractEffortTier(slug) {
     if (!slug) return null;
-    var m = String(slug).toLowerCase().match(/-(xhigh|high|medium|low)$/);
+    var m = String(slug).toLowerCase().match(/(?:-|[\s(]+)(xhigh|high|medium|low)\)?$/);
     if (!m) return null;
     var map = { low: "Low", medium: "Medium", high: "High", xhigh: "XHigh" };
     return map[m[1]] || null;
@@ -2441,15 +2754,25 @@
     return mode === "net" ? (inp + out) : (inp + cache + out);
   }
 
-  function getModelFamilyId(slug) {
+  function getModelFamilyId(slug, role) {
     var s = String(slug || "").toLowerCase();
     if (!s || s === "unknown") return "other";
+    if (s.indexOf("orchestrator") >= 0) {
+      if (s.indexOf("claude") >= 0) return s.indexOf("sonnet") >= 0 ? "claude_sonnet_5_5" : "claude_opus_5_5";
+      if (s.indexOf("hydrogen") >= 0) return "hydrogen";
+      if (s.indexOf("neon") >= 0) return "neon";
+      if (s.indexOf("argon") >= 0) return "argon";
+      if (s.indexOf("carbon") >= 0) return "carbon";
+      if (s.indexOf("flash") >= 0) return "flash";
+      return role === "execution" ? "hydrogen" : "carbon";
+    }
     if (s.indexOf("hydrogen") >= 0) return "hydrogen";
     if (s.indexOf("neon") >= 0) return "neon";
     if (s.indexOf("carbon") >= 0) return "carbon";
     if (s.indexOf("argon") >= 0) return "argon";
     if (s.indexOf("flash") >= 0) return "flash";
     if (s.indexOf("opus-5-5") >= 0 || (s.indexOf("claude") >= 0 && s.indexOf("opus") >= 0)) return "claude_opus_5_5";
+    if (s.indexOf("sonnet-5-5") >= 0 || (s.indexOf("claude") >= 0 && s.indexOf("sonnet") >= 0)) return "claude_sonnet_5_5";
     return "other";
   }
 
@@ -2486,7 +2809,7 @@
     var inp = Number(rec.input) || 0;
     var cache = Number(rec.cache_read) || 0;
     var out = Number(rec.output) || 0;
-    var famId = getModelFamilyId(rec.model);
+    var famId = getModelFamilyId(rec.model, rec.role || rec.r);
     var rate = getEffectiveRateByFamily(famId, dateYmd || rec.date);
     var inCost = (inp / 1e6) * rate.input;
     var cacheCost = mode === "net" ? 0 : (cache / 1e6) * rate.cache_read;
@@ -2508,12 +2831,14 @@
 
   function computeConversationCost(conv, mode) {
     var dateYmd = (conv.first_at || conv.last_at || "").slice(0, 10);
-    var models = Array.isArray(conv.models) && conv.models.length > 0
-      ? conv.models
-      : [{ model: "unknown", input: conv.input || 0, cache_read: conv.cache_read || 0, output: conv.output || 0 }];
+    var models = (Array.isArray(conv.daily_models) && conv.daily_models.length > 0)
+      ? conv.daily_models
+      : (Array.isArray(conv.models) && conv.models.length > 0
+          ? conv.models
+          : [{ model: "unknown", input: conv.input || 0, cache_read: conv.cache_read || 0, output: conv.output || 0 }]);
     var res = { total: 0, input: 0, cache_read: 0, output: 0, noCache: 0, cacheSaved: 0 };
     models.forEach(function (m) {
-      var c = computeRecordCost(m, mode, dateYmd);
+      var c = computeRecordCost(m, mode, m.date || dateYmd);
       res.total += c.total;
       res.input += c.input;
       res.cache_read += c.cache_read;
@@ -2543,12 +2868,151 @@
     return (isFinite(n) && n > 0) ? n : 0;
   }
 
+  function finiteOrNull(raw) {
+    if (raw === null || raw === undefined || raw === "") return null;
+    var n = Number(raw);
+    return (isFinite(n) && n >= 0) ? n : null;
+  }
+
+  function formatTsLocalYmd(ts) {
+    if (ts === null || ts === undefined || ts === "") return "";
+    var n = Number(ts);
+    if (!isFinite(n) || n <= 0) return "";
+    var d = new Date(n);
+    if (isNaN(d.getTime())) return "";
+    return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+  }
+
+  function getRequestBillingDate(r) {
+    if (r && r.d && parseDateYMD(r.d)) return String(r.d).trim();
+    return formatTsLocalYmd(r && r.ts);
+  }
+
+  function sanitizeImportedDbTelemetry(dt) {
+    if (!dt || typeof dt !== "object") return null;
+    var ctx = null;
+    if (dt.context && typeof dt.context === "object") {
+      var cats = Array.isArray(dt.context.categories)
+        ? dt.context.categories
+            .filter(function (c) { return c && typeof c === "object" && c.label; })
+            .map(function (c) { return { label: String(c.label), tokens: nonNegFinite(c.tokens) }; })
+            .filter(function (c) { return c.tokens > 0; })
+        : [];
+      ctx = {
+        used: nonNegFinite(dt.context.used),
+        max: finiteOrNull(dt.context.max),
+        categories: cats
+      };
+    }
+    var pk = finiteOrNull(dt.peak_tps);
+    return {
+      req_count: Math.round(nonNegFinite(dt.req_count)),
+      thinking_tokens: Math.round(nonNegFinite(dt.thinking_tokens)),
+      response_tokens: Math.round(nonNegFinite(dt.response_tokens)),
+      ttft_sum_ms: nonNegFinite(dt.ttft_sum_ms),
+      ttft_count: Math.round(nonNegFinite(dt.ttft_count)),
+      stream_ms: nonNegFinite(dt.stream_ms),
+      timed_output: Math.round(nonNegFinite(dt.timed_output)),
+      peak_tps: (pk != null && pk > 0) ? pk : null,
+      error_count: Math.round(nonNegFinite(dt.error_count)),
+      retry_count: Math.round(nonNegFinite(dt.retry_count)),
+      compactions: Math.round(nonNegFinite(dt.compactions)),
+      context: ctx
+    };
+  }
+
+  function sanitizeImportedRequest(rq, src, cidFallback, title, cutoffMs, futureLimitMs) {
+    if (!rq || typeof rq !== "object") return null;
+    var ts = Number(rq.ts);
+    if (!isFinite(ts) || ts <= 0 || ts < cutoffMs || ts > futureLimitMs) return null;
+    var rerr = Array.isArray(rq.rerr)
+      ? rq.rerr.map(function (s) { return String(s || "").slice(0, 180); }).filter(Boolean).slice(0, 3)
+      : [];
+    var tm = rq.tm === "stream" || rq.tm === "whole" ? rq.tm : null;
+    var role = rq.r === "execution" || rq.r === "planner" ? rq.r : "";
+    var cid = rq.cid != null ? String(rq.cid) : String(cidFallback || "");
+    return {
+      id: rq.id != null ? String(rq.id) : (cid + ":" + ts + ":" + String(rq.m || "")),
+      cid: cid,
+      ts: ts,
+      d: (rq.d && parseDateYMD(rq.d)) ? String(rq.d).trim() : formatTsLocalYmd(ts),
+      m: rq.m != null ? String(rq.m) : "unknown",
+      r: role,
+      in: Math.round(nonNegFinite(rq.in)),
+      ca: Math.round(nonNegFinite(rq.ca)),
+      out: Math.round(nonNegFinite(rq.out)),
+      th: Math.round(nonNegFinite(rq.th)),
+      resp: Math.round(nonNegFinite(rq.resp)),
+      ttft: finiteOrNull(rq.ttft),
+      st: finiteOrNull(rq.st),
+      dur: finiteOrNull(rq.dur),
+      tps: finiteOrNull(rq.tps),
+      wtps: finiteOrNull(rq.wtps),
+      tm: tm,
+      ok: rq.ok === 0 ? 0 : 1,
+      err: rq.err != null ? String(rq.err).slice(0, 220) : "",
+      err_code: rq.err_code != null ? String(rq.err_code).slice(0, 32) : "",
+      ret: Math.round(nonNegFinite(rq.ret)),
+      rerr: rerr,
+      src: String(src || "desktop"),
+      title: String(title || "")
+    };
+  }
+
+  function annotateCacheAnomaliesBrowser(requests) {
+    var anomalies = Object.create(null);
+    if (!Array.isArray(requests) || !requests.length) return anomalies;
+    var ordered = requests.filter(function (r) {
+      return r && r.cid && isFinite(r.ts) && r.ok !== 0;
+    }).slice().sort(function (a, b) {
+      return (a.ts - b.ts) || String(a.id || "").localeCompare(String(b.id || ""));
+    });
+    var priorHitKeys = Object.create(null);
+    var lastByKey = Object.create(null);
+    ordered.forEach(function (r) {
+      var modelId = normalizeModelSlug(r.m);
+      var key = r.cid + "::" + modelId;
+      var curIn = r.in || 0;
+      var curCache = r.ca || 0;
+      var curTotalIn = curIn + curCache;
+      var curHit = curTotalIn > 0 ? Number(((curCache / curTotalIn) * 100).toFixed(1)) : null;
+      var prev = lastByKey[key];
+      var anomalous = false;
+      if (prev && curHit != null && curTotalIn >= 4000 && curTotalIn >= prev.totalIn * 0.6) {
+        var gapMs = r.ts - prev.ts;
+        if (gapMs >= 0 && gapMs <= 180000) {
+          if (prev.cache >= 4000 && prev.hit >= 50) {
+            if (curCache === 0) {
+              anomalies[r.id] = { kind: "cleared", gap: gapMs, ph: prev.hit, ch: 0, pc: prev.cache, cc: 0 };
+              anomalous = true;
+            } else if (prev.hit - curHit >= 40 && curHit < 20 && curCache < prev.cache * 0.5) {
+              anomalies[r.id] = { kind: "dropped", gap: gapMs, ph: prev.hit, ch: curHit, pc: prev.cache, cc: curCache };
+              anomalous = true;
+            }
+          } else if (curCache === 0 && priorHitKeys[key] && (prev.anomalous || prev.totalIn >= 16000)) {
+            anomalies[r.id] = { kind: "missed", gap: gapMs, ph: prev.hit, ch: 0, pc: prev.cache, cc: 0 };
+            anomalous = true;
+          }
+        }
+      }
+      if (curCache > 0) priorHitKeys[key] = true;
+      if (curTotalIn >= 2000 && curHit != null) {
+        lastByKey[key] = { ts: r.ts, cache: curCache, hit: curHit, totalIn: curTotalIn, anomalous: anomalous };
+      }
+    });
+    return anomalies;
+  }
+
   function normalizeImportedArchive(doc) {
     if (!doc || typeof doc !== "object" || !doc.machine || !doc.conversations || typeof doc.conversations !== "object" || Array.isArray(doc.conversations)) return null;
     var hourlyMap = Object.create(null);
     var toolMap = Object.create(null);
     var skillMap = Object.create(null);
     var convList = [];
+    var rawRequests = [];
+    var nowMs = Date.now();
+    var cutoffMs = nowMs - 90 * 86400000;
+    var futureLimitMs = nowMs + 86400000;
     var convs = doc.conversations;
 
     Object.keys(convs).forEach(function (ck) {
@@ -2561,6 +3025,7 @@
       var bObj = (c.hourly_buckets && typeof c.hourly_buckets === "object")
         ? c.hourly_buckets
         : ((c.buckets && typeof c.buckets === "object") ? c.buckets : {});
+      var cDailyModelMap = Object.create(null);
       Object.keys(bObj).forEach(function (bk) {
         var b = bObj[bk];
         if (!b || typeof b !== "object" || !parseDateYMD(b.date)) return;
@@ -2578,6 +3043,12 @@
         cModels[model].input += inp;
         cModels[model].cache_read += cache;
         cModels[model].output += out;
+
+        var dmk = bDate + "|" + model;
+        if (!cDailyModelMap[dmk]) cDailyModelMap[dmk] = { date: bDate, model: model, input: 0, cache_read: 0, output: 0 };
+        cDailyModelMap[dmk].input += inp;
+        cDailyModelMap[dmk].cache_read += cache;
+        cDailyModelMap[dmk].output += out;
 
         var hk = bDate + "|" + h + "|" + src + "|" + scene + "|" + model;
         if (!hourlyMap[hk]) hourlyMap[hk] = { date: bDate, hour: h, source: src, scene: scene, model: model, steps: 0, input: 0, cache_read: 0, output: 0 };
@@ -2610,35 +3081,52 @@
         skillMap[key].count += cnt;
       });
 
+      var convId = String(c.conv_id || ck);
+      var cTitle = String(c.title || convId.slice(0, 8));
+      if (Array.isArray(c.requests)) {
+        c.requests.forEach(function (rq) {
+          var cleanReq = sanitizeImportedRequest(rq, src, convId, cTitle, cutoffMs, futureLimitMs);
+          if (cleanReq) rawRequests.push(cleanReq);
+        });
+      }
+
       convList.push({
-        conv_id: c.conv_id || ck,
-        title: c.title || (c.conv_id || ck).slice(0, 8),
-        first_prompt: c.first_prompt || "",
+        conv_id: convId,
+        title: cTitle,
+        first_prompt: String(c.first_prompt || ""),
         source: src,
         scene: scene,
         plan_execute: !!c.plan_execute,
-        first_at: c.first_at || "",
-        last_at: c.last_at || "",
+        first_at: String(c.first_at || ""),
+        last_at: String(c.last_at || ""),
         turns: Number(c.turns) || 0,
         max_turn_sec: Number(c.max_turn_sec) || 0,
-        max_turn_date: c.max_turn_date || "",
+        max_turn_date: String(c.max_turn_date || ""),
         steps: cSteps,
         input: cIn,
         cache_read: cCache,
         output: cOut,
         tool_count: cTools,
-        models: Object.keys(cModels).map(function (mk) { return cModels[mk]; })
+        models: Object.keys(cModels).map(function (mk) { return cModels[mk]; }),
+        daily_models: Object.keys(cDailyModelMap).map(function (dk) { return cDailyModelMap[dk]; }),
+        db_telemetry: sanitizeImportedDbTelemetry(c.db_telemetry)
       });
     });
 
+    var anoms = annotateCacheAnomaliesBrowser(rawRequests);
+    rawRequests.forEach(function (r) {
+      if (anoms[r.id]) r.ca_anom = anoms[r.id];
+    });
+    rawRequests.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
     return {
-      machine: doc.machine,
-      updated_at: doc.updated_at || "",
+      machine: String(doc.machine),
+      updated_at: String(doc.updated_at || ""),
       conversation_count: convList.length,
       hourly_records: Object.keys(hourlyMap).map(function (k) { return hourlyMap[k]; }),
       tool_records: Object.keys(toolMap).map(function (k) { return toolMap[k]; }),
       skill_totals: Object.keys(skillMap).map(function (k) { return skillMap[k]; }),
       conversations: convList,
+      requests: rawRequests.slice(0, 10000),
       importedPreview: true
     };
   }
@@ -2667,6 +3155,7 @@
     var toolRecords = [];
     var skillTotals = [];
     var conversations = [];
+    var requests = [];
 
     selectedMachines.forEach(function (m) {
       var mName = m.machine;
@@ -2686,7 +3175,13 @@
         if (state.source !== "all" && c.source !== state.source) return;
         conversations.push(Object.assign({ machine: mName }, c));
       });
+      (m.requests || []).forEach(function (rq) {
+        if (state.source !== "all" && rq.src && rq.src !== state.source) return;
+        requests.push(Object.assign({ machine: mName }, rq));
+      });
     });
+
+    requests.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
 
     return {
       allMachines: allMachines,
@@ -2694,7 +3189,8 @@
       hourlyRecords: hourlyRecords,
       toolRecords: toolRecords,
       skillTotals: skillTotals,
-      conversations: conversations
+      conversations: conversations,
+      requests: requests
     };
   }
 
@@ -2823,9 +3319,12 @@
     if (state.tab === "overview") {
       pageTitleEl.textContent = "个人概览";
       pageSubEl.textContent = "累计 Token 概览、活动热力图、技能洞察与模型趋势";
-    } else {
+    } else if (state.tab === "analytics") {
       pageTitleEl.textContent = "使用情况分析";
       pageSubEl.textContent = "每日消耗构成、聊天用量排行、5小时/每周时段、工具活动与消息";
+    } else {
+      pageTitleEl.textContent = "诊断与明细";
+      pageSubEl.textContent = "模型速度 (tok/s)、TTFT 首字延迟、疑似掉缓存标红、报错诊断与上下文构成";
     }
 
     var updatedText = "";
@@ -2850,13 +3349,20 @@
         b.classList.toggle("active", b.getAttribute("data-metric") === state.metric);
       });
     }
+    var curBox = document.getElementById("currencyToggle");
+    if (curBox) {
+      curBox.querySelectorAll("button").forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-currency") === state.currency);
+      });
+    }
 
     var pTitle = document.getElementById("profileTitle");
     var pSub = document.getElementById("profileSubtitle");
     var machineNames = machines.map(function (m) { return m.machine; }).join(" + ");
     var modeLabel = state.mode === "full" ? "全量含缓存" : "净新增不含缓存";
+    var curLabel = state.currency === "CNY" ? ("CNY · 汇率 " + state.fxRate) : "USD";
     var metricNote = state.metric === "cost"
-      ? (" · 视图: API 费用 (" + (PRICING_PRESET_LABELS[state.pricingPreset] || "USD") + ")")
+      ? (" · 视图: API 费用 (" + curLabel + " · " + (PRICING_PRESET_LABELS[state.pricingPreset] || "USD") + ")")
       : "";
     if (state.machine === "all") {
       pTitle.textContent = "全账号汇总";
@@ -3027,7 +3533,8 @@
     if (presetSel) presetSel.value = state.pricingPreset;
     var descEl = document.getElementById("costHeroDesc");
     if (descEl) {
-      descEl.textContent = "基于 Gemini 4 等模型官方 API 单价按调用日期实时折算（美元 USD · 口径: " +
+      var curDesc = state.currency === "CNY" ? ("人民币 CNY · 1 USD = " + state.fxRate + " CNY") : "美元 USD";
+      descEl.textContent = "基于 Gemini 4 等模型官方 API 单价按调用日期实时折算（" + curDesc + " · 口径: " +
         (state.mode === "full" ? "全量含缓存" : "净新增不含缓存") + "）";
     }
 
@@ -3191,11 +3698,18 @@
     drawerEl.innerHTML =
       '<div class="pricing-drawer-head">' +
         '<div>' +
-          '<div class="pricing-drawer-title">官方参考单价表 &amp; 自定义费率（美元 / 1M Token）</div>' +
-          '<div class="pricing-drawer-note">修改任意数字后回车或点击空白处即自动切换为「自定义单价」并保存在本地浏览器。</div>' +
+          '<div class="pricing-drawer-title">官方参考单价表、人民币汇率 &amp; 自定义费率（表内单价为美元 / 1M Token）</div>' +
+          '<div class="pricing-drawer-note">修改任意数字后回车或点击空白处即自动保存。默认全离线零请求，仅点击右侧按钮时才按需联网更新。</div>' +
         '</div>' +
-        '<button type="button" class="btn-pill" id="resetPricingBtn">恢复官方默认</button>' +
+        '<div class="card-actions">' +
+          '<label style="font-size:12px;color:var(--text-secondary);display:inline-flex;align-items:center;gap:6px;">USD→CNY 汇率 ' +
+            '<input type="number" id="fxRateInput" class="rate-input tabular" step="0.01" min="3" max="15" value="' + escapeHtml(String(state.fxRate)) + '">' +
+          '</label>' +
+          '<button type="button" class="btn-pill" id="refreshPricingBtn">联网更新官方价与汇率</button>' +
+          '<button type="button" class="btn-pill" id="resetPricingBtn">恢复默认</button>' +
+        '</div>' +
       '</div>' +
+      (state.pricingRefreshMsg ? '<div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;">' + escapeHtml(state.pricingRefreshMsg) + '</div>' : '') +
       '<div class="table-scroll" style="max-height:none;">' +
         '<table class="data-table">' +
           '<thead><tr><th>模型系列</th><th class="num">新增输入 ($/1M)</th><th class="num">缓存读取 ($/1M)</th><th class="num">输出 ($/1M)</th><th>说明</th></tr></thead>' +
@@ -3203,7 +3717,77 @@
         '</table>' +
       '</div>';
 
-    drawerEl.querySelectorAll(".rate-input").forEach(function (inp) {
+    var fxInp = document.getElementById("fxRateInput");
+    if (fxInp) {
+      fxInp.addEventListener("change", function () {
+        var val = parseFloat(fxInp.value);
+        if (isFinite(val) && val >= 3 && val <= 15) {
+          state.fxRate = Number(val.toFixed(4));
+          state.fxManual = true;
+          savePricingConfig();
+          renderAll();
+        }
+      });
+    }
+
+    var refreshPricingBtn = document.getElementById("refreshPricingBtn");
+    if (refreshPricingBtn) {
+      refreshPricingBtn.addEventListener("click", async function () {
+        refreshPricingBtn.disabled = true;
+        refreshPricingBtn.textContent = "更新中...";
+        try {
+          if (typeof pricingRefreshHandler === "function") {
+            var res = await pricingRefreshHandler();
+            if (res && res.pricingCache) applyPricingCache(res.pricingCache);
+            if (res && res.ok) {
+              var pOk = res.pricingOk !== false;
+              var fOk = res.fxOk !== false;
+              if (pOk && fOk) {
+                state.pricingRefreshMsg = "已于 " + new Date().toLocaleTimeString() + " 更新官方单价与汇率（1 USD = " + state.fxRate + " CNY）";
+              } else if (pOk) {
+                state.pricingRefreshMsg = "已更新官方单价（汇率更新失败，保留当前 1 USD = " + state.fxRate + " CNY）";
+              } else {
+                state.pricingRefreshMsg = "已更新实时汇率 1 USD = " + state.fxRate + " CNY（官方单价拉取失败，保留离线/缓存费率）";
+              }
+            } else {
+              state.pricingRefreshMsg = "更新提示：" + (res && res.error ? res.error : "未获取到新费率");
+            }
+          } else {
+            var fxRes = null;
+            var sources = [
+              "https://open.er-api.com/v6/latest/USD",
+              "https://api.frankfurter.app/latest?from=USD&to=CNY"
+            ];
+            for (var si = 0; si < sources.length; si++) {
+              try {
+                var r = await fetch(sources[si]);
+                if (!r.ok) continue;
+                var j = await r.json();
+                var rate = j && j.rates ? Number(j.rates.CNY) : NaN;
+                if (isFinite(rate) && rate >= 3 && rate <= 15) {
+                  fxRes = Number(rate.toFixed(4));
+                  break;
+                }
+              } catch (e) {}
+            }
+            if (fxRes != null) {
+              state.fxRate = fxRes;
+              state.fxManual = false;
+              savePricingConfig();
+              state.pricingRefreshMsg = "已在线更新人民币实时汇率：1 USD = " + fxRes + " CNY（独立网页模式受浏览器 CORS 限制，完整更新官方模型单价请运行 node sync_usage.mjs --refresh-pricing）";
+            } else {
+              state.pricingRefreshMsg = "在线汇率请求失败，已保留当前汇率 " + state.fxRate;
+            }
+          }
+        } catch (err) {
+          state.pricingRefreshMsg = "刷新失败：" + (err && err.message ? err.message : "网络异常");
+        } finally {
+          renderAll();
+        }
+      });
+    }
+
+    drawerEl.querySelectorAll(".rate-input[data-fam]").forEach(function (inp) {
       inp.addEventListener("change", function () {
         var famId = inp.getAttribute("data-fam");
         var field = inp.getAttribute("data-field");
@@ -3230,6 +3814,9 @@
       resetBtn.addEventListener("click", function () {
         state.customRates = {};
         state.pricingPreset = "auto";
+        state.fxRate = DEFAULT_FX_RATE;
+        state.fxManual = false;
+        state.pricingRefreshMsg = "";
         savePricingConfig();
         renderAll();
       });
@@ -3321,7 +3908,10 @@
 
   function renderHeatmapDots(container, byDate, startYmd, endYmd, maxVal) {
     var isCost = state.metric === "cost";
-    var heatPalette = isCost ? HEAT_COLORS_COST : HEAT_COLORS;
+    var isLight = state.resolvedTheme === "light";
+    var heatPalette = isCost
+      ? (isLight ? HEAT_COLORS_COST_LIGHT : HEAT_COLORS_COST)
+      : (isLight ? HEAT_COLORS_LIGHT : HEAT_COLORS);
     var startDow = (new Date(ymdToUtcMs(startYmd)).getUTCDay() + 6) % 7; // Mon=0..Sun=6
     var gridStart = addDaysYmd(startYmd, -startDow);
     var totalDays = diffDaysYmd(gridStart, endYmd) + 1;
@@ -3689,12 +4279,41 @@
       { k: "使用的技能总数", v: formatInt(totalSkillReads) }
     ];
 
+    var reqs = data.requests || [];
+    if (reqs.length > 0) {
+      var stats = computeRequestStats(reqs);
+      var thinkShare = stats.totalOut > 0 ? formatPercent(stats.totalThink, stats.totalOut) : "0%";
+      var avgTtftTxt = stats.ttftCount > 0 ? formatMsText(stats.ttftSum / stats.ttftCount) : "-";
+      var avgTpsTxt = stats.streamMs > 0 ? ((stats.timedOut * 1000 / stats.streamMs).toFixed(1) + " tok/s") : "-";
+      var peakTpsTxt = stats.peakTps != null ? (stats.peakTps.toFixed(1) + " tok/s") : "-";
+      insights.push({
+        k: "思考 Token 占比（SQLite 明细）",
+        v: thinkShare + " (" + formatCompactCn(stats.totalThink) + " / " + formatCompactCn(stats.totalOut) + ")"
+      });
+      insights.push({
+        k: "平均首字延迟 / 流式均速 / 峰值",
+        v: avgTtftTxt + " · " + avgTpsTxt + " · 峰值 " + peakTpsTxt
+      });
+      insights.push({
+        k: "疑似掉缓存 / 报错请求",
+        vHtml: '<button type="button" class="insight-link" id="jumpDiagBtn">' +
+          formatInt(stats.anomalies) + ' 次疑似掉缓存 · ' + formatInt(stats.errors) + ' 次报错 (查看诊断)</button>'
+      });
+    }
+
     document.getElementById("insightsList").innerHTML = insights.map(function (row) {
       return '<div class="insight-row">' +
         '<span class="insight-key">' + escapeHtml(row.k) + '</span>' +
-        '<span class="insight-val tabular">' + escapeHtml(row.v) + '</span>' +
+        '<span class="insight-val tabular">' + (row.vHtml ? row.vHtml : escapeHtml(row.v)) + '</span>' +
         '</div>';
     }).join("");
+    var jumpBtn = document.getElementById("jumpDiagBtn");
+    if (jumpBtn) {
+      jumpBtn.addEventListener("click", function () {
+        setActiveTab("diagnostics", true);
+        renderAll();
+      });
+    }
   }
 
   function renderCompositionAndDailyTable(data, byDate) {
@@ -4232,8 +4851,139 @@
     }
   }
 
+  function formatMsText(ms) {
+    if (ms == null || !isFinite(ms)) return "-";
+    if (ms >= 1000) return (ms / 1000).toFixed(2) + "s";
+    return Math.round(ms) + "ms";
+  }
+
+  function isBufferedTailReq(r) {
+    var outTok = Number(r.out) || 0;
+    var st = r.st;
+    var dur = r.dur;
+    return Boolean(dur > 0 && st != null && st < 1500 && (st / dur) < 0.06 && outTok >= 500);
+  }
+
+  function robustPeakTpsBrowser(rows) {
+    var valid = [];
+    rows.forEach(function (r) {
+      if (!r) return;
+      var outTok = Number(r.out) || 0;
+      if (outTok <= 0) return;
+      var ttft = r.ttft != null && isFinite(Number(r.ttft)) ? Number(r.ttft) : null;
+      var st = r.st != null && isFinite(Number(r.st)) ? Number(r.st) : null;
+      var rawDur = r.dur != null && isFinite(Number(r.dur)) ? Number(r.dur) : null;
+      var fullDur = (rawDur != null && rawDur > 0)
+        ? rawDur
+        : ((ttft != null && st != null && ttft + st > 0) ? (ttft + st) : null);
+      var bufTail = isBufferedTailReq({ out: outTok, st: st, dur: fullDur });
+      var derivedMode = (st != null && st >= 500 && outTok >= 20 && !bufTail)
+        ? "stream"
+        : (fullDur != null && fullDur > 0 ? "whole" : null);
+      var mode = (r.tm === "whole" || derivedMode === "whole") ? "whole" : derivedMode;
+      var wholeTps = (fullDur != null && fullDur > 0)
+        ? Number(((outTok * 1000) / fullDur).toFixed(1))
+        : (r.wtps != null && isFinite(Number(r.wtps)) && Number(r.wtps) > 0 ? Number(r.wtps) : null);
+      var streamTps = (st != null && st > 0)
+        ? Number(((outTok * 1000) / st).toFixed(1))
+        : null;
+      var tps = mode === "whole"
+        ? (wholeTps != null ? wholeTps : (r.tps != null && isFinite(Number(r.tps)) && Number(r.tps) > 0 ? Number(r.tps) : null))
+        : (streamTps != null ? streamTps : wholeTps);
+      if (!(tps > 0) || !isFinite(tps)) return;
+      valid.push({ out: outTok, st: st, mode: mode, tps: tps, wtps: wholeTps });
+    });
+    if (!valid.length) return null;
+    var sustained = valid.filter(function (r) { return r.st != null && r.st >= 3000 && r.out >= 100 && r.mode !== "whole"; });
+    var pool = sustained.length ? sustained : valid;
+    var maxOf = function (arr) {
+      var m = -Infinity;
+      arr.forEach(function (x) { if (x.tps > m) m = x.tps; });
+      return isFinite(m) ? m : null;
+    };
+    if (pool.length < 5) return maxOf(pool);
+    var sorted = pool.map(function (r) { return r.tps; }).sort(function (a, b) { return a - b; });
+    var quant = function (p) {
+      var pos = (sorted.length - 1) * p;
+      var lo = Math.floor(pos), hi = Math.ceil(pos);
+      return lo === hi ? sorted[lo] : sorted[lo] + (sorted[hi] - sorted[lo]) * (pos - lo);
+    };
+    var q1 = quant(0.25), q3 = quant(0.75);
+    var fence = Math.max(q3 + 1.5 * (q3 - q1), q3 * 1.25);
+    var accepted = pool.filter(function (r) { return r.tps <= fence || (r.wtps != null && r.wtps >= r.tps * 0.5); });
+    return accepted.length ? maxOf(accepted) : sorted[sorted.length - 1];
+  }
+
+  function computeRequestStats(reqs) {
+    var totalOut = 0, totalThink = 0, ttftSum = 0, ttftCount = 0;
+    var streamMs = 0, timedOut = 0, anomalies = 0, errors = 0;
+    reqs.forEach(function (r) {
+      totalOut += Number(r.out) || 0;
+      totalThink += Number(r.th) || 0;
+      if (r.ttft != null && isFinite(Number(r.ttft)) && Number(r.ttft) >= 0) {
+        ttftSum += Number(r.ttft);
+        ttftCount++;
+      }
+      var dur = (r.tm === "stream" && r.st > 0 && !isBufferedTailReq(r)) ? r.st : r.dur;
+      if (dur > 0 && (Number(r.out) || 0) > 0) {
+        streamMs += dur;
+        timedOut += Number(r.out) || 0;
+      }
+      if (r.ca_anom) anomalies++;
+      if (r.ok === 0) errors++;
+    });
+    return {
+      totalOut: totalOut,
+      totalThink: totalThink,
+      ttftSum: ttftSum,
+      ttftCount: ttftCount,
+      streamMs: streamMs,
+      timedOut: timedOut,
+      anomalies: anomalies,
+      errors: errors,
+      peakTps: robustPeakTpsBrowser(reqs)
+    };
+  }
+
+  var CTX_COLORS = {
+    "System Prompt": "#38bdf8",
+    "Rules": "#fb923c",
+    "Skills": "#a78bfa",
+    "Mcp Tools": "#2dd4bf",
+    "Tools": "#fbbf24",
+    "Chat Messages": "#58b4ff",
+    "Unspecified": "#94a3b8"
+  };
+
+  function renderContextBreakdownHtml(ctx, compactions) {
+    if (!ctx || !ctx.used) return "";
+    var maxTok = ctx.max > 0 ? ctx.max : null;
+    var pct = maxTok ? formatPercent(ctx.used, maxTok) : "";
+    var cats = Array.isArray(ctx.categories) ? ctx.categories : [];
+    var denom = maxTok && maxTok >= ctx.used ? maxTok : ctx.used;
+    var segsHtml = cats.map(function (c) {
+      var w = denom > 0 ? (c.tokens / denom) * 100 : 0;
+      var col = CTX_COLORS[c.label] || "#64748b";
+      return w > 0.2 ? '<div style="width:' + w.toFixed(2) + '%;background:' + col + ';" title="' + escapeHtml(c.label + ': ' + formatCompactCn(c.tokens)) + '"></div>' : '';
+    }).join("");
+    var legendHtml = cats.map(function (c) {
+      var col = CTX_COLORS[c.label] || "#64748b";
+      return '<span class="ctx-legend-item"><span class="swatch" style="background:' + col + ';"></span>' + escapeHtml(c.label) + ' <strong class="tabular">' + formatCompactCn(c.tokens) + '</strong></span>';
+    }).join("");
+    var compNum = Math.max(0, Math.round(Number(compactions) || 0));
+    return '<div style="margin-top:4px;">' +
+      '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);">' +
+        '<span>占用 <strong class="tabular" style="color:var(--text-primary);">' + formatCompactCn(ctx.used) + '</strong>' + (maxTok ? (' / ' + formatCompactCn(maxTok) + ' (' + pct + ')') : '') + '</span>' +
+        (compNum > 0 ? '<span class="status-pill warn">压缩 ' + compNum + ' 次</span>' : '') +
+      '</div>' +
+      '<div class="ctx-stack-bar">' + segsHtml + '</div>' +
+      '<div class="ctx-legend-row">' + legendHtml + '</div>' +
+    '</div>';
+  }
+
   function renderChatRankingCard(data) {
     var isCost = state.metric === "cost";
+    var q = String(state.chatSearch || "").trim().toLowerCase();
     var totalTokensAll = 0;
     var totalCostAll = 0;
     var ranked = data.conversations.map(function (c) {
@@ -4242,13 +4992,17 @@
       totalTokensAll += val;
       totalCostAll += costObj.total;
       return Object.assign({ _val: val, _cost: costObj.total, _costObj: costObj }, c);
+    }).filter(function (c) {
+      if (!q) return true;
+      var hay = (c.title + " " + (c.first_prompt || "") + " " + (c.models || []).map(function (m) { return m.model; }).join(" ")).toLowerCase();
+      return hay.indexOf(q) >= 0;
     }).sort(function (a, b) {
       return isCost ? (b._cost - a._cost) : (b._val - a._val);
     });
 
     var container = document.getElementById("chatRankingContainer");
     if (ranked.length === 0) {
-      container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">暂无归档会话</div>';
+      container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">' + (q ? "未找到匹配的会话记录" : "暂无归档会话") + '</div>';
       return;
     }
 
@@ -4281,12 +5035,15 @@
       if (isOpen) {
         var convDate = (c.first_at || c.last_at || "").slice(0, 10);
         var mergedModels = Object.create(null);
-        (c.models || []).forEach(function (m) {
+        var modelCostSource = (Array.isArray(c.daily_models) && c.daily_models.length > 0)
+          ? c.daily_models
+          : (c.models || []);
+        modelCostSource.forEach(function (m) {
           var mk = normalizeModelSlug(m.model);
           if (!mergedModels[mk]) {
             mergedModels[mk] = { key: mk, label: formatModelName(mk), cost: 0, tokens: 0 };
           }
-          mergedModels[mk].cost += computeRecordCost(m, state.mode, convDate).total;
+          mergedModels[mk].cost += computeRecordCost(m, state.mode, m.date || convDate).total;
           mergedModels[mk].tokens += getTokenValue(m, state.mode);
         });
         var modelParts = Object.keys(mergedModels).map(function (mk) {
@@ -4297,6 +5054,24 @@
           return escapeHtml(m.label) + ": " + formatUsd(m.cost) + " (" + formatCompactCn(m.tokens) + ")";
         }).join(" / ");
 
+        var dbTelHtml = "";
+        if (c.db_telemetry && typeof c.db_telemetry === "object") {
+          var dt = c.db_telemetry;
+          var dtTtftCnt = Number(dt.ttft_count) || 0;
+          var dtTtftSum = Number(dt.ttft_sum_ms) || 0;
+          var dtStreamMs = Number(dt.stream_ms) || 0;
+          var dtTimedOut = Number(dt.timed_output) || 0;
+          var dtErrCnt = Math.max(0, Math.round(Number(dt.error_count) || 0));
+          var dtRetCnt = Math.max(0, Math.round(Number(dt.retry_count) || 0));
+          var avgTtft = dtTtftCnt > 0 ? formatMsText(dtTtftSum / dtTtftCnt) : "-";
+          var avgTps = dtStreamMs > 0 ? ((dtTimedOut * 1000 / dtStreamMs).toFixed(1) + " tok/s") : "-";
+          var peakTps = (dt.peak_tps != null && isFinite(Number(dt.peak_tps))) ? (Number(dt.peak_tps).toFixed(1) + " tok/s") : "-";
+          dbTelHtml += '<div class="detail-kv"><div class="dk">思考与响应速度 (SQLite)</div><div class="dv tabular">思考 ' + formatCompactCn(dt.thinking_tokens) + ' / 回复 ' + formatCompactCn(dt.response_tokens) + ' · TTFT ' + avgTtft + ' · 均速 ' + avgTps + ' · 峰值 ' + peakTps + (dtErrCnt || dtRetCnt ? (' · 报错/重试 ' + dtErrCnt + '/' + dtRetCnt) : '') + '</div></div>';
+          if (dt.context) {
+            dbTelHtml += '<div class="detail-kv detail-span-2"><div class="dk">最新上下文窗口构成</div><div class="dv">' + renderContextBreakdownHtml(dt.context, dt.compactions || 0) + '</div></div>';
+          }
+        }
+
         html += '<tr class="detail-drawer"><td colspan="6">' +
           '<div class="detail-grid">' +
             '<div class="detail-kv detail-span-2"><div class="dk">首条提问</div><div class="dv">' + escapeHtml(c.first_prompt || "无记录") + '</div></div>' +
@@ -4304,6 +5079,7 @@
             '<div class="detail-kv"><div class="dk">最长单轮用时</div><div class="dv tabular">' + formatDurationCn(c.max_turn_sec) + ' (' + (c.turns || 0) + ' 轮对话)</div></div>' +
             '<div class="detail-kv"><div class="dk">Token 明细 (含缓存命中率 ' + cacheRate + ')</div><div class="dv tabular">新增 ' + formatInt(c.input) + ' / 缓存 ' + formatInt(c.cache_read) + ' / 输出 ' + formatInt(c.output) + '</div></div>' +
             '<div class="detail-kv"><div class="dk">API 费用明细</div><div class="dv tabular">合计 <strong class="cost-accent-text">' + formatUsd(c._cost) + '</strong> · 新增 ' + formatUsd(c._costObj.input) + ' / 缓存 ' + formatUsd(c._costObj.cache_read) + ' / 输出 ' + formatUsd(c._costObj.output) + (state.mode === "full" ? (' · 缓存省 <span class="cost-saved-text">' + formatUsd(c._costObj.cacheSaved) + '</span>') : '') + '</div></div>' +
+            dbTelHtml +
             '<div class="detail-kv detail-span-2"><div class="dk">模型分布</div><div class="dv tabular">' + (modelParts || "暂无") + '</div></div>' +
           '</div>' +
         '</td></tr>';
@@ -4625,7 +5401,7 @@
         var color = PALETTE[si % PALETTE.length];
         if (val > 0) {
           var cy = padT + plotH - (val / yTop) * plotH;
-          dotsFocus += '<circle cx="' + xCoords[idx].toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="4" fill="' + color + '" stroke="#121212" stroke-width="1.5" />';
+          dotsFocus += '<circle cx="' + xCoords[idx].toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="4" fill="' + color + '" stroke="var(--bg-canvas)" stroke-width="1.5" />';
         }
         html += '<div class="tt-line"><span><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + color + ';margin-right:5px;"></span>' + escapeHtml(seriesMap[sk].label) + '</span><strong class="tabular">' + formatInt(val) + ' ' + unitLabel + '</strong></div>';
       });
@@ -4710,6 +5486,237 @@
     );
   }
 
+  function formatRequestDateTime(ts) {
+    if (!ts) return "-";
+    var d = new Date(ts);
+    if (isNaN(d.getTime())) return "-";
+    return pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()) + " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds());
+  }
+
+  function getFilteredDiagRequests(data) {
+    var all = data.requests || [];
+    var q = String(state.diagSearch || "").trim().toLowerCase();
+    return all.filter(function (r) {
+      if (state.diagStatus === "anomaly" && !r.ca_anom) return false;
+      if (state.diagStatus === "error" && r.ok !== 0 && !(r.ret > 0 || (r.rerr && r.rerr.length))) return false;
+      if (state.diagModel !== "all" && normalizeModelSlug(r.m) !== state.diagModel) return false;
+      if (q) {
+        var hay = ((r.title || "") + " " + (r.m || "") + " " + (r.err || "") + " " + (r.rerr || []).join(" ")).toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    });
+  }
+
+  function triggerDownload(filename, text, mime) {
+    var blob = new Blob([text], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function renderDiagnosticsTab(data) {
+    var reqs = data.requests || [];
+    var healthBox = document.getElementById("diagModelHealthTable");
+    var reqBox = document.getElementById("diagRequestsContainer");
+    var ctxBox = document.getElementById("diagContextContainer");
+
+    if (reqs.length === 0) {
+      var emptyMsg = '<div style="color:var(--text-muted);font-size:12px;padding:14px 0;">当前设备/筛选条件下暂无 SQLite 请求明细（若为旧机同步文件或未运行新版 <code>sync_usage.mjs</code>，重新扫描本机后即可显示）。</div>';
+      if (healthBox) healthBox.innerHTML = emptyMsg;
+      if (reqBox) reqBox.innerHTML = emptyMsg;
+      var emptyModelSel = document.getElementById("diagModelSelect");
+      if (emptyModelSel) {
+        emptyModelSel.innerHTML = '<option value="all">全部模型 (0)</option>';
+        emptyModelSel.value = "all";
+        state.diagModel = "all";
+      }
+    } else {
+      // 1. Model Health & Speed Table
+      var byModel = {};
+      reqs.forEach(function (r) {
+        var mk = normalizeModelSlug(r.m);
+        if (!byModel[mk]) {
+          byModel[mk] = { key: mk, label: formatModelName(mk), rows: [], ok: 0, err: 0, inp: 0, ca: 0, out: 0, th: 0, ttftSum: 0, ttftCnt: 0, stMs: 0, stOut: 0, costUsd: 0, hasRole: false };
+        }
+        var b = byModel[mk];
+        b.rows.push(r);
+        if (r.r) b.hasRole = true;
+        if (r.ok === 0) b.err++; else b.ok++;
+        b.inp += Number(r.in) || 0;
+        b.ca += Number(r.ca) || 0;
+        b.out += Number(r.out) || 0;
+        b.th += Number(r.th) || 0;
+        if (r.ttft != null && isFinite(Number(r.ttft))) { b.ttftSum += Number(r.ttft); b.ttftCnt++; }
+        var sd = (r.tm === "stream" && r.st > 0 && !isBufferedTailReq(r)) ? r.st : r.dur;
+        if (sd > 0 && (Number(r.out) || 0) > 0) { b.stMs += sd; b.stOut += Number(r.out) || 0; }
+        var dYmd = getRequestBillingDate(r);
+        b.costUsd += computeRecordCost({ model: r.m, role: r.r, input: r.in, cache_read: r.ca, output: r.out }, state.mode, dYmd).total;
+      });
+      var mList = Object.keys(byModel).map(function (k) { return byModel[k]; }).sort(function (a, b) { return b.rows.length - a.rows.length; });
+
+      var modelSel = document.getElementById("diagModelSelect");
+      if (modelSel) {
+        var prevM = state.diagModel;
+        var mOpts = '<option value="all">全部模型 (' + mList.length + ')</option>';
+        mList.forEach(function (m) {
+          mOpts += '<option value="' + escapeHtml(m.key) + '">' + escapeHtml(m.label) + ' (' + m.rows.length + ')</option>';
+        });
+        modelSel.innerHTML = mOpts;
+        modelSel.value = (prevM === "all" || byModel[prevM]) ? prevM : "all";
+        state.diagModel = modelSel.value;
+      }
+
+      if (healthBox) {
+        healthBox.innerHTML = '<table class="data-table">' +
+          '<thead><tr><th>模型</th><th class="num">请求 (成功/报错)</th><th class="num">缓存命中率</th><th class="num">思考占比</th><th class="num">平均 TTFT</th><th class="num">流式均速</th><th class="num">稳健峰值</th><th class="num">折合费用</th></tr></thead>' +
+          '<tbody>' + mList.map(function (m) {
+            var hit = (m.inp + m.ca) > 0 ? formatPercent(m.ca, m.inp + m.ca) : "-";
+            var thPct = m.out > 0 ? formatPercent(m.th, m.out) : "-";
+            var avgTtft = m.ttftCnt > 0 ? formatMsText(m.ttftSum / m.ttftCnt) : "-";
+            var avgTps = m.stMs > 0 ? ((m.stOut * 1000 / m.stMs).toFixed(1) + " tok/s") : "-";
+            var pk = robustPeakTpsBrowser(m.rows);
+            var pkTxt = pk != null ? (pk.toFixed(1) + " tok/s") : "-";
+            var orchNote = (m.key.indexOf("orchestrator") >= 0 && m.hasRole)
+              ? ' <span class="tag-pill" title="诊断页按 SQLite 执行/规划角色细分计价；概览小时桶无角色字段，按默认系列估算">含角色估算</span>'
+              : '';
+            return '<tr>' +
+              '<td><strong>' + escapeHtml(m.label) + '</strong>' + orchNote + '</td>' +
+              '<td class="num tabular">' + formatInt(m.rows.length) + ' <span style="color:var(--text-muted);">(' + m.ok + '/' + (m.err > 0 ? ('<span style="color:var(--danger);">' + m.err + '</span>') : '0') + ')</span></td>' +
+              '<td class="num tabular">' + hit + '</td>' +
+              '<td class="num tabular">' + thPct + '</td>' +
+              '<td class="num tabular">' + avgTtft + '</td>' +
+              '<td class="num tabular">' + avgTps + '</td>' +
+              '<td class="num tabular">' + pkTxt + '</td>' +
+              '<td class="num tabular cost-accent-text"><strong>' + formatUsd(m.costUsd) + '</strong></td>' +
+            '</tr>';
+          }).join("") + '</tbody></table>';
+      }
+
+      // 2. Request Log & Cache Anomalies
+      var filteredReqs = getFilteredDiagRequests(data);
+      if (reqBox) {
+        if (filteredReqs.length === 0) {
+          reqBox.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:14px 0;">当前筛选条件下无匹配请求记录</div>';
+        } else {
+          var vis = filteredReqs.slice(0, state.diagLimit);
+          var rowsHtml = vis.map(function (r) {
+            var rk = r.id;
+            var isOpen = !!state.expandedReqs[rk];
+            var totIn = (Number(r.in) || 0) + (Number(r.ca) || 0);
+            var hitTxt = totIn > 0 ? formatPercent(r.ca, totIn) : "-";
+            var roleTag = r.r ? (' <span class="tag-pill">' + (r.r === "execution" ? "执行" : "规划") + '</span>') : "";
+            var statusHtml = '<span class="status-pill ok">正常</span>';
+            if (r.ok === 0) {
+              statusHtml = '<span class="status-pill danger">报错' + (r.err_code ? (" · " + escapeHtml(String(r.err_code).toUpperCase())) : "") + '</span>';
+            } else if (r.ca_anom && typeof r.ca_anom === "object") {
+              var kLabel = r.ca_anom.kind === "cleared" ? "疑似掉缓存(清零)" : (r.ca_anom.kind === "dropped" ? "疑似掉缓存(骤降)" : "疑似未命中");
+              var gapSec = Math.max(0, Math.round((Number(r.ca_anom.gap) || 0) / 1000));
+              var phNum = Number(r.ca_anom.ph) || 0;
+              var chNum = Number(r.ca_anom.ch) || 0;
+              statusHtml = '<span class="status-pill warn" title="' + escapeHtml('距上次 ' + gapSec + 's：命中率 ' + phNum + '% → ' + chNum + '%') + '">' + kLabel + '</span>';
+            } else if (r.ret > 0 || (r.rerr && r.rerr.length)) {
+              var retNum = Math.max(0, Math.round(Number(r.ret) || 0), Array.isArray(r.rerr) ? r.rerr.length : 0);
+              statusHtml = '<span class="status-pill warn">重试 ' + retNum + ' 次</span>';
+            }
+            var dYmd = getRequestBillingDate(r);
+            var reqCost = computeRecordCost({ model: r.m, role: r.r, input: r.in, cache_read: r.ca, output: r.out }, state.mode, dYmd).total;
+            var hasDetail = r.ok === 0 || r.err || (r.rerr && r.rerr.length) || r.ca_anom;
+            var rTpsNum = r.tps != null && isFinite(Number(r.tps)) ? Number(r.tps) : null;
+            var rTtftNum = r.ttft != null && isFinite(Number(r.ttft)) ? Number(r.ttft) : null;
+            var speedTxt = (rTpsNum != null ? (rTpsNum.toFixed(1).replace(/\.0$/, "") + " tok/s") : "-") + (rTtftNum != null ? (" / " + formatMsText(rTtftNum)) : "");
+
+            var html = '<tr class="' + (hasDetail ? "clickable-row" : "") + '" data-reqid="' + escapeHtml(rk) + '">' +
+              '<td class="tabular">' + escapeHtml(formatRequestDateTime(r.ts)) + '</td>' +
+              '<td><span class="title-text" style="max-width:170px;display:inline-block;vertical-align:bottom;" title="' + escapeHtml(r.title || r.cid) + '">' + escapeHtml(r.title || String(r.cid || "").slice(0, 8)) + '</span></td>' +
+              '<td>' + escapeHtml(formatModelName(r.m)) + roleTag + '</td>' +
+              '<td>' + statusHtml + '</td>' +
+              '<td class="num tabular">' + escapeHtml(speedTxt) + '</td>' +
+              '<td class="num tabular">' + formatCompactCn(r.in) + ' / ' + formatCompactCn(r.ca) + ' <span style="color:var(--text-muted);">(' + hitTxt + ')</span></td>' +
+              '<td class="num tabular">' + formatCompactCn(r.out) + (r.th > 0 ? (' <span style="color:var(--text-muted);">(思 ' + formatCompactCn(r.th) + ')</span>') : '') + '</td>' +
+              '<td class="num tabular cost-accent-text">' + formatUsd(reqCost) + '</td>' +
+            '</tr>';
+
+            if (isOpen && hasDetail) {
+              var errText = [r.err || "", (Array.isArray(r.rerr) ? r.rerr : []).join("\n")].filter(Boolean).join("\n---\n");
+              var anomNote = (r.ca_anom && typeof r.ca_anom === "object")
+                ? ('上次缓存命中 ' + (Number(r.ca_anom.ph) || 0) + '% (' + formatCompactCn(r.ca_anom.pc) + ') → 本次 ' + (Number(r.ca_anom.ch) || 0) + '% (' + formatCompactCn(r.ca_anom.cc) + ')，间隔 ' + Math.max(0, Math.round((Number(r.ca_anom.gap) || 0) / 1000)) + ' 秒')
+                : '';
+              html += '<tr class="detail-drawer"><td colspan="8">' +
+                (anomNote ? '<div style="font-size:12px;color:var(--warn);margin-bottom:6px;">' + escapeHtml(anomNote) + '</div>' : '') +
+                (errText
+                  ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><span style="font-size:11px;color:var(--text-muted);">报错 / 重试信息（设备: ' + escapeHtml(r.machine) + '）</span><button type="button" class="btn-pill copy-err-btn" data-err="' + escapeHtml(errText) + '">复制报错</button></div><div class="error-box">' + escapeHtml(errText) + '</div>'
+                  : '<div style="font-size:11px;color:var(--text-muted);">设备: ' + escapeHtml(r.machine) + ' · 会话 ID: ' + escapeHtml(r.cid) + '</div>') +
+              '</td></tr>';
+            }
+            return html;
+          }).join("");
+
+          var moreBtn = filteredReqs.length > state.diagLimit
+            ? '<button type="button" class="show-more-btn" id="diagMoreBtn">加载更多 (已显示 ' + vis.length + ' / ' + filteredReqs.length + ' 条)</button>'
+            : '';
+
+          reqBox.innerHTML = '<div class="table-scroll" style="max-height:460px;"><table class="data-table">' +
+            '<thead><tr><th>时间</th><th>所属会话</th><th>模型</th><th>状态 / 诊断</th><th class="num">速度 / TTFT</th><th class="num">新增 / 缓存 (命中)</th><th class="num">输出 (思考)</th><th class="num">费用</th></tr></thead>' +
+            '<tbody>' + rowsHtml + '</tbody></table></div>' + moreBtn;
+
+          reqBox.querySelectorAll("tr[data-reqid].clickable-row").forEach(function (tr) {
+            tr.addEventListener("click", function () {
+              var id = tr.getAttribute("data-reqid");
+              state.expandedReqs[id] = !state.expandedReqs[id];
+              renderDiagnosticsTab(data);
+            });
+          });
+          reqBox.querySelectorAll(".copy-err-btn").forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              var txt = btn.getAttribute("data-err") || "";
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(txt).then(function () { btn.textContent = "已复制"; }).catch(function () {});
+              }
+            });
+          });
+          var moreEl = document.getElementById("diagMoreBtn");
+          if (moreEl) {
+            moreEl.addEventListener("click", function () {
+              state.diagLimit += 50;
+              renderDiagnosticsTab(data);
+            });
+          }
+        }
+      }
+    }
+
+    // 3. Context Breakdown Top 10
+    if (ctxBox) {
+      var ctxConvs = (data.conversations || []).filter(function (c) {
+        return c.db_telemetry && c.db_telemetry.context && c.db_telemetry.context.used > 0;
+      }).slice().sort(function (a, b) {
+        return String(b.last_at || "").localeCompare(String(a.last_at || ""));
+      }).slice(0, 10);
+
+      if (ctxConvs.length === 0) {
+        ctxBox.innerHTML = '<div style="color:var(--text-muted);font-size:12px;">暂无带上下文拆解的会话数据</div>';
+      } else {
+        ctxBox.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px;">' + ctxConvs.map(function (c) {
+          return '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">' +
+            '<div style="display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:600;">' +
+              '<span class="title-text">' + escapeHtml(c.title) + '</span>' +
+              '<span style="font-size:11px;font-weight:400;color:var(--text-muted);">' + escapeHtml(c.machine) + ' · ' + escapeHtml((c.last_at || "").slice(0, 16).replace("T", " ")) + '</span>' +
+            '</div>' +
+            renderContextBreakdownHtml(c.db_telemetry.context, c.db_telemetry.compactions || 0) +
+          '</div>';
+        }).join("") + '</div>';
+      }
+    }
+    syncAllCustomSelects();
+  }
+
   function renderAll() {
     var hasBase = window.AGY_USAGE_DATA && Array.isArray(window.AGY_USAGE_DATA.machines);
     var allMachines = getMergedMachines();
@@ -4737,12 +5744,14 @@
       renderOverviewActivity(byDate);
       renderPopularAndInsights(data);
       renderCompositionAndDailyTable(data, byDate);
-    } else {
+    } else if (state.tab === "analytics") {
       renderUsageHistoryCard(data);
       renderChatRankingCard(data);
       renderWindowHistoryCard(data);
       renderToolActivityCard(data);
       renderMessagesCard(data);
+    } else {
+      renderDiagnosticsTab(data);
     }
 
     syncAllCustomSelects();
@@ -4884,7 +5893,7 @@
   }
 
   function setActiveTab(tabName, updateHash) {
-    var nextTab = tabName === "analytics" ? "analytics" : "overview";
+    var nextTab = (tabName === "analytics" || tabName === "diagnostics") ? tabName : "overview";
     state.tab = nextTab;
     document.getElementById("mainTabGroup").querySelectorAll("button").forEach(function (b) {
       b.classList.toggle("active", b.getAttribute("data-tab") === nextTab);
@@ -4904,7 +5913,7 @@
   function syncTabFromHash() {
     if (typeof window.location === "undefined") return;
     var h = String(window.location.hash || "").replace(/^#/, "");
-    if (h === "analytics" || h === "overview") {
+    if (h === "analytics" || h === "overview" || h === "diagnostics") {
       setActiveTab(h, false);
     }
   }
@@ -4939,6 +5948,17 @@
     }
 
     bindSegmented("metricToggle", "data-metric", setMetric);
+    bindSegmented("currencyToggle", "data-currency", function (v) {
+      state.currency = v === "CNY" ? "CNY" : "USD";
+      savePricingConfig();
+      renderAll();
+    });
+    bindSegmented("themeToggle", "data-theme", function (v) {
+      state.theme = v === "light" ? "light" : "dark";
+      applyTheme(state.theme);
+      savePricingConfig();
+      renderAll();
+    });
     bindSegmented("modeToggle", "data-mode", function (v) { state.mode = v; renderAll(); });
     bindSegmented("sourceToggle", "data-source", function (v) { state.source = v; renderAll(); });
     bindSegmented("activityViewToggle", "data-view", function (v) { state.activityView = v; renderAll(); });
@@ -4950,6 +5970,80 @@
     bindSegmented("toolModeToggle", "data-tmode", function (v) { state.toolMode = v; renderAll(); });
     bindSegmented("msgSpanToggle", "data-span", function (v) { state.msgSpan = Number(v); renderAll(); });
     bindSegmented("msgModeToggle", "data-mmode", function (v) { state.msgMode = v; renderAll(); });
+    bindSegmented("diagStatusToggle", "data-dstatus", function (v) { state.diagStatus = v; state.diagLimit = 30; renderDiagnosticsTab(getFilteredData()); });
+
+    var chatSearchEl = document.getElementById("chatSearchInput");
+    if (chatSearchEl) {
+      chatSearchEl.addEventListener("input", function () {
+        state.chatSearch = chatSearchEl.value || "";
+        state.chatLimit = 5;
+        renderChatRankingCard(getFilteredData());
+      });
+    }
+
+    var diagModelSel = document.getElementById("diagModelSelect");
+    if (diagModelSel) {
+      diagModelSel.addEventListener("change", function (e) {
+        state.diagModel = e.target.value;
+        state.diagLimit = 30;
+        renderDiagnosticsTab(getFilteredData());
+      });
+    }
+
+    var diagSearchEl = document.getElementById("diagSearchInput");
+    if (diagSearchEl) {
+      diagSearchEl.addEventListener("input", function () {
+        state.diagSearch = diagSearchEl.value || "";
+        state.diagLimit = 30;
+        renderDiagnosticsTab(getFilteredData());
+      });
+    }
+
+    var expCsvBtn = document.getElementById("diagExportCsvBtn");
+    if (expCsvBtn) {
+      expCsvBtn.addEventListener("click", function () {
+        var rows = getFilteredDiagRequests(getFilteredData());
+        var csvEscapeText = function (v) {
+          var s = String(v == null ? "" : v);
+          if (/^[\s\u0000-\u001f]*[=+\-@]/.test(s)) s = "'" + s;
+          return '"' + s.replace(/"/g, '""') + '"';
+        };
+        var csvEscapeNum = function (v) {
+          if (v === "" || v === null || v === undefined) return '""';
+          var n = Number(v);
+          return isFinite(n) ? '"' + String(n) + '"' : '""';
+        };
+        var header = ["time", "machine", "conversation", "model", "role", "status", "cache_anomaly", "ttft_ms", "stream_ms", "tps", "input", "cache_read", "output", "thinking", "error"].join(",");
+        var body = rows.map(function (r) {
+          return [
+            csvEscapeText(formatRequestDateTime(r.ts)),
+            csvEscapeText(r.machine),
+            csvEscapeText(r.title || r.cid),
+            csvEscapeText(r.m),
+            csvEscapeText(r.r || ""),
+            csvEscapeText(r.ok === 0 ? "error" : "ok"),
+            csvEscapeText(r.ca_anom ? r.ca_anom.kind : ""),
+            csvEscapeNum(r.ttft),
+            csvEscapeNum(r.st),
+            csvEscapeNum(r.tps),
+            csvEscapeNum(r.in || 0),
+            csvEscapeNum(r.ca || 0),
+            csvEscapeNum(r.out || 0),
+            csvEscapeNum(r.th || 0),
+            csvEscapeText(r.err || "")
+          ].join(",");
+        }).join("\n");
+        triggerDownload("antigravity-requests-" + getTodayLocalYmd() + ".csv", "\uFEFF" + header + "\n" + body, "text/csv;charset=utf-8");
+      });
+    }
+
+    var expJsonBtn = document.getElementById("diagExportJsonBtn");
+    if (expJsonBtn) {
+      expJsonBtn.addEventListener("click", function () {
+        var rows = getFilteredDiagRequests(getFilteredData());
+        triggerDownload("antigravity-requests-" + getTodayLocalYmd() + ".json", JSON.stringify(rows, null, 2), "application/json;charset=utf-8");
+      });
+    }
 
     document.getElementById("pricingPresetSelect").addEventListener("change", function (e) {
       var v = e.target.value;
@@ -5038,7 +6132,21 @@
     setUsageData: function (data) {
       if (!data || typeof data !== "object") return;
       window.AGY_USAGE_DATA = data;
+      if (data.pricing_cache) applyPricingCache(data.pricing_cache);
       renderAll();
+    },
+    applyHostTheme: function (theme) {
+      if (state.theme === "auto") {
+        if (theme === "light" || theme === "dark") {
+          applyTheme(theme);
+          renderAll();
+        }
+      } else {
+        applyTheme(state.theme === "light" ? "light" : "dark");
+      }
+    },
+    bindPricingRefresh: function (fn) {
+      if (typeof fn === "function") pricingRefreshHandler = fn;
     },
     setLoading: function (isLoading) {
       var missingBox = document.getElementById("missingDataBox");

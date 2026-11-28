@@ -56,9 +56,13 @@ async function runBackgroundSync(isAuto) {
 function applyHostCtx(ctx) {
   if (!ctx) return;
   if (ctx.theme) {
-    try {
-      applyDocumentTheme(ctx.theme);
-    } catch {}
+    if (window.__AGY_DASHBOARD__?.applyHostTheme) {
+      window.__AGY_DASHBOARD__.applyHostTheme(ctx.theme);
+    } else {
+      try {
+        applyDocumentTheme(ctx.theme);
+      } catch {}
+    }
   }
   if (ctx.styles && ctx.styles.variables) {
     try {
@@ -119,6 +123,15 @@ app.onhostcontextchanged = (ctx) => {
 async function start() {
   if (window.__AGY_DASHBOARD__) {
     window.__AGY_DASHBOARD__.bindManualSync(() => runBackgroundSync(false));
+    if (window.__AGY_DASHBOARD__.bindPricingRefresh) {
+      window.__AGY_DASHBOARD__.bindPricingRefresh(async () => {
+        const res = await app.callServerTool({
+          name: "refresh_pricing",
+          arguments: {},
+        });
+        return res && res.structuredContent ? res.structuredContent : null;
+      });
+    }
   }
   await app.connect();
   applyHostCtx(app.getHostContext());

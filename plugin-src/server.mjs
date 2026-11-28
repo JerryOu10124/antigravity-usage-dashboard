@@ -9,6 +9,12 @@ import {
   ListToolsRequestSchema,
   ReadResourceRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import {
+  fetchLiveFxRate,
+  fetchLiveOfficialPricing,
+  loadPricingCache,
+  savePricingCache,
+} from "../lib/telemetry.mjs";
 
 const BASE_DIR =
   typeof __dirname !== "undefined"
@@ -39,7 +45,18 @@ function readBundleData(usageDir) {
     .replace(/^\s*window\.AGY_USAGE_DATA\s*=\s*/, "")
     .replace(/;\s*$/, "");
   if (!jsonStr) return null;
-  return JSON.parse(jsonStr);
+  const data = JSON.parse(jsonStr);
+  if (data && typeof data === "object") {
+    const diskCache = loadPricingCache(usageDir);
+    if (
+      diskCache &&
+      (!data.pricing_cache ||
+        String(diskCache.checkedAt || "") >= String(data.pricing_cache.checkedAt || ""))
+    ) {
+      data.pricing_cache = diskCache;
+    }
+  }
+  return data;
 }
 
 function isGitSyncConfigured(usageDir) {
@@ -221,6 +238,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           ui: { visibility: ["app"] },
         },
       },
+      {
+        name: "refresh_pricing",
+        title: "刷新官方单价与汇率",
+        description: "按需从官方定价页与公开汇率接口刷新参考费率并本地缓存。",
+        inputSchema: {
+          type: "object",
+          properties: {},
+          additionalProperties: false,
+        },
+        _meta: {
+          ui: { visibility: ["app"] },
+        },
+      },
     ],
   };
 });
@@ -294,6 +324,54 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     return {
       content: [{ type: "text", text: summarizeUsage(usageData) }],
       structuredContent: { ok: true, usageData },
+    };
+  }
+
+  if (name === "refresh_pricing") {
+    const prev = loadPricingCache(USAGE_DIR) || {};
+    const [pRes, fRes] = await Promise.allSettled([
+      fetchLiveOfficialPricing(),
+      fetchLiveFxRate(),
+    ]);
+    const pricingOk = Boolean(pRes.status === "fulfilled" && pRes.value);
+    const fxOk = Boolean(fRes.status === "fulfilled" && fRes.value);
+    const nowIso = new Date().toISOString();
+    const next = { ...prev };
+    const errs = [];
+    if (pricingOk) {
+      next.families = { ...(prev.families || {}), ...pRes.value.families };
+      next.pricingSource = pRes.value.source;
+      next.pricingUpdatedAt = nowIso;
+    } else {
+      errs.push("官方单价拉取失败");
+    }
+    if (fxOk) {
+      next.fx = fRes.value;
+      next.fxUpdatedAt = nowIso;
+    } else {
+      errs.push("汇率拉取失败");
+    }
+    const ok = pricingOk || fxOk;
+    if (ok) {
+      next.checkedAt = nowIso;
+      savePricingCache(USAGE_DIR, next);
+    }
+    return {
+      content: [
+        {
+          type: "text",
+          text: ok
+            ? `已更新参考费率${errs.length ? `（${errs.join("，")}）` : ""}`
+            : `刷新失败：${errs.join("，")}`,
+        },
+      ],
+      structuredContent: {
+        ok,
+        pricingOk,
+        fxOk,
+        pricingCache: ok ? next : prev,
+        error: errs.length ? errs.join("，") : null,
+      },
     };
   }
 
